@@ -26,14 +26,14 @@ export function CartScreen({ navigation }) {
 
   const checkoutMutation = useMutation(
     async () => {
-      const currentCheckout = await createCheckoutFromCurrentCart({
-        channelType: currentCart.ChannelType.OTHER_PLATFORM,
-      });
+      const currentCheckout = await createCheckoutFromCurrentCart(
+        currentCart.ChannelType.OTHER_PLATFORM
+      );
 
       const { redirectSession } = await createRedirectSession({
         ecomCheckout: { checkoutId: currentCheckout.checkoutId },
         callbacks: {
-          thankYouPageUrl: Linking.createURL("/checkout/thank-you"),
+          thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
         },
       });
 

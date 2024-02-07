@@ -25,6 +25,9 @@ import {
 } from "./authentication/session";
 import { MyOrdersScreen } from "./store/MyOrdersScreen";
 import { StoreScreen } from "./store/StoreScreen";
+import * as Crypto from "expo-crypto";
+
+global.crypto = Crypto;
 
 const Drawer = createDrawerNavigator();
 
