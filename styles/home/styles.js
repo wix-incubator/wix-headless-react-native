@@ -10,5 +10,7 @@ export const styles = StyleSheet.create({
     scrollView: {
         flexGrow: 1,
         marginTop: 60,
+        paddingBottom: 60,
+        overflow: "none",
     },
 });

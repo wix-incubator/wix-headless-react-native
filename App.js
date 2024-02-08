@@ -22,6 +22,8 @@ function App() {
         "Fraunces-VariableFont_SOFT": require("./assets/fonts/Fraunces-VariableFont_SOFT,WONK,opsz,wght.ttf"),
         "Fraunces-Italic-VariableFont_SOFT": require("./assets/fonts/Fraunces-Italic-VariableFont_SOFT,WONK,opsz,wght.ttf"),
         "Fraunces-Regular": require("./assets/fonts/static/Fraunces_144pt-Regular.ttf"),
+        "Fraunces-Italic": require("./assets/fonts/static/Fraunces_144pt-Italic.ttf"),
+        "Fraunces-Bold": require("./assets/fonts/static/Fraunces_144pt-Bold.ttf"),
     });
 
     return (

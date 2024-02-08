@@ -2,53 +2,11 @@ import * as React from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {NavigationContainer} from "@react-navigation/native";
 import * as Linking from "expo-linking";
-import {HomeScreen} from "../../screens/home/HomeScreen";
-import {StoreScreen} from "../../screens/store/StoreScreen";
-import {Image, StyleSheet} from "react-native";
+import {Image} from "react-native";
+import {tabs} from "../../data/tabs/data";
+import {styles} from "../../styles/tabs/styles";
 
 const Tab = createBottomTabNavigator();
-
-const tabs = [
-    {
-        name: "Home",
-        component: HomeScreen,
-        icon: require("../../assets/icons/home-icon.png"),
-    },
-    {
-        name: "Collections",
-        component: StoreScreen,
-        icon: require("../../assets/icons/collections-icon.png"),
-    },
-    {
-        name: "Chat",
-        component: StoreScreen,
-        icon: require("../../assets/icons/chat-icon.png"),
-    },
-    {
-        name: "Members Area",
-        component: StoreScreen,
-        icon: require("../../assets/icons/user-icon.png"),
-    },
-    {
-        name: "Cart",
-        component: StoreScreen,
-        icon: require("../../assets/icons/cart-icon.png"),
-    }
-];
-
-const styles = StyleSheet.create({
-    icon: {
-        width: 24,
-        height: 24,
-        opacity: 0.6,
-    },
-    selectedIcon: {
-        width: 24,
-        height: 24,
-        opacity: 1,
-    },
-});
-
 
 function NavbarTabs({onChangeTab, getActiveTab}) {
     return (

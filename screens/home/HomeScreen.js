@@ -3,12 +3,14 @@ import {Toast} from "../../components/Toast/Toast";
 import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
 import {AnimtedAppBar} from "../../components/Header/AnimtedAppBar";
+import {ShopCollectionsHome} from "../../components/ShopCollectionsHome/ShopCollectionsHome";
 
 
 export function HomeScreen(navigation) {
     const scrollY = new Animated.Value(0);
-    const translateY = scrollY.interpolate({
-        inputRange: [0, 100],
+    const diffClamp = Animated.diffClamp(scrollY, 0, 200);
+    const translateY = diffClamp.interpolate({
+        inputRange: [0, 200],
         outputRange: [0, -200],
         extrapolate: 'clamp',
     });
@@ -22,6 +24,8 @@ export function HomeScreen(navigation) {
                         contentContainerStyle={styles.scrollView}
                         keyboardShouldPersistTaps="always"
                         alwaysBounceVertical={false}
+                        bounces={false}
+                        bouncesZoom={false}
                         showsVerticalScrollIndicator={false}
                         onScroll={e => {
                             scrollY.setValue(e.nativeEvent.contentOffset.y);
@@ -31,6 +35,7 @@ export function HomeScreen(navigation) {
                 {/*<Header/>*/}
                 <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
                 <HeroSection/>
+                <ShopCollectionsHome/>
             </ScrollView>
         </View>
     );
