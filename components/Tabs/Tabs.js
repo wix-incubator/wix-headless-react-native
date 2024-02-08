@@ -102,7 +102,7 @@ function NavbarTabs({onChangeTab, getActiveTab}) {
     );
 }
 
-export function Navbar() {
+export function Tabs() {
     const [activeTab, setActiveTab] = React.useState(tabs[0].name);
     const changeTabHandler = (tab) => {
         setActiveTab(tab);

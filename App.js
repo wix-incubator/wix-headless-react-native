@@ -7,7 +7,8 @@ import {PaperProvider,} from "react-native-paper";
 import "react-native-url-polyfill/auto";
 import {WixSessionProvider,} from "./authentication/session";
 import * as Crypto from "expo-crypto";
-import {Navbar} from "./components/Navbar/Navbar";
+import {Tabs} from "./components/Tabs/Tabs";
+import {useFonts} from "expo-font";
 
 global.crypto = Crypto;
 
@@ -17,6 +18,12 @@ const Drawer = createDrawerNavigator();
 const queryClient = new QueryClient();
 
 function App() {
+    const [fontsLoaded] = useFonts({
+        "Fraunces-VariableFont_SOFT": require("./assets/fonts/Fraunces-VariableFont_SOFT,WONK,opsz,wght.ttf"),
+        "Fraunces-Italic-VariableFont_SOFT": require("./assets/fonts/Fraunces-Italic-VariableFont_SOFT,WONK,opsz,wght.ttf"),
+        "Fraunces-Regular": require("./assets/fonts/static/Fraunces_144pt-Regular.ttf"),
+    });
+
     return (
         <PaperProvider>
             <QueryClientProvider client={queryClient}>
@@ -26,7 +33,7 @@ function App() {
                     })}
                 >
                     <WixSessionProvider>
-                        <Navbar/>
+                        <Tabs/>
                     </WixSessionProvider>
                 </WixProvider>
             </QueryClientProvider>

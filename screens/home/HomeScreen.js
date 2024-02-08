@@ -1,38 +1,37 @@
-import {useWixSession, useWixSessionModules} from "../../authentication/session";
-import {members} from "@wix/members";
-import {useQuery} from "@tanstack/react-query";
-import {ActivityIndicator} from "react-native-paper";
-import {Text, View} from "react-native";
+import {Animated, ScrollView, View} from "react-native";
+import {Toast} from "../../components/Toast/Toast";
+import {HeroSection} from "../../components/Hero/HeroSection";
+import {styles} from "../../styles/home/styles";
+import {AnimtedAppBar} from "../../components/Header/AnimtedAppBar";
 
-function MemberNickname() {
-    const {getCurrentMember} = useWixSessionModules(members);
 
-    const memberDetails = useQuery(["memberDetails"], getCurrentMember);
-
-    if (memberDetails.isLoading) {
-        return <ActivityIndicator/>;
-    }
-
-    if (memberDetails.isError) {
-        return <Text>Error: {memberDetails.error.message}</Text>;
-    }
-
-    return <Text>{memberDetails.data.member.profile.nickname}</Text>;
-}
-
-export function HomeScreen({navigation}) {
-    const {session} = useWixSession();
+export function HomeScreen(navigation) {
+    const scrollY = new Animated.Value(0);
+    const translateY = scrollY.interpolate({
+        inputRange: [0, 100],
+        outputRange: [0, -200],
+        extrapolate: 'clamp',
+    });
 
     return (
-        <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-            <Text>
-                Home Screen:{" "}
-                {session.refreshToken.role === "member" ? (
-                    <MemberNickname/>
-                ) : (
-                    "Anonymous"
-                )}
-            </Text>
+        <View
+            style={styles.screen}
+        >
+            {AnimtedAppBar(translateY, navigation)}
+            <ScrollView style={styles.scrollView}
+                        contentContainerStyle={styles.scrollView}
+                        keyboardShouldPersistTaps="always"
+                        alwaysBounceVertical={false}
+                        showsVerticalScrollIndicator={false}
+                        onScroll={e => {
+                            scrollY.setValue(e.nativeEvent.contentOffset.y);
+                        }}
+                        scrollEventThrottle={16}
+            >
+                {/*<Header/>*/}
+                <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
+                <HeroSection/>
+            </ScrollView>
         </View>
     );
 }
