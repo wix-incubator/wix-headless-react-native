@@ -55,7 +55,8 @@ export const ShopCollectionsHome = (navigation) => {
                 autoPlay={false}
                 data={newProducts}
                 scrollAnimationDuration={1000}
-                onSnapToItem={(index) => console.log('current index:', index)}
+                onSnapToItem={(index) => {
+                }}
                 renderItem={({index}) => {
                     return (
                         <View

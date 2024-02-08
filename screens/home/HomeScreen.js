@@ -4,6 +4,7 @@ import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
 import {AnimtedAppBar} from "../../components/Header/AnimtedAppBar";
 import {ShopCollectionsHome} from "../../components/ShopCollectionsHome/ShopCollectionsHome";
+import {MissionSectionHome} from "../../components/MissionSectionHome/MissionSectionHome";
 
 
 export function HomeScreen(navigation) {
@@ -36,6 +37,7 @@ export function HomeScreen(navigation) {
                 <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
                 <HeroSection/>
                 <ShopCollectionsHome/>
+                <MissionSectionHome/>
             </ScrollView>
         </View>
     );
