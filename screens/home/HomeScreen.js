@@ -6,6 +6,7 @@ import {AnimtedBar} from "../../components/Header/AnimtedBar";
 import {ShopCollectionsHome} from "../../components/ShopCollectionsHome/ShopCollectionsHome";
 import {MissionSectionHome} from "../../components/MissionSectionHome/MissionSectionHome";
 import {FollowUsHome} from "../../components/FollowUsHome/FollowUsHome";
+import {Footer} from "../../components/Footer/Footer";
 
 
 export function HomeScreen(navigation) {
@@ -40,6 +41,7 @@ export function HomeScreen(navigation) {
                 <ShopCollectionsHome/>
                 <MissionSectionHome/>
                 <FollowUsHome/>
+                <Footer/>
             </ScrollView>
         </View>
     );
