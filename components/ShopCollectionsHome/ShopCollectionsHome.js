@@ -66,11 +66,13 @@ export const ShopCollectionsHome = (navigation) => {
                                 justifyContent: 'center',
                                 width: width * 0.6,
                                 height: width * 0.7,
+                                borderWidth: 10,
+                                borderColor: 'transparent',
                             }}
                         >
                             <Image
                                 style={{
-                                    width: width * 0.6,
+                                    width: width * 0.6 - 20,
                                     height: width * 0.7,
                                     borderRadius: 15,
                                 }}
