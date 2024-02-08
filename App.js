@@ -9,6 +9,7 @@ import {WixSessionProvider,} from "./authentication/session";
 import * as Crypto from "expo-crypto";
 import {Tabs} from "./components/Tabs/Tabs";
 import {useFonts} from "expo-font";
+import {WIX_CLIENT_ID} from "@env";
 
 global.crypto = Crypto;
 
@@ -31,7 +32,7 @@ function App() {
             <QueryClientProvider client={queryClient}>
                 <WixProvider
                     auth={OAuthStrategy({
-                        clientId: process.env.WIX_CLIENT_ID || "",
+                        clientId: WIX_CLIENT_ID || "",
                     })}
                 >
                     <WixSessionProvider>
