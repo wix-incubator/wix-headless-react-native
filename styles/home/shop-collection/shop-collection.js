@@ -43,6 +43,7 @@ export const styles = StyleSheet.create({
         left: 0,
         padding: 10,
         borderRadius: 5,
+        transform: [{translateY: -30}],
     },
     indicatorButtonRight: {
         position: 'absolute',
@@ -50,6 +51,7 @@ export const styles = StyleSheet.create({
         right: 0,
         padding: 10,
         borderRadius: 5,
+        transform: [{translateY: -30}],
     },
     indicatorText: {
         fontSize: 18,
