@@ -36,5 +36,5 @@ export const styles = StyleSheet.create({
         margin: 0,
         color: '#333',
         textDecorationLine: 'underline',
-    }
+    },
 });
