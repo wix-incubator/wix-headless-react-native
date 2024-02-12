@@ -9,6 +9,7 @@ import RenderHtml from "react-native-render-html";
 import {usePrice} from "./price";
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {useWixSessionModules} from "../../authentication/session";
+import {WixMediaImage} from "../../WixMediaImage";
 
 export function ProductScreen({route, navigation}) {
     const {product} = route.params;
@@ -24,8 +25,8 @@ export function ProductScreen({route, navigation}) {
     } = useWixSessionModules({redirects, checkout});
 
     const price = usePrice({
-        amount: product.price.price,
-        currencyCode: product.price.currency,
+        amount: product?.price?.price,
+        currencyCode: product?.price?.currency,
     });
 
     const buyNowMutation = useMutation(

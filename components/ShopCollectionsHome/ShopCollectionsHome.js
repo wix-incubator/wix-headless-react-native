@@ -111,7 +111,6 @@ export const ShopCollectionsHome = (navigation) => {
                                     textAlign: 'center',
                                     color: '#333',
                                     padding: 5,
-                                    marginTop: 10,
                                     fontSize: 14,
                                 }}>
                                     {newProducts[index].convertedPriceData.formatted?.price}

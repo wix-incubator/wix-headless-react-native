@@ -1,6 +1,6 @@
 import {Text, View} from "react-native";
 import {styles} from "../../styles/home/mission/styles";
-import {IconGrid} from "../ImageGrid/IconGrid";
+import {IconGrid} from "../Grid/IconGrid";
 import TrashBagSvg from "../../Icons/TrashBag";
 import ZeroWaste from "../../Icons/ZeroWaste";
 import Vegan from "../../Icons/Vegan";
