@@ -2,7 +2,7 @@ import {Animated, ScrollView, View} from "react-native";
 import {Toast} from "../../components/Toast/Toast";
 import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
-import {AnimtedBar} from "../../components/Header/AnimtedBar";
+import {MainAnimatedBar} from "../../components/Header/MainAnimatedBar";
 import {ShopCollectionsHome} from "../../components/ShopCollectionsHome/ShopCollectionsHome";
 import {MissionSectionHome} from "../../components/MissionSectionHome/MissionSectionHome";
 import {FollowUsHome} from "../../components/FollowUsHome/FollowUsHome";
@@ -22,7 +22,7 @@ export function HomeScreen(navigation) {
         <View
             style={styles.screen}
         >
-            {AnimtedBar(translateY, navigation)}
+            {MainAnimatedBar(translateY, navigation)}
             <ScrollView style={styles.scrollView}
                         contentContainerStyle={styles.scrollView}
                         keyboardShouldPersistTaps="always"

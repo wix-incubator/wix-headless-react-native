@@ -1,7 +1,7 @@
 import {Animated} from 'react-native';
 import {Header} from './Header';
 
-export const AnimtedBar = (translateY, navigation) => {
+export const MainAnimatedBar = (translateY, navigation) => {
     return (
         <Animated.View
             style={{
