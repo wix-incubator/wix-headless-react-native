@@ -2,19 +2,22 @@ import {Animated, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View
 import {WixMediaImage} from "../../WixMediaImage";
 
 const screenWidth = Dimensions.get('window').width;
+export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY, onScroll}) => {
 
-export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY}) => {
     return (
         <>
             <FlatList
                 scrollEventThrottle={16}
                 data={data} numColumns={2} keyExtractor={(item) => item._id}
-                onScroll={
-                    Animated.event(
-                        [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
-                        {useNativeDriver: false}
-                    )
-                }
+                onScroll={Animated.event(
+                    [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
+                    {
+                        useNativeDriver: false,
+                        listener: (event) => {
+                            onScroll(event.nativeEvent.contentOffset.y)
+                        }
+                    }
+                )}
                 keyboardShouldPersistTaps="always"
                 alwaysBounceVertical={false}
                 showsVerticalScrollIndicator={false}
@@ -32,7 +35,10 @@ export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY}) => {
                                     {({url}) => {
                                         return (
                                             <Image
-                                                style={styles.image}
+                                                style={[styles.image, {
+                                                    width: screenWidth / 2 - 20, // Adjust the width as needed
+                                                    height: screenWidth / 2,
+                                                }]}
                                                 source={{
                                                     uri: url,
                                                 }}
@@ -62,8 +68,6 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     image: {
-        width: screenWidth / 2 - 20, // Adjust the width as needed
-        height: screenWidth / 2,
         borderRadius: 25,
         backgroundColor: '#f1ede6',
     },

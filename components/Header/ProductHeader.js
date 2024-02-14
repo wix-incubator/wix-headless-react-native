@@ -6,7 +6,7 @@ const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2;
 const Header_Min_Height = 70;
-export const ProductHeader = ({navigation, animHeaderValue}) => {
+export const ProductHeader = ({navigation, animHeaderValue, visible}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
         outputRange: [1, 0],
@@ -38,39 +38,44 @@ export const ProductHeader = ({navigation, animHeaderValue}) => {
                     <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon} onPress={handleGoBack}/>
                 </View>
             </Text>
-            <Animated.Text style={
-                [styles.subTitle,
-                    {
-                        opacity: animateHeaderTextOpacity,
-                        height: animHeaderValue.interpolate({
-                            inputRange: [0, Header_Max_Height - Header_Min_Height],
-                            outputRange: [200, 0],
-                            extrapolate: 'clamp',
-                        }),
-                        maxHeight: Header_Max_Height - 200,
-                        width: '100%',
-                        paddingHorizontal: 10
-                    }
-                ]}>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores deserunt nihil numquam odio
-                perspiciatis quasi, quo veniam veritatis? Architecto ea eius est exercitationem fuga modi
-                placeat
-                sapiente sit tenetur voluptatibus!
-            </Animated.Text>
-            <Animated.View style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginVertical: 15,
-                opacity: animateHeaderTextOpacity,
-                height: animHeaderValue.interpolate({
-                    inputRange: [0, Header_Max_Height - Header_Min_Height],
-                    outputRange: [0, 0],
-                    extrapolate: 'clamp',
-                })
-            }}>
-                <Animated.Image source={require('../../assets/icons/home-icon.png')}/>
-            </Animated.View>
+            {visible &&
+                (
+                    <>
+                        <Animated.Text style={
+                            [styles.subTitle,
+                                {
+                                    opacity: animateHeaderTextOpacity,
+                                    height: animHeaderValue.interpolate({
+                                        inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                        outputRange: [200, 0],
+                                        extrapolate: 'clamp',
+                                    }),
+                                    width: '100%',
+                                    paddingHorizontal: 10
+                                }
+                            ]}>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores deserunt nihil numquam
+                            odio
+                            perspiciatis quasi, quo veniam veritatis? Architecto ea eius est exercitationem fuga modi
+                            placeat
+                            sapiente sit tenetur voluptatibus!
+                        </Animated.Text>
+                        <Animated.View style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginVertical: 15,
+                            opacity: animateHeaderTextOpacity,
+                            height: animHeaderValue.interpolate({
+                                inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                outputRange: [0, 0],
+                                extrapolate: 'clamp',
+                            })
+                        }}>
+                            <Animated.Image source={require('../../assets/icons/home-icon.png')}/>
+                        </Animated.View>
+                    </>)}
+
         </Animated.View>
     );
 }

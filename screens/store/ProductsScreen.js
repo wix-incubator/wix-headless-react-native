@@ -2,11 +2,15 @@ import {useQuery} from "@tanstack/react-query";
 import {useWixModules} from "@wix/sdk-react";
 import {products} from "@wix/stores";
 import * as React from "react";
-import {useRef} from "react";
-import {Animated, SafeAreaView, Text, View} from "react-native";
+import {useCallback, useRef} from "react";
+import {Animated, Dimensions, SafeAreaView, Text, View} from "react-native";
 import {ActivityIndicator} from "react-native-paper";
 import {ProductsGrid} from "../../components/Grid/ProductsGrid";
 import {ProductHeader} from "../../components/Header/ProductHeader";
+
+const screenHigh = Dimensions.get('window').height;
+const Header_Max_Height = screenHigh / 2;
+const Header_Min_Height = 70;
 
 export function ProductsScreen({navigation}) {
     const {queryProducts} = useWixModules(products);
@@ -29,7 +33,20 @@ export function ProductsScreen({navigation}) {
         navigation.navigate("Product", {product});
     }
 
-    const scrollOffsetY = useRef(new Animated.Value(0)).current;
+    const [animationState, setAnimationState] = React.useState({
+        animation: new Animated.Value(0),
+        visible: true,
+    });
+
+    const scrollOffsetY = useRef(animationState.animation).current;
+
+    const scrollHandler = useCallback((val = 0) => {
+        if (val > (Header_Max_Height - Header_Min_Height) - 20) {
+            setAnimationState({...animationState, visible: false});
+        } else {
+            setAnimationState({...animationState, visible: true});
+        }
+    }, [animationState]);
 
     return (
         <>
@@ -40,9 +57,10 @@ export function ProductsScreen({navigation}) {
                 showsVerticalScrollIndicator={false}
                 style={{height: '100%', flex: 1, backgroundColor: '#fdfbef'}}
             >
-                <ProductHeader animHeaderValue={scrollOffsetY} navigation={navigation}/>
+                <ProductHeader animHeaderValue={scrollOffsetY} navigation={navigation}
+                               visible={animationState.visible}/>
                 <ProductsGrid data={productsResponse.data.items} onPress={productPressHandler} navigation={navigation}
-                              scrollOffsetY={scrollOffsetY}/>
+                              scrollOffsetY={scrollOffsetY} onScroll={scrollHandler}/>
             </View>
         </>
     );
