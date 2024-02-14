@@ -6,7 +6,7 @@ const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2;
 const Header_Min_Height = 70;
-export const ProductHeader = ({animHeaderValue}) => {
+export const ProductHeader = ({navigation, animHeaderValue}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
         outputRange: [1, 0],
@@ -18,6 +18,10 @@ export const ProductHeader = ({animHeaderValue}) => {
         outputRange: [Header_Max_Height, Header_Min_Height],
         extrapolate: 'clamp'
     })
+
+    const handleGoBack = () => {
+        navigation.goBack()
+    }
 
     return (
         <Animated.View
@@ -31,7 +35,7 @@ export const ProductHeader = ({animHeaderValue}) => {
         >
             <Text style={styles.headerText}>Kitchen
                 <View>
-                    <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon}/>
+                    <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon} onPress={handleGoBack}/>
                 </View>
             </Text>
             <Animated.Text style={

@@ -1,16 +1,11 @@
 import {Animated, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {WixMediaImage} from "../../WixMediaImage";
-import {ProductHeader} from "../Header/ProductHeader";
-import {useRef} from "react";
 
 const screenWidth = Dimensions.get('window').width;
 
-export const ProductsGrid = ({data, onPress, onScroll}) => {
-    const scrollOffsetY = useRef(new Animated.Value(0)).current;
-
+export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY}) => {
     return (
         <>
-            <ProductHeader animHeaderValue={scrollOffsetY}/>
             <FlatList
                 scrollEventThrottle={16}
                 data={data} numColumns={2} keyExtractor={(item) => item._id}

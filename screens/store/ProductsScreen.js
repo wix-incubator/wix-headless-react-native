@@ -2,9 +2,11 @@ import {useQuery} from "@tanstack/react-query";
 import {useWixModules} from "@wix/sdk-react";
 import {products} from "@wix/stores";
 import * as React from "react";
-import {SafeAreaView, Text, View} from "react-native";
+import {useRef} from "react";
+import {Animated, SafeAreaView, Text, View} from "react-native";
 import {ActivityIndicator} from "react-native-paper";
 import {ProductsGrid} from "../../components/Grid/ProductsGrid";
+import {ProductHeader} from "../../components/Header/ProductHeader";
 
 export function ProductsScreen({navigation}) {
     const {queryProducts} = useWixModules(products);
@@ -27,6 +29,8 @@ export function ProductsScreen({navigation}) {
         navigation.navigate("Product", {product});
     }
 
+    const scrollOffsetY = useRef(new Animated.Value(0)).current;
+
     return (
         <>
             <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>
@@ -34,9 +38,11 @@ export function ProductsScreen({navigation}) {
                 keyboardShouldPersistTaps="always"
                 alwaysBounceVertical={false}
                 showsVerticalScrollIndicator={false}
-                style={{height: '100%', flex: 1}}
+                style={{height: '100%', flex: 1, backgroundColor: '#fdfbef'}}
             >
-                <ProductsGrid data={productsResponse.data.items} onPress={productPressHandler}/>
+                <ProductHeader animHeaderValue={scrollOffsetY} navigation={navigation}/>
+                <ProductsGrid data={productsResponse.data.items} onPress={productPressHandler} navigation={navigation}
+                              scrollOffsetY={scrollOffsetY}/>
             </View>
         </>
     );
