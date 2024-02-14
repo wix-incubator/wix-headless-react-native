@@ -19,7 +19,7 @@ export function ProductsScreen({navigation, route}) {
         _id: CollectionId,
         description: CollectionDescription,
     } = route.params.items;
-    const {queryProducts, getCollectionBySlug} = useWixModules(products);
+    const {queryProducts} = useWixModules(products);
 
     const productsResponse = useQuery(["products"], () => queryProducts().find());
 
@@ -36,7 +36,7 @@ export function ProductsScreen({navigation, route}) {
     }
     const items = productsResponse.data.items.filter((product) => product.collectionIds.includes(CollectionId));
     const productPressHandler = (product) => {
-        navigation.navigate("Product", {product});
+        navigation.navigate("Product", {product, collectionName: CollectionName});
     }
 
     const [animationState, setAnimationState] = React.useState({

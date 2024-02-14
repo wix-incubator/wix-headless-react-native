@@ -1,15 +1,17 @@
 import {Text, View} from "react-native";
+import {IconButton} from "react-native-paper";
 
-export const CollectionsHeader = ({navigation}) => {
+export const SimpleHeader = ({navigation, title, backIcon: showBackButton = false}) => {
     return (
         <View style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'space-around',
             alignItems: 'center',
             padding: 10,
             backgroundColor: '#c3c198',
             height: 70
         }}>
+            {showBackButton && <IconButton icon={'arrow-left'} onPress={() => navigation.goBack()} color={'#403f2b'}/>}
             <Text style={{
                 fontSize: 36,
                 fontWeight: 'normal',
@@ -17,7 +19,7 @@ export const CollectionsHeader = ({navigation}) => {
                 textAlign: 'center',
                 width: '100%',
                 color: '#403f2b'
-            }}>Collections</Text>
+            }}>{title}</Text>
         </View>
     );
 }

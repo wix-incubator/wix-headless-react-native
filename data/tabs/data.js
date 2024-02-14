@@ -1,5 +1,6 @@
 import {HomeScreen} from "../../screens/home/HomeScreen";
 import {StoreScreen} from "../../screens/store/StoreScreen";
+import {CartScreen} from "../../screens/store/CartScreen";
 
 export const tabs = [
     {
@@ -24,7 +25,7 @@ export const tabs = [
     },
     {
         name: "Cart",
-        component: StoreScreen,
+        component: CartScreen,
         icon: require("../../assets/icons/cart-icon.png"),
     }
 ];

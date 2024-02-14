@@ -37,7 +37,7 @@ export function HomeScreen(navigation) {
             >
                 {/*<Header/>*/}
                 <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
-                <HeroSection/>
+                <HeroSection navigation={navigation}/>
                 <ShopCollectionsHome/>
                 <MissionSectionHome/>
                 <FollowUsHome/>

@@ -2,31 +2,28 @@ import {StyleSheet, TextInput, View} from "react-native";
 import {Icon} from "react-native-paper";
 
 export const InputPrefix = ({iconName, ...props}) => {
-    const inputStyles = StyleSheet.create({
-        inputContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderColor: '#333333',
-            borderWidth: 1,
-            borderRadius: 0,
-            paddingHorizontal: 10,
-        },
-        icon: {
-            color: '#333333',
-        },
-        input: {
-            flex: 1,
-            height: 40,
-            fontSize: 16,
-            color: '#333333',
-            marginLeft: 5,
-        },
-    });
-
     return (
-        <View style={props.style || inputStyles.inputContainer}>
-            <Icon source={iconName} size={24} style={inputStyles.icon}/>
-            <TextInput {...props} style={inputStyles.input}/>
+        <View style={[styles.inputContainer, props.style]}>
+            <Icon source={iconName} size={24} color={'#403f2b'}/>
+            <TextInput style={styles.input} {...props}/>
         </View>
     );
 };
+
+const styles = StyleSheet.create({
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#403f2b',
+        borderWidth: 1,
+        borderRadius: 0,
+        paddingHorizontal: 10,
+    },
+    input: {
+        flex: 1,
+        height: 40,
+        fontSize: 16,
+        color: '#403f2b',
+        marginLeft: 5,
+    },
+});

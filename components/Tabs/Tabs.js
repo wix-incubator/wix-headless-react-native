@@ -82,6 +82,7 @@ export function Tabs() {
                                 CheckoutThankYou: "checkout/thank-you",
                                 Cart: "cart",
                                 Products: "products",
+                                Collections: "collection",
                             },
                         },
                     },
