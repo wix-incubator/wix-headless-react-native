@@ -1,12 +1,13 @@
 import React from 'react';
 import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
 import {IconButton} from "react-native-paper";
+import {WixMediaImage} from "../../WixMediaImage";
 
 const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-const Header_Max_Height = screenHigh / 2;
+const Header_Max_Height = screenHigh / 2 - 10;
 const Header_Min_Height = 70;
-export const ProductHeader = ({navigation, animHeaderValue, visible}) => {
+export const ProductHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
         outputRange: [1, 0],
@@ -15,7 +16,7 @@ export const ProductHeader = ({navigation, animHeaderValue, visible}) => {
 
     const animateHeaderHeight = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
-        outputRange: [Header_Max_Height, Header_Min_Height],
+        outputRange: [Header_Max_Height, Header_Min_Height + 10],
         extrapolate: 'clamp'
     })
 
@@ -28,38 +29,34 @@ export const ProductHeader = ({navigation, animHeaderValue, visible}) => {
             style={[
                 styles.header,
                 {
-                    height: animateHeaderHeight,
+                    height: (animateHeaderHeight),
                     backgroundColor: '#c3c198',
                 }
             ]}
         >
-            <Text style={styles.headerText}>Kitchen
+            <Text style={styles.headerText}>{title}
                 <View>
                     <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon} onPress={handleGoBack}/>
                 </View>
             </Text>
-            {visible &&
-                (
-                    <>
-                        <Animated.Text style={
-                            [styles.subTitle,
-                                {
-                                    opacity: animateHeaderTextOpacity,
-                                    height: animHeaderValue.interpolate({
-                                        inputRange: [0, Header_Max_Height - Header_Min_Height],
-                                        outputRange: [200, 0],
-                                        extrapolate: 'clamp',
-                                    }),
-                                    width: '100%',
-                                    paddingHorizontal: 10
-                                }
-                            ]}>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores deserunt nihil numquam
-                            odio
-                            perspiciatis quasi, quo veniam veritatis? Architecto ea eius est exercitationem fuga modi
-                            placeat
-                            sapiente sit tenetur voluptatibus!
-                        </Animated.Text>
+            {visible && (
+                <>
+                    <Animated.Text style={
+                        [styles.subTitle,
+                            {
+                                opacity: animateHeaderTextOpacity,
+                                height: description ? animHeaderValue.interpolate({
+                                    inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                    outputRange: [150, 0],
+                                    extrapolate: 'clamp',
+                                }) : 0,
+                                width: '100%',
+                                paddingHorizontal: 10
+                            }
+                        ]}>
+                        {description}
+                    </Animated.Text>
+                    {media && (
                         <Animated.View style={{
                             display: 'flex',
                             alignItems: 'center',
@@ -72,9 +69,33 @@ export const ProductHeader = ({navigation, animHeaderValue, visible}) => {
                                 extrapolate: 'clamp',
                             })
                         }}>
-                            <Animated.Image source={require('../../assets/icons/home-icon.png')}/>
+                            <WixMediaImage
+                                media={media?.image?.url}
+                                width={screenWidth / 2 - 20}
+                                height={screenWidth / 2}
+                            >
+                                {({url}) => {
+                                    return (
+                                        <Animated.Image
+                                            style={[styles.image, {
+                                                height: description ? animHeaderValue.interpolate({
+                                                    inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                                    outputRange: [200, 0],
+                                                    extrapolate: 'clamp',
+                                                }) : 0,
+                                                width: screenWidth / 2 - 20
+                                            }]}
+                                            source={{
+                                                uri: url,
+                                            }}
+                                        />
+                                    );
+                                }}
+                            </WixMediaImage>
                         </Animated.View>
-                    </>)}
+                    )}
+                </>
+            )}
 
         </Animated.View>
     );

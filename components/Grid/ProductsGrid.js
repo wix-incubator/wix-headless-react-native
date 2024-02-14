@@ -5,55 +5,53 @@ const screenWidth = Dimensions.get('window').width;
 export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY, onScroll}) => {
 
     return (
-        <>
-            <FlatList
-                scrollEventThrottle={16}
-                data={data} numColumns={2} keyExtractor={(item) => item._id}
-                onScroll={Animated.event(
-                    [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
-                    {
-                        useNativeDriver: false,
-                        listener: (event) => {
-                            onScroll(event.nativeEvent.contentOffset.y)
-                        }
+        <FlatList
+            scrollEventThrottle={16}
+            data={data} numColumns={2} keyExtractor={(item) => item._id}
+            onScroll={Animated.event(
+                [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
+                {
+                    useNativeDriver: false,
+                    listener: (event) => {
+                        onScroll(event.nativeEvent.contentOffset.y)
                     }
-                )}
-                keyboardShouldPersistTaps="always"
-                alwaysBounceVertical={false}
-                showsVerticalScrollIndicator={false}
-                renderItem={({item, index}) => {
-                    return (
-                        <View style={styles.container}>
-                            <Pressable onPress={() => {
-                                onPress(item)
-                            }}>
-                                <WixMediaImage
-                                    media={item.media.mainMedia.image.url}
-                                    width={screenWidth / 2 - 20}
-                                    height={screenWidth / 2}
-                                >
-                                    {({url}) => {
-                                        return (
-                                            <Image
-                                                style={[styles.image, {
-                                                    width: screenWidth / 2 - 20, // Adjust the width as needed
-                                                    height: screenWidth / 2,
-                                                }]}
-                                                source={{
-                                                    uri: url,
-                                                }}
-                                            />
-                                        );
-                                    }}
-                                </WixMediaImage>
-                                <Text style={styles.title}>{item.name}</Text>
-                                <Text style={styles.title}>{item.convertedPriceData?.formatted?.price}</Text>
-                            </Pressable>
-                        </View>
-                    )
-                }} style={{zIndex: -1}}>
-            </FlatList>
-        </>
+                }
+            )}
+            keyboardShouldPersistTaps="always"
+            alwaysBounceVertical={false}
+            showsVerticalScrollIndicator={false}
+            renderItem={({item, index}) => {
+                return (
+                    <View style={styles.container}>
+                        <Pressable onPress={() => {
+                            onPress(item)
+                        }}>
+                            <WixMediaImage
+                                media={item.media.mainMedia.image.url}
+                                width={screenWidth / 2 - 20}
+                                height={screenWidth / 2}
+                            >
+                                {({url}) => {
+                                    return (
+                                        <Image
+                                            style={[styles.image, {
+                                                width: screenWidth / 2 - 20, // Adjust the width as needed
+                                                height: screenWidth / 2,
+                                            }]}
+                                            source={{
+                                                uri: url,
+                                            }}
+                                        />
+                                    );
+                                }}
+                            </WixMediaImage>
+                            <Text style={styles.title}>{item.name}</Text>
+                            <Text style={styles.title}>{item.convertedPriceData?.formatted?.price}</Text>
+                        </Pressable>
+                    </View>
+                )
+            }} style={{zIndex: -1}}>
+        </FlatList>
     );
 }
 

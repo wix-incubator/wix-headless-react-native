@@ -2,7 +2,7 @@ import {checkout, currentCart} from "@wix/ecom";
 import {redirects} from "@wix/redirects";
 import * as Linking from "expo-linking";
 import * as React from "react";
-import {ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
+import {SafeAreaView, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
 import NumericInput from "react-native-numeric-input";
 import {Button, Card, List, Portal, Snackbar, useTheme,} from "react-native-paper";
 import RenderHtml from "react-native-render-html";
@@ -88,78 +88,80 @@ export function ProductScreen({route, navigation}) {
     );
 
     return (
-        <ScrollView
-            keyboardShouldPersistTaps="always"
-            alwaysBounceVertical={false}
-            showsVerticalScrollIndicator={false}
-            styles={styles.container}
-            contentContainerStyle={styles.content}
-        >
-            <Card style={styles.card} mode={"elevated"}>
-                <WixMediaImage media={product.media.mainMedia.image.url}>
-                    {({url}) => <Card.Cover source={{uri: url}}/>}
-                </WixMediaImage>
-                <Card.Title title={product.name} subtitle={price}/>
-                <Card.Content>
-                    <Text variant="bodyMedium">{product.description}</Text>
-                    <View style={styles.flexJustifyCenter}>
-                        <NumericInput
-                            onChange={(value) => setQuantity(value)}
-                            value={quantity}
-                            minValue={1}
+        <SafeAreaView>
+            <ScrollView
+                keyboardShouldPersistTaps="always"
+                alwaysBounceVertical={false}
+                showsVerticalScrollIndicator={false}
+                styles={styles.container}
+                contentContainerStyle={styles.content}
+            >
+                <Card style={styles.card} mode={"elevated"}>
+                    <WixMediaImage media={product.media.mainMedia.image.url}>
+                        {({url}) => <Card.Cover source={{uri: url}}/>}
+                    </WixMediaImage>
+                    <Card.Title title={product.name} subtitle={price}/>
+                    <Card.Content>
+                        <Text variant="bodyMedium">{product.description}</Text>
+                        <View style={styles.flexJustifyCenter}>
+                            <NumericInput
+                                onChange={(value) => setQuantity(value)}
+                                value={quantity}
+                                minValue={1}
+                            />
+                        </View>
+
+                        <Button
+                            mode="contained"
+                            onPress={() => addToCurrentCartMutation.mutateAsync(quantity)}
+                            loading={addToCurrentCartMutation.isLoading}
+                            disabled={addToCurrentCartMutation.isLoading}
+                            style={styles.flexGrow1Button}
+                            buttonColor={theme.colors.secondary}
+                        >
+                            Add to Cart
+                        </Button>
+                        <Button
+                            mode="contained"
+                            style={styles.flexGrow1Button}
+                            loading={buyNowMutation.isLoading}
+                            disabled={buyNowMutation.isLoading}
+                            onPress={() => buyNowMutation.mutateAsync(quantity)}
+                        >
+                            Buy Now
+                        </Button>
+                    </Card.Content>
+                </Card>
+
+                {product.additionalInfoSections.map((section) => (
+                    <List.Accordion title={section.title} key={section.title}>
+                        <RenderHtml
+                            contentWidth={width}
+                            baseStyle={{
+                                padding: 10,
+                            }}
+                            source={{html: section.description ?? ""}}
                         />
-                    </View>
+                    </List.Accordion>
+                ))}
 
-                    <Button
-                        mode="contained"
-                        onPress={() => addToCurrentCartMutation.mutateAsync(quantity)}
-                        loading={addToCurrentCartMutation.isLoading}
-                        disabled={addToCurrentCartMutation.isLoading}
-                        style={styles.flexGrow1Button}
-                        buttonColor={theme.colors.secondary}
-                    >
-                        Add to Cart
-                    </Button>
-                    <Button
-                        mode="contained"
-                        style={styles.flexGrow1Button}
-                        loading={buyNowMutation.isLoading}
-                        disabled={buyNowMutation.isLoading}
-                        onPress={() => buyNowMutation.mutateAsync(quantity)}
-                    >
-                        Buy Now
-                    </Button>
-                </Card.Content>
-            </Card>
-
-            {product.additionalInfoSections.map((section) => (
-                <List.Accordion title={section.title} key={section.title}>
-                    <RenderHtml
-                        contentWidth={width}
-                        baseStyle={{
-                            padding: 10,
+                <Portal>
+                    <Snackbar
+                        visible={addToCartSnackBarVisible}
+                        onDismiss={() => setAddToCartSnackBarVisible(false)}
+                        action={{
+                            label: "View Cart",
+                            onPress: () => {
+                                navigation.navigate("Cart");
+                            },
                         }}
-                        source={{html: section.description ?? ""}}
-                    />
-                </List.Accordion>
-            ))}
-
-            <Portal>
-                <Snackbar
-                    visible={addToCartSnackBarVisible}
-                    onDismiss={() => setAddToCartSnackBarVisible(false)}
-                    action={{
-                        label: "View Cart",
-                        onPress: () => {
-                            navigation.navigate("Cart");
-                        },
-                    }}
-                    duration={5000}
-                >
-                    Added to cart!
-                </Snackbar>
-            </Portal>
-        </ScrollView>
+                        duration={5000}
+                    >
+                        Added to cart!
+                    </Snackbar>
+                </Portal>
+            </ScrollView>
+        </SafeAreaView>
     );
 }
 

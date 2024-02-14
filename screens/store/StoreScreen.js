@@ -5,6 +5,7 @@ import {ProductScreen} from "./ProductScreen";
 import {CheckoutScreen} from "./CheckoutScreen";
 import {CheckoutThankYouScreen} from "./CheckoutThankYouScreen";
 import {CartScreen} from "./CartScreen";
+import {CollectionsScreen} from "../collections/CollectionsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +16,10 @@ export function StoreScreen() {
                 headerShown: false
             }}
         >
-            <Stack.Screen name="Products" component={ProductsScreen}/>
+            <Stack.Screen name="Collection" component={CollectionsScreen}/>
+            <Stack.Screen name="Products" component={ProductsScreen}
+                          options={({route}) => ({title: route.params.items.name})}
+            />
             <Stack.Screen name="Checkout" component={CheckoutScreen}/>
             <Stack.Screen
                 name="Product"
