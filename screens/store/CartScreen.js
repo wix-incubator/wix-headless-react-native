@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {currentCart} from "@wix/ecom";
+import {checkout, currentCart} from "@wix/ecom";
 import {useWixSessionModules} from "../../authentication/session";
 import {ActivityIndicator, Button, Surface, TouchableRipple,} from "react-native-paper";
 import {Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View} from "react-native";
@@ -12,18 +12,42 @@ import {SimpleHeader} from "../../components/Header/SimpleHeader";
 import {CartListItem} from "../../components/List/CartListItem";
 import {InputPrefix} from "../../components/Input/InputPrefix";
 import {PrefixText} from "../../components/PrefixText/PrefixText";
+import _ from 'lodash';
 
 export function CartScreen({navigation}) {
+    const [userNote, setUserNote] = React.useState('');
+    const [userDiscount, setUserDiscount] = React.useState('');
+    const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
     const {getCurrentCart, createCheckoutFromCurrentCart} =
         useWixModules(currentCart);
+
+    const {updateCheckout} = useWixModules(checkout);
     const {createRedirectSession} = useWixSessionModules(redirects);
+
     const currentCartQuery = useQuery(["currentCart"], getCurrentCart);
 
     const checkoutMutation = useMutation(
         async () => {
-            const currentCheckout = await createCheckoutFromCurrentCart(
+            let currentCheckout = await createCheckoutFromCurrentCart(
                 currentCart.ChannelType.OTHER_PLATFORM
             );
+            if (userNote !== '') {
+                currentCheckout.buyerNote = userNote;
+            }
+            if (userDiscount !== '') {
+                currentCheckout.discountCode = userDiscount;
+            }
+
+            if (userDiscount !== '') {
+                try {
+                    currentCheckout = await updateCheckout(currentCheckout.checkoutId, currentCheckout, {
+                        couponCode: userDiscount,
+                    });
+                } catch (e) {
+                    setTriggerInvalidCoupon(true);
+                    return undefined;
+                }
+            }
 
             const {redirectSession} = await createRedirectSession({
                 ecomCheckout: {checkoutId: currentCheckout.checkoutId},
@@ -33,9 +57,11 @@ export function CartScreen({navigation}) {
             });
 
             return redirectSession;
+
         },
         {
             onSuccess: (redirectSession) => {
+                if (!redirectSession) return;
                 navigation.navigate("Checkout", {redirectSession});
             },
         }
@@ -50,7 +76,11 @@ export function CartScreen({navigation}) {
     }
 
     if (currentCartQuery.isError) {
-        return <Text>Error: {currentCartQuery.error.message}</Text>;
+        return (
+            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+                <Text>Error: {currentCartQuery.error.message}</Text>
+            </View>
+        );
     }
 
     const subTotal = usePrice({
@@ -59,6 +89,15 @@ export function CartScreen({navigation}) {
         }, 0),
         currencyCode: currentCartQuery.data.currency,
     });
+
+    const userAddNoteHandler = _.debounce((text) => {
+        setUserNote(text);
+    }, 250);
+
+    const userAddDiscountHandler = _.debounce((text) => {
+        setTriggerInvalidCoupon(false);
+        setUserDiscount(text);
+    }, 250);
 
     return (
         <>
@@ -133,7 +172,10 @@ export function CartScreen({navigation}) {
                             <InputPrefix iconName={'tag-outline'} style={{margin: 10, borderWidth: 0}}
                                          label={'Promo code'}
                                          placeholder={'Enter your promo code'}
+                                         onChangeText={userAddDiscountHandler}
                                          placeholderTextColor={'#403f2b'}
+                                         error={triggerInvalidCoupon}
+                                         errorMessage={`${userDiscount} is not a valid coupon code`}
                             />
                             <Surface
                                 style={{
@@ -148,6 +190,7 @@ export function CartScreen({navigation}) {
                             <InputPrefix iconName={'note-text-outline'} style={{margin: 10, borderWidth: 0}}
                                          label={'Promo code'}
                                          placeholder={'Add a note'}
+                                         onChangeText={userAddNoteHandler}
                                          placeholderTextColor={'#403f2b'}
                             />
                             <Surface

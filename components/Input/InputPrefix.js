@@ -1,16 +1,27 @@
-import {StyleSheet, TextInput, View} from "react-native";
+import {StyleSheet, Text, TextInput, View} from "react-native";
 import {Icon} from "react-native-paper";
 
-export const InputPrefix = ({iconName, ...props}) => {
+export const InputPrefix = ({iconName, error = false, errorMessage = '', ...props}) => {
     return (
-        <View style={[styles.inputContainer, props.style]}>
-            <Icon source={iconName} size={24} color={'#403f2b'}/>
-            <TextInput style={styles.input} {...props}/>
+        <View style={styles.container}>
+            <View style={[styles.inputContainer, props.style, {
+                borderColor: error ? 'red' : '#403f2b',
+            }]}>
+                <Icon source={iconName} size={24} color={'#403f2b'}/>
+                <TextInput style={styles.input} {...props}/>
+            </View>
+            {error && <Text style={styles.error}>{errorMessage}</Text>}
         </View>
     );
 };
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: 'transparent',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        width: '100%',
+    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -25,5 +36,10 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#403f2b',
         marginLeft: 5,
+    },
+    error: {
+        color: 'red',
+        fontSize: 12,
+        paddingHorizontal: 20,
     },
 });

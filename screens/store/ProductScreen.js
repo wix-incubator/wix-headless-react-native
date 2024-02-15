@@ -19,7 +19,7 @@ export function ProductScreen({route, navigation}) {
     const {width} = useWindowDimensions();
     const theme = useTheme();
     const [quantity, setQuantity] = React.useState(1);
-    const {addToCurrentCart} = useWixSessionModules(currentCart);
+    const {addToCurrentCart, getCurrentCart, updateCurrentCartLineItemQuantity} = useWixSessionModules(currentCart);
 
     const {
         redirects: {createRedirectSession},
@@ -70,19 +70,39 @@ export function ProductScreen({route, navigation}) {
         React.useState(false);
 
     const queryClient = useQueryClient();
+    const addToCart = (quantity) => addToCurrentCart({
+        lineItems: [
+            {
+                quantity,
+                catalogReference: {
+                    catalogItemId: product._id,
+                    appId: "1380b703-ce81-ff05-f115-39571d94dfcd",
+                },
+            },
+        ],
+    });
+
     const addToCurrentCartMutation = useMutation(
-        async (quantity) =>
-            addToCurrentCart({
-                lineItems: [
-                    {
-                        quantity,
-                        catalogReference: {
-                            catalogItemId: product._id,
-                            appId: "1380b703-ce81-ff05-f115-39571d94dfcd",
-                        },
-                    },
-                ],
-            }),
+        async (quantity) => {
+            try {
+                const currentCart = await getCurrentCart();
+
+                const existingProductIndex = currentCart.lineItems.findIndex(
+                    (item) => item.catalogReference.catalogItemId === product._id
+                );
+
+                if (existingProductIndex !== -1 && currentCart) {
+                    return updateCurrentCartLineItemQuantity([{
+                        _id: currentCart.lineItems[existingProductIndex]._id,
+                        quantity: currentCart.lineItems[existingProductIndex].quantity + quantity,
+                    }]);
+                } else {
+                    return addToCart(quantity);
+                }
+            } catch (e) {
+                return addToCart(quantity);
+            }
+        },
         {
             onSuccess: (response) => {
                 queryClient.setQueryData(["currentCart"], response.cart);
@@ -92,7 +112,7 @@ export function ProductScreen({route, navigation}) {
     );
 
     const onQuantityChanged = (val) => {
-        setQuantity(val);
+        setQuantity(parseInt(val));
     }
     const prodInventoryId = product?.inventoryItemId;
     const {getInventoryVariants} = useWixModules(inventory);
@@ -100,6 +120,9 @@ export function ProductScreen({route, navigation}) {
         getInventoryVariants(prodInventoryId)
     );
     const inventoryQuantity = (inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.quantity)
+    const addToCartHandler = () => {
+        !addToCurrentCartMutation.isLoading ? addToCurrentCartMutation.mutateAsync(quantity) : {}
+    }
     return (
         <>
             <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>
@@ -143,26 +166,18 @@ export function ProductScreen({route, navigation}) {
                             <View style={styles.flexJustifyStart}>
                                 <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
                                 <NumericInput
-                                    value={quantity.toString()}
+                                    value={1}
                                     onChange={onQuantityChanged}
                                     min={1}
                                     max={inventoryQuantity}
-                                    step={1}
                                     style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
-                                    showIndicators={false}
                                 />
-                                {/*<NumericInput*/}
-                                {/*    onChange={(value) => setQuantity(value)}*/}
-                                {/*    value={quantity}*/}
-                                {/*    minValue={1}*/}
-                                {/*/>*/}
                             </View>
 
                             <Button
                                 mode="contained"
-                                onPress={() => addToCurrentCartMutation.mutateAsync(quantity)}
+                                onPress={addToCartHandler}
                                 loading={addToCurrentCartMutation.isLoading}
-                                disabled={addToCurrentCartMutation.isLoading}
                                 style={styles.flexGrow1Button}
                                 buttonColor={theme.colors.secondary}
                             >

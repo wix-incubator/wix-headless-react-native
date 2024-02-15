@@ -1,6 +1,7 @@
 import {HomeScreen} from "../../screens/home/HomeScreen";
 import {StoreScreen} from "../../screens/store/StoreScreen";
 import {CartScreen} from "../../screens/store/CartScreen";
+import {MemberAreaScreen} from "../../screens/members/MemberAreaScreen";
 
 export const tabs = [
     {
@@ -20,7 +21,7 @@ export const tabs = [
     },
     {
         name: "Members Area",
-        component: StoreScreen,
+        component: MemberAreaScreen,
         icon: require("../../assets/icons/user-icon.png"),
     },
     {

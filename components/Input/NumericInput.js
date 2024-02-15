@@ -1,40 +1,29 @@
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {StyleSheet, TextInput, View} from "react-native";
 import {useState} from "react";
 
-export const NumericInput = ({value, onChange, min, max, step, style, showIndicators = true}) => {
+export const NumericInput = ({value, onChange, min, max, style}) => {
     const [inputValue, setInputValue] = useState(value);
+    const clamp = (value = 1, min = 1, max = 100000) => Math.min(Math.max(value, min), max);
     const handleChange = (text) => {
-        // Allow only numbers
-        const numericValue = text.replace(/[^0-9]/g, "");
-        max ?? numericValue > max ? setInputValue(max) : setInputValue(numericValue);
-        min ?? numericValue < min ? setInputValue(min) : setInputValue(numericValue);
-        setInputValue(numericValue);
+        if (text === "") {
+            setInputValue("");
+            onChange("0");
+            return;
+        }
+        const numericValue = parseInt(text.replace(/[^0-9]/g, ""));
+        setInputValue(clamp(numericValue, min, max).toString());
+        onChange(clamp(numericValue, min, max));
     };
 
     return (
         <View style={[styles.numericInputContainer, style]}>
-            {showIndicators && (
-                <TouchableOpacity
-                    onPress={() => onChange(currentValue - step)}
-                    style={styles.numericInputButton}
-                >
-                    <Text style={styles.numericInputButtonText}>-</Text>
-                </TouchableOpacity>
-            )}
             <TextInput
-                value={inputValue?.toString() || min.toString()}
+                value={inputValue.toString() || ""}
+                onBlur={() => setInputValue(clamp(inputValue, min, max))}
                 onChangeText={handleChange}
                 keyboardType="numeric"
                 style={styles.numericInput}
             />
-            {showIndicators && (
-                <TouchableOpacity
-                    onPress={() => onChange(currentValue + step)}
-                    style={styles.numericInputButton}
-                >
-                    <Text style={styles.numericInputButtonText}>+</Text>
-                </TouchableOpacity>
-            )}
         </View>
     );
 }

@@ -29,6 +29,7 @@
     "expo-splash-screen": "^0.26.4",
     "expo-status-bar": "^1.11.1",
     "expo-web-browser": "^12.8.2",
+    "lodash": "^4.17.21",
     "react": "18.2.0",
     "react-native": "^0.73.4",
     "react-native-dotenv": "^3.4.9",
