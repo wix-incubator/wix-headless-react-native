@@ -16,7 +16,7 @@
     "@wix/members": "^1.0.50",
     "@wix/metro-runtime": "^1.1621.0",
     "@wix/redirects": "^1.0.32",
-    "@wix/sdk-react": "^0.4.7",
+    "@wix/sdk-react": "^0.4.8",
     "@wix/stores": "^1.0.122",
     "babel-plugin-module-resolver": "^5.0.0",
     "date-fns": "^3.3.1",

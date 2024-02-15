@@ -26,6 +26,8 @@ import {
 import { MyOrdersScreen } from "./store/MyOrdersScreen";
 import { StoreScreen } from "./store/StoreScreen";
 import * as Crypto from "expo-crypto";
+import { CustomLoginScreen } from "./store/CustomLoginScreen";
+import { LoginHandler } from "./authentication/LoginHandler";
 
 global.crypto = Crypto;
 
@@ -76,68 +78,77 @@ function App() {
           })}
         >
           <WixSessionProvider>
-            <NavigationContainer
-              linking={{
-                prefixes: [Linking.createURL("/")],
-                config: {
-                  screens: {
-                    Store: {
-                      path: "store",
-                      screens: {
-                        CheckoutThankYou: "checkout/thank-you",
-                        Cart: "cart",
-                        Products: "products",
+            <LoginHandler>
+              <NavigationContainer
+                linking={{
+                  prefixes: [Linking.createURL("/")],
+                  config: {
+                    screens: {
+                      Store: {
+                        path: "store",
+                        screens: {
+                          CheckoutThankYou: "checkout/thank-you",
+                          Cart: "cart",
+                          Products: "products",
+                        },
                       },
                     },
                   },
-                },
-              }}
-            >
-              <Drawer.Navigator
-                screenOptions={({ navigation, route }) => ({
-                  headerRight: () => (
-                    <View
-                      style={{
-                        marginRight: 10,
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                    >
-                      {route.name === "Store" && (
-                        <IconButton
-                          icon="cart"
-                          onPress={() => navigation.navigate("Cart")}
-                        />
-                      )}
-                      <MemberHeaderMenu navigation={navigation} />
-                    </View>
-                  ),
-                })}
+                }}
               >
-                <Drawer.Screen
-                  name="Home"
-                  component={HomeScreen}
-                  options={{
-                    headerTitle: () => <Text>Home</Text>,
-                  }}
-                />
-                <Drawer.Screen
-                  name="Store"
-                  component={StoreScreen}
-                  options={{
-                    headerTitle: () => <Text>Store</Text>,
-                  }}
-                />
-                <Drawer.Screen
-                  name="MyOrders"
-                  component={MyOrdersScreen}
-                  options={{
-                    drawerItemStyle: { display: "none" },
-                    headerTitle: () => <Text>My Orders</Text>,
-                  }}
-                />
-              </Drawer.Navigator>
-            </NavigationContainer>
+                <Drawer.Navigator
+                  screenOptions={({ navigation, route }) => ({
+                    headerRight: () => (
+                      <View
+                        style={{
+                          marginRight: 10,
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        {route.name === "Store" && (
+                          <IconButton
+                            icon="cart"
+                            onPress={() => navigation.navigate("Cart")}
+                          />
+                        )}
+                        <MemberHeaderMenu navigation={navigation} />
+                      </View>
+                    ),
+                  })}
+                >
+                  <Drawer.Screen
+                    name="Home"
+                    component={HomeScreen}
+                    options={{
+                      headerTitle: () => <Text>Home</Text>,
+                    }}
+                  />
+                  <Drawer.Screen
+                    name="Store"
+                    component={StoreScreen}
+                    options={{
+                      headerTitle: () => <Text>Store</Text>,
+                    }}
+                  />
+                  <Drawer.Screen
+                    name="MyOrders"
+                    component={MyOrdersScreen}
+                    options={{
+                      drawerItemStyle: { display: "none" },
+                      headerTitle: () => <Text>My Orders</Text>,
+                    }}
+                  />
+                  <Drawer.Screen
+                    name="CustomLogin"
+                    component={CustomLoginScreen}
+                    options={{
+                      headerTitle: () => <Text>Custom Login</Text>,
+                    }}
+                  />
+                </Drawer.Navigator>
+              </NavigationContainer>
+            </LoginHandler>
           </WixSessionProvider>
         </WixProvider>
       </QueryClientProvider>
