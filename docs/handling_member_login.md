@@ -2,7 +2,7 @@
 
 In this guide we'll cover how to handle member login and logout in a React Native application based on Wix Headless. We'll cover the following topics:
 
-- [Logging in users Wix Managed Pages by using a Redirect Session](#logging-in-with-wix-managed-pages)
+- [Logging in users with Wix Managed Pages by using a Redirect Session](#logging-in-with-wix-managed-pages)
 - [Building a custom login form that logs in users directly](#building-a-custom-login-form)
 - [Performing a silent login when a user logs in during a checkout redirect session.](#handling-loginlogout-inside-a-checkout-redirect-session)
 
