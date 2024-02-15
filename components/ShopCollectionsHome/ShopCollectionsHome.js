@@ -1,4 +1,4 @@
-import {Dimensions, Image, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, Image, Pressable, Text, TouchableOpacity, View} from "react-native";
 import {styles} from "../../styles/home/shop-collection/shop-collection";
 import {ImageCard} from "../Cards/ImageCard";
 import {collections} from "../../data/homeScreen/ShopCollection/data";
@@ -9,7 +9,7 @@ import {useQuery} from "@tanstack/react-query";
 import {ActivityIndicator, IconButton} from "react-native-paper";
 import {useRef} from "react";
 
-export const ShopCollectionsHome = (navigation) => {
+export const ShopCollectionsHome = ({navigation}) => {
     const width = Dimensions.get('window').width;
     const {queryProducts} = useWixModules(products);
     const carouselRef = useRef(null);
@@ -86,35 +86,44 @@ export const ShopCollectionsHome = (navigation) => {
                                     borderColor: 'transparent',
                                 }}
                             >
-                                <Image
-                                    style={{
-                                        width: width * 0.6 - 20,
-                                        height: width * 0.7,
-                                        borderRadius: 15,
+                                <Pressable
+                                    onPress={() => {
+                                        navigation.navigate('Product', {
+                                            product: newProducts[index],
+                                            collectionName: newProducts[index].name
+                                        });
                                     }}
-                                    source={{
-                                        uri: newProducts[index].media.mainMedia.image.url,
-                                    }}
-                                />
-                                <Text style={{
-                                    width: width * 0.6,
-                                    textAlign: 'center',
-                                    color: '#333',
-                                    padding: 5,
-                                    marginTop: 10,
-                                    fontSize: 20,
-                                }}>
-                                    {newProducts[index].name}
-                                </Text>
-                                <Text style={{
-                                    width: width * 0.6,
-                                    textAlign: 'center',
-                                    color: '#333',
-                                    padding: 5,
-                                    fontSize: 14,
-                                }}>
-                                    {newProducts[index].convertedPriceData.formatted?.price}
-                                </Text>
+                                >
+                                    <Image
+                                        style={{
+                                            width: width * 0.6 - 20,
+                                            height: width * 0.7,
+                                            borderRadius: 15,
+                                        }}
+                                        source={{
+                                            uri: newProducts[index].media.mainMedia.image.url,
+                                        }}
+                                    />
+                                    <Text style={{
+                                        width: width * 0.6,
+                                        textAlign: 'center',
+                                        color: '#333',
+                                        padding: 5,
+                                        marginTop: 10,
+                                        fontSize: 20,
+                                    }}>
+                                        {newProducts[index].name}
+                                    </Text>
+                                    <Text style={{
+                                        width: width * 0.6,
+                                        textAlign: 'center',
+                                        color: '#333',
+                                        padding: 5,
+                                        fontSize: 14,
+                                    }}>
+                                        {newProducts[index].convertedPriceData.formatted?.price}
+                                    </Text>
+                                </Pressable>
                             </View>
                         );
                     }}

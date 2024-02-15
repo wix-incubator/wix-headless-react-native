@@ -7,9 +7,37 @@ import {ShopCollectionsHome} from "../../components/ShopCollectionsHome/ShopColl
 import {MissionSectionHome} from "../../components/MissionSectionHome/MissionSectionHome";
 import {FollowUsHome} from "../../components/FollowUsHome/FollowUsHome";
 import {Footer} from "../../components/Footer/Footer";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {ProductScreen} from "../store/ProductScreen";
+import {CheckoutThankYouScreen} from "../store/CheckoutThankYouScreen";
+import {CartScreen} from "../store/CartScreen";
 
+const Stack = createNativeStackNavigator();
 
-export function HomeScreen(navigation) {
+export const HomeScreen = ({navigation}) => {
+    return (
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false
+            }}
+        >
+            <Stack.Screen name="HomePage" component={HomePage}/>
+            <Stack.Screen
+                name="Product"
+                component={ProductScreen}
+                options={({route}) => ({title: route?.params?.CollectionName})}
+            />
+            <Stack.Screen
+                name="CheckoutThankYou"
+                component={CheckoutThankYouScreen}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen name="Cart" component={CartScreen}/>
+
+        </Stack.Navigator>
+    )
+}
+const HomePage = ({navigation}) => {
     const scrollY = new Animated.Value(0);
     const diffClamp = Animated.diffClamp(scrollY, 0, 200);
     const translateY = diffClamp.interpolate({
@@ -35,10 +63,9 @@ export function HomeScreen(navigation) {
                         }}
                         scrollEventThrottle={16}
             >
-                {/*<Header/>*/}
                 <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
                 <HeroSection navigation={navigation}/>
-                <ShopCollectionsHome/>
+                <ShopCollectionsHome navigation={navigation}/>
                 <MissionSectionHome/>
                 <FollowUsHome/>
                 <Footer/>

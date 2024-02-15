@@ -16,7 +16,7 @@ export const tabs = [
     },
     {
         name: "Chat",
-        component: StoreScreen,
+        component: HomeScreen,
         icon: require("../../assets/icons/chat-icon.png"),
     },
     {

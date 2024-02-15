@@ -36,7 +36,7 @@ export function ProductsScreen({navigation, route}) {
     }
     const items = productsResponse.data.items.filter((product) => product.collectionIds.includes(CollectionId));
     const productPressHandler = (product) => {
-        navigation.navigate("Product", {product, collectionName: CollectionName});
+        navigation.navigate("Product", {product, collectionName: CollectionName ?? product.name});
     }
 
     const [animationState, setAnimationState] = React.useState({
