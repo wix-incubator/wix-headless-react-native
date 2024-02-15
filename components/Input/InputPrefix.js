@@ -1,5 +1,5 @@
-import {StyleSheet, Text, TextInput, View} from "react-native";
-import {Icon} from "react-native-paper";
+import {StyleSheet, TextInput, View} from "react-native";
+import {HelperText, Icon} from "react-native-paper";
 
 export const InputPrefix = ({iconName, error = false, errorMessage = '', ...props}) => {
     return (
@@ -8,9 +8,11 @@ export const InputPrefix = ({iconName, error = false, errorMessage = '', ...prop
                 borderColor: error ? 'red' : '#403f2b',
             }]}>
                 <Icon source={iconName} size={24} color={'#403f2b'}/>
-                <TextInput style={styles.input} {...props}/>
+                <TextInput style={styles.input} {...props} />
             </View>
-            {error && <Text style={styles.error}>{errorMessage}</Text>}
+            {error && (<HelperText type="error" visible={error}>
+                {errorMessage}
+            </HelperText>)}
         </View>
     );
 };

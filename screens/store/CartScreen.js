@@ -18,9 +18,8 @@ export function CartScreen({navigation}) {
     const [userNote, setUserNote] = React.useState('');
     const [userDiscount, setUserDiscount] = React.useState('');
     const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
-    const {getCurrentCart, createCheckoutFromCurrentCart} =
-        useWixModules(currentCart);
-
+    const [checkoutRedirect, setCheckoutRedirect] = React.useState(false);
+    const {getCurrentCart, createCheckoutFromCurrentCart} = useWixModules(currentCart);
     const {updateCheckout} = useWixModules(checkout);
     const {createRedirectSession} = useWixSessionModules(redirects);
 
@@ -28,6 +27,7 @@ export function CartScreen({navigation}) {
 
     const checkoutMutation = useMutation(
         async () => {
+            setCheckoutRedirect(true);
             let currentCheckout = await createCheckoutFromCurrentCart(
                 currentCart.ChannelType.OTHER_PLATFORM
             );
@@ -45,6 +45,7 @@ export function CartScreen({navigation}) {
                     });
                 } catch (e) {
                     setTriggerInvalidCoupon(true);
+                    setCheckoutRedirect(false);
                     return undefined;
                 }
             }
@@ -63,6 +64,7 @@ export function CartScreen({navigation}) {
             onSuccess: (redirectSession) => {
                 if (!redirectSession) return;
                 navigation.navigate("Checkout", {redirectSession});
+                setCheckoutRedirect(false);
             },
         }
     );
@@ -170,12 +172,12 @@ export function CartScreen({navigation}) {
                                 </View>
                             ))}
                             <InputPrefix iconName={'tag-outline'} style={{margin: 10, borderWidth: 0}}
-                                         label={'Promo code'}
                                          placeholder={'Enter your promo code'}
                                          onChangeText={userAddDiscountHandler}
                                          placeholderTextColor={'#403f2b'}
                                          error={triggerInvalidCoupon}
                                          errorMessage={`${userDiscount} is not a valid coupon code`}
+
                             />
                             <Surface
                                 style={{
@@ -188,10 +190,10 @@ export function CartScreen({navigation}) {
                                 children={null}
                             />
                             <InputPrefix iconName={'note-text-outline'} style={{margin: 10, borderWidth: 0}}
-                                         label={'Promo code'}
                                          placeholder={'Add a note'}
                                          onChangeText={userAddNoteHandler}
                                          placeholderTextColor={'#403f2b'}
+                                         outlineStyle={{borderWidth: 1, borderColor: '#403f2b'}}
                             />
                             <Surface
                                 style={{
@@ -209,8 +211,8 @@ export function CartScreen({navigation}) {
                                     <Text style={{margin: 10, color: '#403f2b'}}>{subTotal}</Text>
                                 </View>
                                 <Pressable onPress={() => navigation.navigate('Shipping', {})}>
-                                    <Text style={{margin: 20, color: '#403f2b', textDecorationLine: 'underline'}}>Estimated
-                                        delivery
+                                    <Text style={{margin: 10, color: '#403f2b', textDecorationLine: 'underline'}}>
+                                        Estimated delivery
                                     </Text>
                                 </Pressable>
                             </View>
@@ -229,11 +231,19 @@ export function CartScreen({navigation}) {
                                 <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>{subTotal}</Text>
                             </View>
                             <TouchableRipple
-                                onPress={() => checkoutMutation.mutateAsync()}
-                                style={styles.checkoutButton}
+                                onPress={() => {
+                                    !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
+                                }}
                                 rippleColor="rgba(0, 0, 0, .32)"
+                                style={styles.checkoutButton}
                             >
-                                <Text style={styles.checkoutButtonText}>Checkout</Text>
+                                <Button
+                                    theme={{colors: {primary: '#fdfbef'}}}
+                                    loading={checkoutRedirect}
+                                    contentStyle={{color: '#fdfbef'}}
+                                >
+                                    <Text style={styles.checkoutButtonText}>Checkout</Text>
+                                </Button>
                             </TouchableRipple>
                             <View style={{flexDirection: "row", justifyContent: "center", paddingBottom: 20}}>
                                 <PrefixText icon="lock">
