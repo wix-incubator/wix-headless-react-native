@@ -18,6 +18,23 @@ export function LoginHandler(props) {
   const [loginState, setLoginState] = React.useState(null);
   const auth = useWixAuth();
 
+  const silentLogin = React.useCallback(
+    async (sessionToken) => {
+      const data = auth.generateOAuthData(
+        Linking.createURL("/oauth/wix/callback")
+      );
+      const { authUrl } = await auth.getAuthUrl(data, {
+        prompt: "none",
+        sessionToken,
+      });
+      setLoginState({
+        url: authUrl,
+        data,
+      });
+    },
+    [auth, setSessionLoading]
+  );
+
   const login = React.useCallback(
     async (email, password) => {
       setSessionLoading(true);
@@ -25,17 +42,7 @@ export function LoginHandler(props) {
         email,
         password,
       });
-      const data = auth.generateOAuthData(
-        Linking.createURL("/oauth/wix/callback")
-      );
-      const { authUrl } = await auth.getAuthUrl(data, {
-        prompt: "none",
-        sessionToken: result.data.sessionToken,
-      });
-      setLoginState({
-        url: authUrl,
-        data,
-      });
+      await silentLogin(result.data.sessionToken);
     },
     [auth, setSessionLoading]
   );
@@ -47,7 +54,7 @@ export function LoginHandler(props) {
       const requiresSilentLogin =
         wixMemberLoggedIn === "true" && session.refreshToken.role !== "member";
       if (requiresSilentLogin) {
-        silentLoginMutation.mutate();
+        silentLogin();
       } else if (
         event.url.startsWith(Linking.createURL("/oauth/wix/callback"))
       ) {
