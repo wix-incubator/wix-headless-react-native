@@ -34,11 +34,13 @@ export const ProductHeader = ({navigation, animHeaderValue, visible, title, desc
                 }
             ]}
         >
-            <Text style={styles.headerText}>{title}
+            <View style={styles.headerContent}>
+                <View style={styles.headerTextContainer}>
+                    <Text style={styles.headerText}>{title}</Text></View>
                 <View>
                     <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon} onPress={handleGoBack}/>
                 </View>
-            </Text>
+            </View>
             {visible && (
                 <>
                     <Animated.Text style={
@@ -112,6 +114,19 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         width: '100%'
     },
+    headerContent: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%'
+    },
+    headerTextContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 50
+    },
     headerText: {
         color: '#403f2b',
         fontSize: 40,
@@ -121,12 +136,11 @@ const styles = StyleSheet.create({
         letterSpacing: 1.5,
         position: 'relative',
         marginVertical: 10,
-        width: '100%'
+        // width: '100%',
     },
     backIcon: {
-        position: 'absolute',
-        top: -50,
-        right: screenWidth - 220,
+        width: 50,
+        height: 50,
     },
     subTitle: {
         color: '#403f2b',
