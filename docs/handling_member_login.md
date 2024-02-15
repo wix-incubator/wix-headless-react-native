@@ -80,7 +80,7 @@ In some cases, you might want to build a custom login form for your application.
 
 To provide a secure login process for your application, one that doesn't rely on secrets being exposed in the client, we'll be using Wix OAuth API with PKCE (Proof Key for Code Exchange). PKCE is a security extension to OAuth 2.0 that prevents interception of the authorization code by attackers. It was designed to work with public clients (like mobile and single-page applications) and provides a way to secure the authorization code when it is returned to the client.
 
-For the oauth process to work in a react native, we'll be using a hidden webview to open the Wix OAuth /authorize endpoint and then listen to the callback deep link to finish the OAuth process. We'll use the `expo-web-view` package to open the webview and listen to the callback deep link. This is similar to the process the Wix SDK uses in browser clients.
+For the oauth process to work in a react native app, we'll be using a hidden webview to open the Wix OAuth /authorize endpoint and then listen to the callback deep link to finish the OAuth process. We'll use the `expo-web-view` package to open the webview and listen to the callback deep link. This is similar to the process the Wix SDK uses in browser clients.
 
 ### Code Example
 
