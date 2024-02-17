@@ -22,7 +22,10 @@ export function WixSessionProvider(props) {
   const setSession = React.useCallback(
     async (tokens) => {
       auth.setTokens(tokens);
-      await SecureStore.setItemAsync("wixSession", JSON.stringify(tokens));
+      await SecureStore.setItemAsync(
+        "wixSession",
+        JSON.stringify({ tokens, clientId: props.clientId })
+      );
       setSessionState(tokens);
       setSessionLoading(false);
     },
@@ -42,7 +45,12 @@ export function WixSessionProvider(props) {
       if (!wixSession) {
         newVisitorSession();
       } else {
-        setSession(JSON.parse(wixSession));
+        const { tokens, clientId } = JSON.parse(wixSession);
+        if (clientId !== props.clientId) {
+          newVisitorSession();
+        } else {
+          setSession(JSON.parse(tokens));
+        }
       }
     });
   }, []);

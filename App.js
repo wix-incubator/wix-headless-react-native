@@ -77,7 +77,7 @@ function App() {
             clientId: "2fb39349-3744-4242-920d-9ccd74af3229",
           })}
         >
-          <WixSessionProvider>
+          <WixSessionProvider clientId="2fb39349-3744-4242-920d-9ccd74af3229">
             <LoginHandler>
               <NavigationContainer
                 linking={{
