@@ -49,7 +49,7 @@ export function WixSessionProvider(props) {
         if (clientId !== props.clientId) {
           newVisitorSession();
         } else {
-          setSession(JSON.parse(tokens));
+          setSession(tokens);
         }
       }
     });
