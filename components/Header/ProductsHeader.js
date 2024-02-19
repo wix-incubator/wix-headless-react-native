@@ -7,7 +7,7 @@ const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2 - 10;
 const Header_Min_Height = 70;
-export const ProductHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
+export const ProductsHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
         outputRange: [1, 0],

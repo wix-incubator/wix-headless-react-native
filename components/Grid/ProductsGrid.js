@@ -18,8 +18,10 @@ export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY, onScroll
                 }
             )}
             keyboardShouldPersistTaps="always"
-            alwaysBounceVertical={false}
             showsVerticalScrollIndicator={false}
+            alwaysBounceHorizontal={false}
+            alwaysBounceVertical={false}
+            bounces={false}
             renderItem={({item, index}) => {
                 return (
                     <View style={styles.container}>

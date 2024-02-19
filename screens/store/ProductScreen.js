@@ -2,17 +2,17 @@ import {checkout, currentCart} from "@wix/ecom";
 import {redirects} from "@wix/redirects";
 import * as Linking from "expo-linking";
 import * as React from "react";
-import {Pressable, SafeAreaView, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
+import {Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
 import {Button, Card, IconButton, List, Portal, Snackbar, useTheme,} from "react-native-paper";
 import RenderHtml from "react-native-render-html";
 import {usePrice} from "./price";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useWixSessionModules} from "../../authentication/session";
 import {WixMediaImage} from "../../WixMediaImage";
-import {SimpleHeader} from "../../components/Header/SimpleHeader";
 import {NumericInput} from "../../components/Input/NumericInput";
 import {useWixModules} from "@wix/sdk-react";
 import {inventory} from "@wix/stores";
+import {SimpleContainer} from "../../components/Container/SimpleContainer";
 
 export function ProductScreen({route, navigation}) {
     const {product, collectionName} = route.params;
@@ -124,105 +124,97 @@ export function ProductScreen({route, navigation}) {
         !addToCurrentCartMutation.isLoading ? addToCurrentCartMutation.mutateAsync(quantity) : {}
     }
     return (
-        <>
-            <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>
-            <SimpleHeader title={collectionName} backIcon={true} navigation={navigation}/>
-            <View
+        <SimpleContainer navigation={navigation} title={collectionName} backIcon={true}>
+            <ScrollView
                 keyboardShouldPersistTaps="always"
                 alwaysBounceVertical={false}
                 showsVerticalScrollIndicator={false}
-                style={{height: '100%', flex: 1, backgroundColor: '#fdfbef'}}>
-                <ScrollView
-                    keyboardShouldPersistTaps="always"
-                    alwaysBounceVertical={false}
-                    showsVerticalScrollIndicator={false}
-                    styles={styles.container}
-                    contentContainerStyle={styles.content}
-                >
-                    <View style={{flexDirection: "row", alignItems: "center", paddingHorizontal: 20}}>
-                        <Pressable onPress={() => navigation.goBack()}
-                                   style={{
-                                       flexDirection: "row",
-                                       alignItems: "center",
-                                       justifyContent: "flex-start",
-                                       width: '100%'
-                                   }}>
-                            <IconButton icon={"chevron-left"} onPress={() => navigation.goBack()}/>
-                            <Text style={{textAlign: "center", fontSize: 15}}>
-                                Back To {collectionName}
-                            </Text>
-                        </Pressable>
-                    </View>
-                    <Card style={styles.card} mode={"elevated"} elevation={0}>
-                        <WixMediaImage media={product.media.mainMedia.image.url} height={400} width={300}>
-                            {({url}) => <Card.Cover source={{uri: url}}
-                                                    style={{marginHorizontal: 20, height: 400, borderRadius: 0}}/>}
-                        </WixMediaImage>
-                        {product.sku && <Card.Title title={''} subtitle={`SKU: ${product.sku}`}
-                                                    subtitleStyle={{margin: 0, padding: 0}}/>}
-                        <Card.Title title={product.name} subtitle={price}
-                                    titleStyle={{fontFamily: "Fraunces-Regular", fontSize: 40, paddingTop: 40}}/>
-                        <Card.Content>
-                            <View style={styles.flexJustifyStart}>
-                                <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
-                                <NumericInput
-                                    value={1}
-                                    onChange={onQuantityChanged}
-                                    min={1}
-                                    max={inventoryQuantity}
-                                    style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
-                                />
-                            </View>
-
-                            <Button
-                                mode="contained"
-                                onPress={addToCartHandler}
-                                loading={addToCurrentCartMutation.isLoading}
-                                style={styles.flexGrow1Button}
-                                buttonColor={theme.colors.secondary}
-                            >
-                                Add to Cart
-                            </Button>
-                            <RenderHtml style={styles.flexJustifyStart} source={{html: description}}
-                                        contentWidth={width}/>
-                        </Card.Content>
-                    </Card>
-
-                    {product.additionalInfoSections.map((section) => (
-                        <List.Accordion title={section.title} key={section.title}
-                                        style={{paddingHorizontal: 20, backgroundColor: '#fdfbef'}}
-                                        right={(props) => <IconButton
-                                            icon={`${props.isExpanded ? 'minus' : 'plus'}`} {...props}/>}
-                                        titleStyle={{fontSize: 20, fontFamily: "Fraunces-Regular"}}
-                        >
-
-
-                            <RenderHtml
-                                contentWidth={width}
-                                baseStyle={{paddingHorizontal: 35}}
-                                source={{html: section.description ?? ""}}
+                styles={styles.container}
+                contentContainerStyle={styles.content}
+            >
+                <View style={{flexDirection: "row", alignItems: "center", paddingHorizontal: 20}}>
+                    <Pressable onPress={() => navigation.goBack()}
+                               style={{
+                                   flexDirection: "row",
+                                   alignItems: "center",
+                                   justifyContent: "flex-start",
+                                   width: '100%'
+                               }}>
+                        <IconButton icon={"chevron-left"} onPress={() => navigation.goBack()}/>
+                        <Text style={{textAlign: "center", fontSize: 15}}>
+                            Back To {collectionName}
+                        </Text>
+                    </Pressable>
+                </View>
+                <Card style={styles.card} mode={"elevated"} elevation={0}>
+                    <WixMediaImage media={product.media.mainMedia.image.url} height={400} width={300}>
+                        {({url}) => <Card.Cover source={{uri: url}}
+                                                style={{marginHorizontal: 20, height: 400, borderRadius: 0}}/>}
+                    </WixMediaImage>
+                    {product.sku && <Card.Title title={''} subtitle={`SKU: ${product.sku}`}
+                                                subtitleStyle={{margin: 0, padding: 0}}/>}
+                    <Card.Title title={product.name} subtitle={price}
+                                titleStyle={{fontFamily: "Fraunces-Regular", fontSize: 40, paddingTop: 40}}/>
+                    <Card.Content>
+                        <View style={styles.flexJustifyStart}>
+                            <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
+                            <NumericInput
+                                value={1}
+                                onChange={onQuantityChanged}
+                                min={1}
+                                max={inventoryQuantity}
+                                style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
                             />
-                        </List.Accordion>
-                    ))}
+                        </View>
 
-                    <Portal>
-                        <Snackbar
-                            visible={addToCartSnackBarVisible}
-                            onDismiss={() => setAddToCartSnackBarVisible(false)}
-                            action={{
-                                label: "View Cart",
-                                onPress: () => {
-                                    navigation.navigate("Cart");
-                                },
-                            }}
-                            duration={5000}
+                        <Button
+                            mode="contained"
+                            onPress={addToCartHandler}
+                            loading={addToCurrentCartMutation.isLoading}
+                            style={styles.flexGrow1Button}
+                            buttonColor={theme.colors.secondary}
                         >
-                            Added to cart!
-                        </Snackbar>
-                    </Portal>
-                </ScrollView>
-            </View>
-        </>
+                            Add to Cart
+                        </Button>
+                        <RenderHtml style={styles.flexJustifyStart} source={{html: description}}
+                                    contentWidth={width}/>
+                    </Card.Content>
+                </Card>
+
+                {product.additionalInfoSections.map((section) => (
+                    <List.Accordion title={section.title} key={section.title}
+                                    style={{paddingHorizontal: 20, backgroundColor: '#fdfbef'}}
+                                    right={(props) => <IconButton
+                                        icon={`${props.isExpanded ? 'minus' : 'plus'}`} {...props}/>}
+                                    titleStyle={{fontSize: 20, fontFamily: "Fraunces-Regular"}}
+                    >
+
+
+                        <RenderHtml
+                            contentWidth={width}
+                            baseStyle={{paddingHorizontal: 35}}
+                            source={{html: section.description ?? ""}}
+                        />
+                    </List.Accordion>
+                ))}
+
+                <Portal>
+                    <Snackbar
+                        visible={addToCartSnackBarVisible}
+                        onDismiss={() => setAddToCartSnackBarVisible(false)}
+                        action={{
+                            label: "View Cart",
+                            onPress: () => {
+                                navigation.navigate("Cart");
+                            },
+                        }}
+                        duration={5000}
+                    >
+                        Added to cart!
+                    </Snackbar>
+                </Portal>
+            </ScrollView>
+        </SimpleContainer>
     );
 }
 

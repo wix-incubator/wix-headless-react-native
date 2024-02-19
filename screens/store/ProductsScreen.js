@@ -5,7 +5,7 @@ import {useCallback, useRef} from "react";
 import {Animated, Dimensions, SafeAreaView, Text, View} from "react-native";
 import {ActivityIndicator} from "react-native-paper";
 import {ProductsGrid} from "../../components/Grid/ProductsGrid";
-import {ProductHeader} from "../../components/Header/ProductHeader";
+import {ProductsHeader} from "../../components/Header/ProductsHeader";
 import {products} from "@wix/stores";
 
 const screenHigh = Dimensions.get('window').height;
@@ -62,9 +62,9 @@ export function ProductsScreen({navigation, route}) {
                 showsVerticalScrollIndicator={false}
                 style={{height: '100%', flex: 1, backgroundColor: '#fdfbef'}}
             >
-                <ProductHeader animHeaderValue={scrollOffsetY} navigation={navigation}
-                               visible={animationState.visible} title={CollectionName}
-                               description={CollectionDescription} media={items[0]?.media?.mainMedia}/>
+                <ProductsHeader animHeaderValue={scrollOffsetY} navigation={navigation}
+                                visible={animationState.visible} title={CollectionName}
+                                description={CollectionDescription} media={items[0]?.media?.mainMedia}/>
                 <ProductsGrid data={items} onPress={productPressHandler} navigation={navigation}
                               scrollOffsetY={scrollOffsetY} onScroll={scrollHandler}/>
             </View>

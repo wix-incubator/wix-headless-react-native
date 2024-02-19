@@ -3,16 +3,38 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {checkout, currentCart} from "@wix/ecom";
 import {useWixSessionModules} from "../../authentication/session";
 import {ActivityIndicator, Button, Surface, TouchableRipple,} from "react-native-paper";
-import {Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {usePrice} from "./price";
 import {redirects} from "@wix/redirects";
 import {useWixModules} from "@wix/sdk-react";
 import * as Linking from "expo-linking";
-import {SimpleHeader} from "../../components/Header/SimpleHeader";
 import {CartListItem} from "../../components/List/CartListItem";
 import {InputPrefix} from "../../components/Input/InputPrefix";
 import {PrefixText} from "../../components/PrefixText/PrefixText";
 import _ from 'lodash';
+import {SimpleContainer} from "../../components/Container/SimpleContainer";
+
+const EmptyCart = ({navigation}) => {
+    return (
+        <View
+            style={{
+                flexGrow: 1,
+                justifyContent: "center",
+                alignItems: "center",
+            }}
+        >
+            <Text>Your cart is empty</Text>
+            <Button
+                onPress={() => navigation.navigate('Collections', {})}
+                mode="contained"
+                style={{marginTop: 10}}
+                theme={{colors: {primary: '#403f2b'}}}
+            >
+                Go to products
+            </Button>
+        </View>
+    )
+}
 
 export function CartScreen({navigation}) {
     const [userNote, setUserNote] = React.useState('');
@@ -23,7 +45,13 @@ export function CartScreen({navigation}) {
     const {updateCheckout} = useWixModules(checkout);
     const {createRedirectSession} = useWixSessionModules(redirects);
 
-    const currentCartQuery = useQuery(["currentCart"], getCurrentCart);
+    const currentCartQuery = useQuery(["currentCart"], () => {
+        try {
+            return getCurrentCart();
+        } catch (e) {
+            return console.error(e);
+        }
+    });
 
     const checkoutMutation = useMutation(
         async () => {
@@ -71,18 +99,44 @@ export function CartScreen({navigation}) {
 
     if (currentCartQuery.isLoading) {
         return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <ActivityIndicator/>
-            </View>
+            <SimpleContainer navigation={navigation} title={'My Cart'}>
+                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+                    <ActivityIndicator/>
+                </View>
+            </SimpleContainer>
         );
     }
 
     if (currentCartQuery.isError) {
-        return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <Text>Error: {currentCartQuery.error.message}</Text>
-            </View>
-        );
+        if (!currentCartQuery.error.message.includes('code: OWNED_CART_NOT_FOUND')) {
+            return (
+                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
+                    <Text>Error: {currentCartQuery.error.message}</Text>
+                </View>
+            );
+        } else {
+            return (
+                <SimpleContainer navigation={navigation} title={'My Cart'}>
+                    <ScrollView
+                        style={{flexGrow: 1, height: "100%"}}
+                        contentContainerStyle={{
+                            flexGrow: 1,
+                        }}
+                        keyboardShouldPersistTaps="always"
+                        alwaysBounceVertical={false}
+                        showsVerticalScrollIndicator={false}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={currentCartQuery.isFetching}
+                                onRefresh={currentCartQuery.refetch}
+                            />
+                        }
+                    >
+                        <EmptyCart navigation={navigation}/>
+                    </ScrollView>
+                </SimpleContainer>
+            );
+        }
     }
 
     const subTotal = usePrice({
@@ -102,159 +156,133 @@ export function CartScreen({navigation}) {
     }, 250);
 
     return (
-        <>
-            <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>
-            <SimpleHeader navigation={navigation} title={'My Cart'} backIcon={true}/>
-            <View
-                style={{
-                    flexDirection: "column",
-                    height: "100%",
-                    backgroundColor: "#fdfbef",
-                    flex: 1,
+        <SimpleContainer navigation={navigation} title={'My Cart'}>
+            <ScrollView
+                style={{flexGrow: 1, height: "100%"}}
+                contentContainerStyle={{
+                    flexGrow: 1,
                 }}
+                keyboardShouldPersistTaps="always"
+                alwaysBounceVertical={false}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={currentCartQuery.isFetching}
+                        onRefresh={currentCartQuery.refetch}
+                    />
+                }
             >
-                <ScrollView
-                    style={{flexGrow: 1, height: "100%"}}
-                    contentContainerStyle={{
-                        flexGrow: 1,
-                    }}
-                    keyboardShouldPersistTaps="always"
-                    alwaysBounceVertical={false}
-                    showsVerticalScrollIndicator={false}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={currentCartQuery.isFetching}
-                            onRefresh={currentCartQuery.refetch}
-                        />
-                    }
-                >
-                    {currentCartQuery.data.lineItems.length === 0 ? (
-                        <View
-                            style={{
-                                flexGrow: 1,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Text>Your cart is empty</Text>
-                            <Button
-                                onPress={() => navigation.navigate('Collections', {})}
-                                mode="contained"
-                                style={{marginTop: 10}}
-                            >
-                                Go to products
-                            </Button>
-                        </View>
-                    ) : (
-                        <View
-                            style={{
-                                flexGrow: 1,
-                                justifyContent: "flex-start",
-                            }}
-                        >
-                            {currentCartQuery.data.lineItems.map((item, index) => (
-                                <View key={item._id}>
-                                    <CartItem
-                                        currency={currentCartQuery.data.currency}
-                                        key={item._id}
-                                        item={item}
-                                    />
-                                    <Surface
-                                        style={{
-                                            margin: 10,
-                                            height: 1,
-                                            backgroundColor: "#c7c7bd",
-                                        }}
-                                        mode="elevated"
-                                        elevation={0}
-                                        children={null}
-                                    />
-                                </View>
-                            ))}
-                            <InputPrefix iconName={'tag-outline'} style={{margin: 10, borderWidth: 0}}
-                                         placeholder={'Enter your promo code'}
-                                         onChangeText={userAddDiscountHandler}
-                                         placeholderTextColor={'#403f2b'}
-                                         error={triggerInvalidCoupon}
-                                         errorMessage={`${userDiscount} is not a valid coupon code`}
+                {currentCartQuery?.data?.lineItems?.length === 0 ? (
+                    <EmptyCart navigation={navigation}/>
+                ) : (
+                    <View
+                        style={{
+                            flexGrow: 1,
+                            justifyContent: "flex-start",
+                        }}
+                    >
+                        {currentCartQuery.data.lineItems.map((item, index) => (
+                            <View key={item._id}>
+                                <CartItem
+                                    currency={currentCartQuery.data.currency}
+                                    key={item._id}
+                                    item={item}
+                                />
+                                <Surface
+                                    style={{
+                                        margin: 10,
+                                        height: 1,
+                                        backgroundColor: "#c7c7bd",
+                                    }}
+                                    mode="elevated"
+                                    elevation={0}
+                                    children={null}
+                                />
+                            </View>
+                        ))}
+                        <InputPrefix iconName={'tag-outline'} style={{margin: 10, borderWidth: 0}}
+                                     placeholder={'Enter your promo code'}
+                                     onChangeText={userAddDiscountHandler}
+                                     placeholderTextColor={'#403f2b'}
+                                     error={triggerInvalidCoupon}
+                                     errorMessage={`${userDiscount} is not a valid coupon code`}
 
-                            />
-                            <Surface
-                                style={{
-                                    margin: 10,
-                                    height: 1,
-                                    backgroundColor: "#c7c7bd",
-                                }}
-                                mode="elevated"
-                                elevation={0}
-                                children={null}
-                            />
-                            <InputPrefix iconName={'note-text-outline'} style={{margin: 10, borderWidth: 0}}
-                                         placeholder={'Add a note'}
-                                         onChangeText={userAddNoteHandler}
-                                         placeholderTextColor={'#403f2b'}
-                                         outlineStyle={{borderWidth: 1, borderColor: '#403f2b'}}
-                            />
-                            <Surface
-                                style={{
-                                    margin: 10,
-                                    height: 1,
-                                    backgroundColor: "#c7c7bd",
-                                }}
-                                mode="elevated"
-                                elevation={0}
-                                children={null}
-                            />
-                            <View style={{flexDirection: "column", justifyContent: "space-between"}}>
-                                <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                    <Text style={{margin: 10, color: '#403f2b'}}>Subtotal</Text>
-                                    <Text style={{margin: 10, color: '#403f2b'}}>{subTotal}</Text>
-                                </View>
-                                <Pressable onPress={() => navigation.navigate('Shipping', {})}>
-                                    <Text style={{margin: 10, color: '#403f2b', textDecorationLine: 'underline'}}>
-                                        Estimated delivery
-                                    </Text>
-                                </Pressable>
-                            </View>
-                            <Surface
-                                style={{
-                                    margin: 10,
-                                    height: 1,
-                                    backgroundColor: "#c7c7bd",
-                                }}
-                                mode="elevated"
-                                elevation={0}
-                                children={null}
-                            />
+                        />
+                        <Surface
+                            style={{
+                                margin: 10,
+                                height: 1,
+                                backgroundColor: "#c7c7bd",
+                            }}
+                            mode="elevated"
+                            elevation={0}
+                            children={null}
+                        />
+                        <InputPrefix iconName={'note-text-outline'} style={{margin: 10, borderWidth: 0}}
+                                     placeholder={'Add a note'}
+                                     onChangeText={userAddNoteHandler}
+                                     placeholderTextColor={'#403f2b'}
+                                     outlineStyle={{borderWidth: 1, borderColor: '#403f2b'}}
+                        />
+                        <Surface
+                            style={{
+                                margin: 10,
+                                height: 1,
+                                backgroundColor: "#c7c7bd",
+                            }}
+                            mode="elevated"
+                            elevation={0}
+                            children={null}
+                        />
+                        <View style={{flexDirection: "column", justifyContent: "space-between"}}>
                             <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>Total</Text>
-                                <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>{subTotal}</Text>
+                                <Text style={{margin: 10, color: '#403f2b'}}>Subtotal</Text>
+                                <Text style={{margin: 10, color: '#403f2b'}}>{subTotal}</Text>
                             </View>
-                            <TouchableRipple
-                                onPress={() => {
-                                    !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
-                                }}
-                                rippleColor="rgba(0, 0, 0, .32)"
-                                style={styles.checkoutButton}
-                            >
-                                <Button
-                                    theme={{colors: {primary: '#fdfbef'}}}
-                                    loading={checkoutRedirect}
-                                    contentStyle={{color: '#fdfbef'}}
-                                >
-                                    <Text style={styles.checkoutButtonText}>Checkout</Text>
-                                </Button>
-                            </TouchableRipple>
-                            <View style={{flexDirection: "row", justifyContent: "center", paddingBottom: 20}}>
-                                <PrefixText icon="lock">
-                                    Secure Checkout
-                                </PrefixText>
-                            </View>
+                            <Pressable onPress={() => navigation.navigate('Shipping', {})}>
+                                <Text style={{margin: 10, color: '#403f2b', textDecorationLine: 'underline'}}>
+                                    Estimated delivery
+                                </Text>
+                            </Pressable>
                         </View>
-                    )}
-                </ScrollView>
-            </View>
-        </>
+                        <Surface
+                            style={{
+                                margin: 10,
+                                height: 1,
+                                backgroundColor: "#c7c7bd",
+                            }}
+                            mode="elevated"
+                            elevation={0}
+                            children={null}
+                        />
+                        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                            <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>Total</Text>
+                            <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>{subTotal}</Text>
+                        </View>
+                        <TouchableRipple
+                            onPress={() => {
+                                !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
+                            }}
+                            rippleColor="rgba(0, 0, 0, .32)"
+                            style={styles.checkoutButton}
+                        >
+                            <Button
+                                theme={{colors: {primary: '#fdfbef'}}}
+                                loading={checkoutRedirect}
+                                contentStyle={{color: '#fdfbef'}}
+                            >
+                                <Text style={styles.checkoutButtonText}>Checkout</Text>
+                            </Button>
+                        </TouchableRipple>
+                        <View style={{flexDirection: "row", justifyContent: "center", paddingBottom: 20}}>
+                            <PrefixText icon="lock">
+                                Secure Checkout
+                            </PrefixText>
+                        </View>
+                    </View>
+                )}
+            </ScrollView>
+        </SimpleContainer>
     );
 }
 

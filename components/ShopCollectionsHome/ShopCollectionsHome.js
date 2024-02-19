@@ -34,8 +34,8 @@ export const ShopCollectionsHome = ({navigation}) => {
     const handlePrev = () => {
         carouselRef.current?.prev();
     }
-
-    const newProducts = productsResponse.data.items.splice(0, 6);
+    const newProducts = [...productsResponse.data.items];
+    const filteredProducts = newProducts.filter((product) => product.collectionIds.includes('50ce695b-b834-0414-48a8-45dcf7cba52d'));
     return (
         <View style={styles.view}>
             <Text style={styles.title}>Shop Collections</Text>
@@ -68,10 +68,8 @@ export const ShopCollectionsHome = ({navigation}) => {
                     width={width * 0.6}
                     height={width}
                     autoPlay={false}
-                    data={newProducts}
+                    data={filteredProducts}
                     scrollAnimationDuration={1000}
-                    onSnapToItem={(index) => {
-                    }}
                     ref={carouselRef}
                     renderItem={({index}) => {
                         return (
@@ -89,8 +87,8 @@ export const ShopCollectionsHome = ({navigation}) => {
                                 <Pressable
                                     onPress={() => {
                                         navigation.navigate('Product', {
-                                            product: newProducts[index],
-                                            collectionName: newProducts[index].name
+                                            product: filteredProducts[index],
+                                            collectionName: filteredProducts[index].name
                                         });
                                     }}
                                 >
@@ -101,7 +99,7 @@ export const ShopCollectionsHome = ({navigation}) => {
                                             borderRadius: 15,
                                         }}
                                         source={{
-                                            uri: newProducts[index].media.mainMedia.image.url,
+                                            uri: filteredProducts[index].media.mainMedia.image.url,
                                         }}
                                     />
                                     <Text style={{
@@ -112,7 +110,7 @@ export const ShopCollectionsHome = ({navigation}) => {
                                         marginTop: 10,
                                         fontSize: 20,
                                     }}>
-                                        {newProducts[index].name}
+                                        {filteredProducts[index].name}
                                     </Text>
                                     <Text style={{
                                         width: width * 0.6,
@@ -121,7 +119,7 @@ export const ShopCollectionsHome = ({navigation}) => {
                                         padding: 5,
                                         fontSize: 14,
                                     }}>
-                                        {newProducts[index].convertedPriceData.formatted?.price}
+                                        {filteredProducts[index].convertedPriceData.formatted?.price}
                                     </Text>
                                 </Pressable>
                             </View>

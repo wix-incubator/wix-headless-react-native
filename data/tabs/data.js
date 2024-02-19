@@ -15,11 +15,6 @@ export const tabs = [
         icon: require("../../assets/icons/collections-icon.png"),
     },
     {
-        name: "Chat",
-        component: HomeScreen,
-        icon: require("../../assets/icons/chat-icon.png"),
-    },
-    {
         name: "Members Area",
         component: MemberAreaScreen,
         icon: require("../../assets/icons/user-icon.png"),
