@@ -9,6 +9,7 @@ import * as WebBrowser from "expo-web-browser";
 import {Button, List} from "react-native-paper";
 import {useState} from "react";
 import {styles} from "../../styles/members/styles";
+import {CustomLoginScreen} from "./CustomLoginScreen";
 
 const FormInput = ({labelValue, placeholderText, inputValue, ...rest}) => {
     return (
@@ -51,7 +52,7 @@ const MemberForm = ({session, handlers, values}) => {
         </View>
     );
 }
-const SignInSection = () => {
+const SignInSection = ({loginType = 'wix'}) => {
     const auth = useWixAuth();
     const {sessionLoading} = useWixSession();
 
@@ -74,20 +75,35 @@ const SignInSection = () => {
         }
     );
 
-    return (
-        <View style={styles.loginSection}>
-            <Text style={{fontSize: 20, marginBottom: 20}}>Please sign in to access this area</Text>
-            <Button
-                mode="elevated"
-                icon={"login"}
-                loading={authSessionMutation.isLoading || sessionLoading}
-                disabled={authSessionMutation.isLoading || sessionLoading}
-                onPress={async () => authSessionMutation.mutate()}
-            >
-                Login
-            </Button>
-        </View>
-    );
+    const loginScreen = () => {
+        switch (loginType) {
+            case 'wix':
+                return (
+                    <View style={styles.loginSection}>
+                        <Text style={{fontSize: 20, marginBottom: 20}}>Please sign in to access this area</Text>
+                        <Button
+                            mode="elevated"
+                            icon={"login"}
+                            loading={authSessionMutation.isLoading || sessionLoading}
+                            disabled={authSessionMutation.isLoading || sessionLoading}
+                            onPress={async () => authSessionMutation.mutate()}
+                        >
+                            Login
+                        </Button>
+                    </View>
+                );
+            case 'custom':
+                return <CustomLoginScreen/>;
+            default:
+                return (
+                    <View style={styles.loginSection}>
+                        <Text style={{fontSize: 20, marginBottom: 20}}>Unknown login type</Text>
+                    </View>
+                );
+        }
+    }
+
+    return loginScreen();
 }
 
 const MemberSection = ({session, handlers, values}) => {
@@ -181,7 +197,7 @@ const MemberSection = ({session, handlers, values}) => {
 
 const MemberArea = ({session, handlers, values}) => {
     if (session.refreshToken.role !== "member") {
-        return <SignInSection/>
+        return <SignInSection loginType={'custom'}/>
     } else {
         return <MemberSection session={session} handlers={handlers} values={values}/>
     }

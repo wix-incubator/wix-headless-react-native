@@ -1,4 +1,3 @@
-import {createDrawerNavigator} from "@react-navigation/drawer";
 import {QueryClient, QueryClientProvider,} from "@tanstack/react-query";
 import {OAuthStrategy, WixProvider} from "@wix/sdk-react";
 import * as React from "react";
@@ -10,11 +9,9 @@ import * as Crypto from "expo-crypto";
 import {Tabs} from "./components/Tabs/Tabs";
 import {useFonts} from "expo-font";
 import {WIX_CLIENT_ID} from "@env";
+import {LoginHandler} from "./authentication/LoginHandler";
 
 global.crypto = Crypto;
-
-const Drawer = createDrawerNavigator();
-
 
 const queryClient = new QueryClient();
 
@@ -27,16 +24,20 @@ function App() {
         "Fraunces-Bold": require("./assets/fonts/static/Fraunces_144pt-Bold.ttf"),
     });
 
+    const clientID = WIX_CLIENT_ID || "";
+
     return (
         <PaperProvider>
             <QueryClientProvider client={queryClient}>
                 <WixProvider
                     auth={OAuthStrategy({
-                        clientId: WIX_CLIENT_ID || "",
+                        clientId: clientID,
                     })}
                 >
-                    <WixSessionProvider>
-                        <Tabs/>
+                    <WixSessionProvider clientId={clientID}>
+                        <LoginHandler>
+                            <Tabs/>
+                        </LoginHandler>
                     </WixSessionProvider>
                 </WixProvider>
             </QueryClientProvider>
