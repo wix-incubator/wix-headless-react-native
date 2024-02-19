@@ -13,10 +13,15 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    loginSection: {
+    contentSection: {
         height: '100%',
         width: '100%',
         flexDirection: 'column',
+    },
+    loginSection: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     loginButton: {
         flex: 1,

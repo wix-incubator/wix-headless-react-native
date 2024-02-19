@@ -51,8 +51,9 @@ const MemberForm = ({session, handlers, values}) => {
         </View>
     );
 }
-const SignInSection = ({sessionLoading}) => {
+const SignInSection = () => {
     const auth = useWixAuth();
+    const {sessionLoading} = useWixSession();
 
     const authSessionMutation = useMutation(
         async () => {
@@ -91,7 +92,7 @@ const SignInSection = ({sessionLoading}) => {
 
 const MemberSection = ({session, handlers, values}) => {
     return (
-        <ScrollView style={styles.loginSection}
+        <ScrollView style={styles.contentSection}
                     keyboardShouldPersistTaps="always"
                     alwaysBounceVertical={false}
                     showsVerticalScrollIndicator={false}
@@ -178,16 +179,16 @@ const MemberSection = ({session, handlers, values}) => {
     );
 }
 
-const MemberArea = ({session, sessionLoading, handlers, values}) => {
-    if (session.refreshToken.role === "member") {
-        return <SignInSection sessionLoading={sessionLoading}/>
+const MemberArea = ({session, handlers, values}) => {
+    if (session.refreshToken.role !== "member") {
+        return <SignInSection/>
     } else {
         return <MemberSection session={session} handlers={handlers} values={values}/>
     }
 }
 
 export const MemberAreaScreen = ({navigation}) => {
-    const {session, sessionLoading} = useWixSession();
+    const {session} = useWixSession();
     const [firstName, setFirstName] = useState(session.refreshToken.firstName);
     const [lastName, setLastName] = useState(session.refreshToken.lastName);
     const [phone, setPhone] = useState(session.refreshToken.phone);
@@ -232,8 +233,7 @@ export const MemberAreaScreen = ({navigation}) => {
                     styles={styles.container}
                     contentContainerStyle={styles.content}
                 >
-                    <MemberArea session={session} sessionLoading={sessionLoading} handlers={formHandlers}
-                                values={formValues}/>
+                    <MemberArea session={session} handlers={formHandlers} values={formValues}/>
                 </ScrollView>
             </View>
         </>
