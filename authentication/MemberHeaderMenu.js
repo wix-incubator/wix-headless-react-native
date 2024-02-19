@@ -32,8 +32,7 @@ function SignInButton() {
   const authSessionMutation = useMutation(
     async () => {
       const data = auth.generateOAuthData(
-        Linking.createURL("oauth/wix/callback"),
-        "stam"
+        Linking.createURL("oauth/wix/callback")
       );
 
       await SecureStorage.setItemAsync("oauthState", JSON.stringify(data));
