@@ -5,14 +5,14 @@ import * as React from "react";
 import {Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
 import {Button, Card, IconButton, List, Portal, Snackbar, useTheme,} from "react-native-paper";
 import RenderHtml from "react-native-render-html";
-import {usePrice} from "./price";
+import {usePrice} from "../price";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {useWixSessionModules} from "../../authentication/session";
-import {WixMediaImage} from "../../WixMediaImage";
-import {NumericInput} from "../../components/Input/NumericInput";
+import {useWixSessionModules} from "../../../authentication/session";
+import {WixMediaImage} from "../../../WixMediaImage";
+import {NumericInput} from "../../../components/Input/NumericInput";
 import {useWixModules} from "@wix/sdk-react";
 import {inventory} from "@wix/stores";
-import {SimpleContainer} from "../../components/Container/SimpleContainer";
+import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 
 export function ProductScreen({route, navigation}) {
     const {product, collectionName} = route.params;

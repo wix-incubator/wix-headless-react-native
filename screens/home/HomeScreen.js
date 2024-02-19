@@ -8,9 +8,9 @@ import {MissionSectionHome} from "../../components/MissionSectionHome/MissionSec
 import {FollowUsHome} from "../../components/FollowUsHome/FollowUsHome";
 import {Footer} from "../../components/Footer/Footer";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {ProductScreen} from "../store/ProductScreen";
-import {CheckoutThankYouScreen} from "../store/CheckoutThankYouScreen";
-import {CartScreen} from "../store/CartScreen";
+import {ProductScreen} from "../store/product/ProductScreen";
+import {CheckoutThankYouScreen} from "../store/checkout/CheckoutThankYouScreen";
+import {CartScreen} from "../store/cart/CartScreen";
 
 const Stack = createNativeStackNavigator();
 

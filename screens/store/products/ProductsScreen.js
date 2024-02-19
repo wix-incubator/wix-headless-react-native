@@ -4,8 +4,8 @@ import * as React from "react";
 import {useCallback, useRef} from "react";
 import {Animated, Dimensions, SafeAreaView, Text, View} from "react-native";
 import {ActivityIndicator} from "react-native-paper";
-import {ProductsGrid} from "../../components/Grid/ProductsGrid";
-import {ProductsHeader} from "../../components/Header/ProductsHeader";
+import {ProductsGrid} from "../../../components/Grid/ProductsGrid";
+import {ProductsHeader} from "../../../components/Header/ProductsHeader";
 import {products} from "@wix/stores";
 
 const screenHigh = Dimensions.get('window').height;

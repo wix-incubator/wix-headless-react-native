@@ -1,6 +1,6 @@
 import {HomeScreen} from "../../screens/home/HomeScreen";
 import {StoreScreen} from "../../screens/store/StoreScreen";
-import {CartScreen} from "../../screens/store/CartScreen";
+import {CartScreen} from "../../screens/store/cart/CartScreen";
 import {MemberAreaScreen} from "../../screens/members/MemberAreaScreen";
 
 export const tabs = [

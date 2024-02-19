@@ -2,9 +2,9 @@ import * as React from "react";
 import {ActivityIndicator, Button, Divider, Text} from "react-native-paper";
 import {View} from "react-native";
 import {orders} from "@wix/ecom";
-import {useWixSessionModules} from "../../authentication/session";
+import {useWixSessionModules} from "../../../authentication/session";
 import {useQuery} from "@tanstack/react-query";
-import {usePreventBackNavigation} from "../../utils/usePreventBackNavigation";
+import {usePreventBackNavigation} from "../../../utils/usePreventBackNavigation";
 
 export function CheckoutThankYouScreen({route, navigation}) {
     usePreventBackNavigation({navigation});

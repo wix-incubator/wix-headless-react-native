@@ -1,11 +1,11 @@
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import * as React from "react";
-import {ProductsScreen} from "./ProductsScreen";
-import {ProductScreen} from "./ProductScreen";
-import {CheckoutScreen} from "./CheckoutScreen";
-import {CheckoutThankYouScreen} from "./CheckoutThankYouScreen";
-import {CartScreen} from "./CartScreen";
-import {CollectionsScreen} from "../collections/CollectionsScreen";
+import {ProductsScreen} from "./products/ProductsScreen";
+import {ProductScreen} from "./product/ProductScreen";
+import {CheckoutScreen} from "./checkout/CheckoutScreen";
+import {CheckoutThankYouScreen} from "./checkout/CheckoutThankYouScreen";
+import {CartScreen} from "./cart/CartScreen";
+import {CollectionsScreen} from "./collections/CollectionsScreen";
 
 const Stack = createNativeStackNavigator();
 

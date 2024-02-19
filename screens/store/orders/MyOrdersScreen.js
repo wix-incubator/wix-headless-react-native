@@ -3,7 +3,7 @@ import {useWix} from "@wix/sdk-react";
 import * as React from "react";
 import {RefreshControl, ScrollView, View} from "react-native";
 import {ActivityIndicator, Text} from "react-native-paper";
-import {useWixSession} from "../../authentication/session";
+import {useWixSession} from "../../../authentication/session";
 import {format} from "date-fns";
 
 export function MyOrdersScreen() {

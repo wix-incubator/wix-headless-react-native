@@ -1,18 +1,18 @@
 import * as React from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {checkout, currentCart} from "@wix/ecom";
-import {useWixSessionModules} from "../../authentication/session";
+import {useWixSessionModules} from "../../../authentication/session";
 import {ActivityIndicator, Button, Surface, TouchableRipple,} from "react-native-paper";
 import {Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
-import {usePrice} from "./price";
+import {usePrice} from "../price";
 import {redirects} from "@wix/redirects";
 import {useWixModules} from "@wix/sdk-react";
 import * as Linking from "expo-linking";
-import {CartListItem} from "../../components/List/CartListItem";
-import {InputPrefix} from "../../components/Input/InputPrefix";
-import {PrefixText} from "../../components/PrefixText/PrefixText";
+import {CartListItem} from "../../../components/List/CartListItem";
+import {InputPrefix} from "../../../components/Input/InputPrefix";
+import {PrefixText} from "../../../components/PrefixText/PrefixText";
 import _ from 'lodash';
-import {SimpleContainer} from "../../components/Container/SimpleContainer";
+import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 
 const EmptyCart = ({navigation}) => {
     return (

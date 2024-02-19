@@ -4,8 +4,8 @@ import {collections} from "@wix/stores";
 import {useQuery} from "@tanstack/react-query";
 import {Text, View} from "react-native";
 import {ActivityIndicator} from "react-native-paper";
-import {CollectionsGrid} from "../../components/Grid/CollectionsGrid";
-import {SimpleContainer} from "../../components/Container/SimpleContainer";
+import {CollectionsGrid} from "../../../components/Grid/CollectionsGrid";
+import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 
 const Stack = createNativeStackNavigator();
 
