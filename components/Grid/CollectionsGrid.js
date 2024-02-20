@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         borderRadius: 25,
-        elevation: 3,
+        elevation: 0,
         textAlign: 'left',
         width: '100%',
         paddingBottom: 20,

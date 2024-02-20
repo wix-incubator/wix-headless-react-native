@@ -1,12 +1,12 @@
 import React from 'react';
-import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Animated, Dimensions, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {IconButton} from "react-native-paper";
 import {WixMediaImage} from "../../WixMediaImage";
 
 const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2 - 10;
-const Header_Min_Height = 70;
+const Header_Min_Height = 70 + StatusBar.currentHeight;
 export const ProductsHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
@@ -15,7 +15,7 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
     });
 
     const animateHeaderHeight = animHeaderValue.interpolate({
-        inputRange: [0, Header_Max_Height - Header_Min_Height],
+        inputRange: [0, 2 * (Header_Max_Height + Header_Min_Height + 10)],
         outputRange: [Header_Max_Height, Header_Min_Height + 10],
         extrapolate: 'clamp'
     })
@@ -48,7 +48,7 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                             {
                                 opacity: animateHeaderTextOpacity,
                                 height: description ? animHeaderValue.interpolate({
-                                    inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                    inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
                                     outputRange: [150, 0],
                                     extrapolate: 'clamp',
                                 }) : 0,
@@ -66,7 +66,7 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                             marginVertical: 15,
                             opacity: animateHeaderTextOpacity,
                             height: animHeaderValue.interpolate({
-                                inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
                                 outputRange: [0, 0],
                                 extrapolate: 'clamp',
                             })
@@ -81,7 +81,7 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                                         <Animated.Image
                                             style={[styles.image, {
                                                 height: description ? animHeaderValue.interpolate({
-                                                    inputRange: [0, Header_Max_Height - Header_Min_Height],
+                                                    inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 400)],
                                                     outputRange: [200, 0],
                                                     extrapolate: 'clamp',
                                                 }) : 0,
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         left: 0,
         right: 0,
-        paddingTop: 10,
+        paddingTop: StatusBar.currentHeight + 10,
         width: '100%'
     },
     headerContent: {

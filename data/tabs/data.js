@@ -7,21 +7,21 @@ export const tabs = [
     {
         name: "Home",
         component: HomeScreen,
-        icon: require("../../assets/icons/home-icon.png"),
+        icon: 'home-outline'
     },
     {
         name: "Collections",
         component: StoreScreen,
-        icon: require("../../assets/icons/collections-icon.png"),
+        icon: 'view-grid-outline'
     },
     {
         name: "Members Area",
         component: MemberAreaScreen,
-        icon: require("../../assets/icons/user-icon.png"),
+        icon: 'account-outline'
     },
     {
         name: "Cart",
         component: CartScreen,
-        icon: require("../../assets/icons/cart-icon.png"),
+        icon: 'cart-outline'
     }
 ];

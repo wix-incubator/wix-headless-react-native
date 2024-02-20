@@ -6,7 +6,7 @@ export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY, onScroll
 
     return (
         <FlatList
-            scrollEventThrottle={32}
+            scrollEventThrottle={16}
             data={data} numColumns={2} keyExtractor={(item) => item._id}
             onScroll={Animated.event(
                 [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         borderRadius: 25,
-        elevation: 3,
+        elevation: 0,
         textAlign: 'left',
         width: '100%',
         paddingBottom: 20,

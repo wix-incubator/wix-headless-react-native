@@ -67,7 +67,6 @@ export function LoginHandler(props) {
             } else if (
                 event.url.startsWith(Linking.createURL("/oauth/wix/callback"))
             ) {
-                console.log('event.url:', event.url)
                 setSessionLoading(true);
                 const oauthData = JSON.parse(
                     await SecureStore.getItemAsync("oauthState")

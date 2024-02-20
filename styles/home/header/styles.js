@@ -7,6 +7,10 @@ export const styles = StyleSheet.create({
         justifyContent: 'start',
         width: '100%',
         textAlign: 'left',
+        elevation: 0,
+        height: '100%',
+        backgroundColor: '#FEFBEF',
+
     },
     header: {
         backgroundColor: '#FEFBEF',
@@ -15,13 +19,16 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'start',
         alignItems: 'center',
+        paddingTop: 0,
+        height: 100,
     },
     header_content: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 10,
-        width: '100%',
+        maxWidth: '100%',
+        backgroundColor: '#FEFBEF',
     },
     header_title: {
         fontSize: 32,

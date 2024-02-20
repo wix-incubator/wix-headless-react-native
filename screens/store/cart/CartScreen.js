@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         margin: 20,
         padding: 10,
-        borderRadius: '50%',
+        borderRadius: 50,
     },
     checkoutButtonText: {
         color: '#fdfbef',

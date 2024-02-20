@@ -51,6 +51,7 @@ export function ProductsScreen({navigation, route}) {
             setAnimationState({...animationState, visible: true});
         }
     }, [animationState]);
+    
     return (
         <>
             <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>

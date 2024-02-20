@@ -154,7 +154,6 @@ const MemberSection = ({session, handlers, values}) => {
     }
 
     if (getCurrentMemberRes.isError) {
-        console.log(session);
         return <ErrorView message={getCurrentMemberRes.error.message}/>
     }
 

@@ -1,4 +1,4 @@
-import {Animated, ScrollView, View} from "react-native";
+import {Animated, SafeAreaView, ScrollView, View} from "react-native";
 import {Toast} from "../../components/Toast/Toast";
 import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
@@ -47,12 +47,12 @@ const HomePage = ({navigation}) => {
     });
 
     return (
-        <View
+        <SafeAreaView
             style={styles.screen}
         >
             {MainAnimatedBar(translateY, navigation)}
             <ScrollView style={styles.scrollView}
-                        contentContainerStyle={styles.scrollView}
+                // contentContainerStyle={styles.scrollView}
                         keyboardShouldPersistTaps="always"
                         alwaysBounceVertical={false}
                         bounces={false}
@@ -63,6 +63,7 @@ const HomePage = ({navigation}) => {
                         }}
                         scrollEventThrottle={16}
             >
+                <View style={styles.spacer}/>
                 <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
                 <HeroSection navigation={navigation}/>
                 <ShopCollectionsHome navigation={navigation}/>
@@ -70,6 +71,6 @@ const HomePage = ({navigation}) => {
                 <FollowUsHome/>
                 <Footer/>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }

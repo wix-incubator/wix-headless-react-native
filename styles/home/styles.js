@@ -1,4 +1,5 @@
-import {StyleSheet} from "react-native";
+import {StatusBar, StyleSheet} from "react-native";
+
 
 export const styles = StyleSheet.create({
     screen: {
@@ -9,8 +10,8 @@ export const styles = StyleSheet.create({
     },
     scrollView: {
         flexGrow: 1,
-        marginTop: 60,
-        paddingBottom: 60,
-        overflow: "none",
+    },
+    spacer: {
+        paddingTop: StatusBar.currentHeight + 100,
     },
 });

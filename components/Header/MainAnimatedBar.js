@@ -11,14 +11,13 @@ export const MainAnimatedBar = (translateY, navigation) => {
                 width: '100%',
 
                 //for animation
-                height: 100,
-                transform: [{translateY: translateY}],
+                height: 0,
                 position: 'absolute',
                 top: 0,
-                right: 0,
                 left: 0,
-                elevation: 4,
+                right: 0,
                 zIndex: 1,
+                transform: [{translateY: translateY}],
             }}>
 
             <Header/>

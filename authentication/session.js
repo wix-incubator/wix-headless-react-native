@@ -22,7 +22,6 @@ export function WixSessionProvider(props) {
     const setSession = React.useCallback(
         async (tokens) => {
             auth.setTokens(tokens);
-            console.log('tokens:', tokens)
             await SecureStore.setItemAsync(
                 "wixSession",
                 JSON.stringify({tokens, clientId: props.clientId})
