@@ -1,10 +1,12 @@
 import * as React from "react";
-import {ActivityIndicator, Button, Divider, Text} from "react-native-paper";
+import {Button, Divider, Text} from "react-native-paper";
 import {View} from "react-native";
 import {orders} from "@wix/ecom";
 import {useWixSessionModules} from "../../../authentication/session";
 import {useQuery} from "@tanstack/react-query";
 import {usePreventBackNavigation} from "../../../utils/usePreventBackNavigation";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {ErrorView} from "../../../components/ErrorView/ErrorView";
 
 export function CheckoutThankYouScreen({route, navigation}) {
     usePreventBackNavigation({navigation});
@@ -15,19 +17,11 @@ export function CheckoutThankYouScreen({route, navigation}) {
     );
 
     if (orderQuery.isLoading) {
-        return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <ActivityIndicator/>
-            </View>
-        );
+        return <LoadingIndicator/>;
     }
 
     if (orderQuery.isError) {
-        return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <Text>Error: {orderQuery.error.message}</Text>
-            </View>
-        );
+        return <ErrorView message={orderQuery.error.message}/>;
     }
 
     const fullName =

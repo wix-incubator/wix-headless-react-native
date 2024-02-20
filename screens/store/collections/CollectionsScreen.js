@@ -2,10 +2,10 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {useWixModules} from "@wix/sdk-react";
 import {collections} from "@wix/stores";
 import {useQuery} from "@tanstack/react-query";
-import {Text, View} from "react-native";
-import {ActivityIndicator} from "react-native-paper";
 import {CollectionsGrid} from "../../../components/Grid/CollectionsGrid";
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {ErrorView} from "../../../components/ErrorView/ErrorView";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,15 +15,13 @@ export const CollectionsScreen = ({navigation}) => {
     if (collectionsResponse.isLoading) {
         return (
             <SimpleContainer navigation={navigation} title={"Collections"} backIcon={false}>
-                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                    <ActivityIndicator/>
-                </View>
+                <LoadingIndicator/>
             </SimpleContainer>
         );
     }
 
     if (collectionsResponse.isError) {
-        return <Text>Error: {collectionsResponse.error.message}</Text>;
+        return <ErrorView message={collectionsResponse.error.message}/>
     }
 
     const collectionPressHandler = (items) => {

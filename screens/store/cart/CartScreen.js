@@ -2,7 +2,7 @@ import * as React from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {checkout, currentCart} from "@wix/ecom";
 import {useWixSessionModules} from "../../../authentication/session";
-import {ActivityIndicator, Button, Surface, TouchableRipple,} from "react-native-paper";
+import {Button, Surface, TouchableRipple,} from "react-native-paper";
 import {Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {usePrice} from "../price";
 import {redirects} from "@wix/redirects";
@@ -13,6 +13,8 @@ import {InputPrefix} from "../../../components/Input/InputPrefix";
 import {PrefixText} from "../../../components/PrefixText/PrefixText";
 import _ from 'lodash';
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {ErrorView} from "../../../components/ErrorView/ErrorView";
 
 const EmptyCart = ({navigation}) => {
     return (
@@ -100,20 +102,14 @@ export function CartScreen({navigation}) {
     if (currentCartQuery.isLoading) {
         return (
             <SimpleContainer navigation={navigation} title={'My Cart'}>
-                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                    <ActivityIndicator/>
-                </View>
+                <LoadingIndicator/>
             </SimpleContainer>
         );
     }
 
     if (currentCartQuery.isError) {
         if (!currentCartQuery.error.message.includes('code: OWNED_CART_NOT_FOUND')) {
-            return (
-                <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                    <Text>Error: {currentCartQuery.error.message}</Text>
-                </View>
-            );
+            return <ErrorView message={currentCartQuery.error.message}/>
         } else {
             return (
                 <SimpleContainer navigation={navigation} title={'My Cart'}>

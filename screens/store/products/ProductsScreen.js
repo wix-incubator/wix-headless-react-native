@@ -2,11 +2,12 @@ import {useQuery} from "@tanstack/react-query";
 import {useWixModules} from "@wix/sdk-react";
 import * as React from "react";
 import {useCallback, useRef} from "react";
-import {Animated, Dimensions, SafeAreaView, Text, View} from "react-native";
-import {ActivityIndicator} from "react-native-paper";
+import {Animated, Dimensions, SafeAreaView, View} from "react-native";
 import {ProductsGrid} from "../../../components/Grid/ProductsGrid";
 import {ProductsHeader} from "../../../components/Header/ProductsHeader";
 import {products} from "@wix/stores";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {ErrorView} from "../../../components/ErrorView/ErrorView";
 
 const screenHigh = Dimensions.get('window').height;
 const Header_Max_Height = screenHigh / 2;
@@ -24,15 +25,12 @@ export function ProductsScreen({navigation, route}) {
     const productsResponse = useQuery(["products"], () => queryProducts().find());
 
     if (productsResponse.isLoading) {
-        return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <ActivityIndicator/>
-            </View>
-        );
+        return <LoadingIndicator/>
+
     }
 
     if (productsResponse.isError) {
-        return <Text>Error: {productsResponse.error.message}</Text>;
+        return <ErrorView message={productsResponse.error.message}/>
     }
     const items = productsResponse.data.items.filter((product) => product.collectionIds.includes(CollectionId));
     const productPressHandler = (product) => {

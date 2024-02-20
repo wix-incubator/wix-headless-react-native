@@ -2,9 +2,11 @@ import {useQuery} from "@tanstack/react-query";
 import {useWix} from "@wix/sdk-react";
 import * as React from "react";
 import {RefreshControl, ScrollView, View} from "react-native";
-import {ActivityIndicator, Text} from "react-native-paper";
+import {Text} from "react-native-paper";
 import {useWixSession} from "../../../authentication/session";
 import {format} from "date-fns";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {ErrorView} from "../../../components/ErrorView/ErrorView";
 
 export function MyOrdersScreen() {
     const wix = useWix();
@@ -24,19 +26,15 @@ export function MyOrdersScreen() {
     });
 
     if (myOrdersQuery.isLoading) {
-        return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <ActivityIndicator/>
-            </View>
-        );
+        return <LoadingIndicator/>;
     }
 
     if (myOrdersQuery.isError) {
-        return <Text>Error: {myOrdersQuery.error.message}</Text>;
+        return <ErrorView message={myOrdersQuery.error.message}/>;
     }
 
     if (!myOrdersQuery.data.orders.length === 0) {
-        return <Text>You have no orders</Text>;
+        return <ErrorView message={'You have no orders'}/>;
     }
 
     return (

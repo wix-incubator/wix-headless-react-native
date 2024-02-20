@@ -17,6 +17,7 @@ export function LoginHandler(props) {
     const {setSession, session, setSessionLoading} = useWixSession();
     const [loginState, setLoginState] = React.useState(null);
     const auth = useWixAuth();
+    const loginType = props?.loginType ?? "wix";
 
     const silentLogin = React.useCallback(
         async (sessionToken) => {
@@ -66,6 +67,7 @@ export function LoginHandler(props) {
             } else if (
                 event.url.startsWith(Linking.createURL("/oauth/wix/callback"))
             ) {
+                console.log('event.url:', event.url)
                 setSessionLoading(true);
                 const oauthData = JSON.parse(
                     await SecureStore.getItemAsync("oauthState")
@@ -78,7 +80,7 @@ export function LoginHandler(props) {
     }, []);
 
     return (
-        <LoginHandlerContext.Provider value={{login}}>
+        <LoginHandlerContext.Provider value={{login, loginType}}>
             <LoginHandlerInvisibleWebview
                 loginState={loginState}
                 setLoginState={setLoginState}

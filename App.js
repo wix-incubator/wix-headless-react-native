@@ -35,7 +35,7 @@ function App() {
                     })}
                 >
                     <WixSessionProvider clientId={clientID}>
-                        <LoginHandler>
+                        <LoginHandler loginType={'wix'}>
                             <Tabs/>
                         </LoginHandler>
                     </WixSessionProvider>

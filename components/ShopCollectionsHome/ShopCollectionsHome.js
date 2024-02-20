@@ -6,8 +6,10 @@ import Carousel from 'react-native-reanimated-carousel';
 import {useWixModules} from "@wix/sdk-react";
 import {products} from "@wix/stores";
 import {useQuery} from "@tanstack/react-query";
-import {ActivityIndicator, IconButton} from "react-native-paper";
+import {IconButton} from "react-native-paper";
 import {useRef} from "react";
+import {LoadingIndicator} from "../LoadingIndicator/LoadingIndicator";
+import {ErrorView} from "../ErrorView/ErrorView";
 
 export const ShopCollectionsHome = ({navigation}) => {
     const width = Dimensions.get('window').width;
@@ -17,15 +19,11 @@ export const ShopCollectionsHome = ({navigation}) => {
     const productsResponse = useQuery(["products"], () => queryProducts().find());
 
     if (productsResponse.isLoading) {
-        return (
-            <View style={{flex: 1, alignItems: "center", justifyContent: "center"}}>
-                <ActivityIndicator/>
-            </View>
-        );
+        return <LoadingIndicator/>
     }
 
     if (productsResponse.isError) {
-        return <Text>Error: {productsResponse.error.message}</Text>;
+        return <ErrorView message={productsResponse.error.message}/>
     }
 
     const handleNext = () => {
