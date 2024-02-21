@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import {SafeAreaView, StyleSheet, Text, View} from "react-native";
 import {Button, HelperText, TextInput} from "react-native-paper";
-import {useLoginHandler} from "../../authentication/LoginHandler";
-import {useWixSession} from "../../authentication/session";
+import {useLoginHandler} from "../../../authentication/LoginHandler";
+import {useWixSession} from "../../../authentication/session";
 
-export function CustomLoginScreen({navigation}) {
+export function CustomLoginScreen({navigation, loading, disabled, onWixLogin}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(false);
@@ -59,6 +59,19 @@ export function CustomLoginScreen({navigation}) {
                 {!sessionLoading && <HelperText type="error" visible={error}>
                     {errorMessage}
                 </HelperText>}
+                <Text style={{textAlign: "center", color: "#403F2B"}}>
+                    Or sign in through wix?
+                </Text>
+                <Button style={styles.wixLoginButton}
+                        mode="outlined"
+                        icon={"login"}
+                        loading={loading}
+                        disabled={disabled}
+                        onPress={onWixLogin}
+                        theme={{colors: {primary: '#403F2B'}}}
+                >
+                    Wix Login
+                </Button>
             </View>
         </SafeAreaView>
     );
@@ -92,5 +105,10 @@ const styles = StyleSheet.create({
     },
     loginButton: {
         backgroundColor: '#403F2B'
+    },
+    wixLoginButton: {
+        borderColor: '#403F2B',
+        borderWidth: 1,
+        backgroundColor: 'transparent',
     }
 })

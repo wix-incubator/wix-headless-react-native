@@ -1,7 +1,7 @@
 import {HomeScreen} from "../../screens/home/HomeScreen";
 import {StoreScreen} from "../../screens/store/StoreScreen";
 import {CartScreen} from "../../screens/store/cart/CartScreen";
-import {MemberAreaScreen} from "../../screens/members/MemberAreaScreen";
+import {MemberAreaScreen} from "../../screens/members/MemberAreaScreen/MemberAreaScreen";
 
 export const tabs = [
     {

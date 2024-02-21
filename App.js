@@ -14,6 +14,7 @@ import {tabs} from "./data/tabs/data";
 import {TabBar} from "./components/Tabs/Tabs";
 import {useFonts} from "expo-font";
 import {LoadingIndicator} from "./components/LoadingIndicator/LoadingIndicator";
+import {WIX_CLIENT_ID} from "@env";
 
 global.crypto = Crypto;
 
@@ -31,15 +32,16 @@ function App() {
         return <LoadingIndicator/>;
     }
 
+    const clientId = WIX_CLIENT_ID || "";
     return (
         <PaperProvider>
             <QueryClientProvider client={queryClient}>
                 <WixProvider
                     auth={OAuthStrategy({
-                        clientId: "2d3621e3-87dc-4afa-bf42-089a29d16a4c",
+                        clientId,
                     })}
                 >
-                    <WixSessionProvider clientId="2d3621e3-87dc-4afa-bf42-089a29d16a4c">
+                    <WixSessionProvider clientId={clientId}>
                         <LoginHandler loginType={'custom'}>
                             <NavigationContainer
                                 linking={{
@@ -52,6 +54,7 @@ function App() {
                                                     CheckoutThankYou: "checkout/thank-you",
                                                     Cart: "cart",
                                                     Products: "products",
+                                                    Collections: "collections"
                                                 },
                                             },
                                         },

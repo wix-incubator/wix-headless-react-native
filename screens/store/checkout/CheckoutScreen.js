@@ -1,5 +1,5 @@
 import * as React from "react";
-import {useEffect, useRef} from "react";
+import {useRef} from "react";
 import {WebView} from "react-native-webview";
 import {StyleSheet} from "react-native";
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
@@ -9,12 +9,6 @@ export function CheckoutScreen({navigation, route}) {
     const {redirectSession} = route.params;
     const [loading, setLoading] = React.useState(true);
     const webviewRef = useRef(null);
-
-
-    useEffect(() => {
-        if (!webviewRef.current) return;
-        console.log(webviewRef.current);
-    }, [webviewRef.current]);
 
     const loadWebView = () => (
         <WebView

@@ -1,15 +1,24 @@
 import {StatusBar, StyleSheet, Text, View} from "react-native";
 import {IconButton} from "react-native-paper";
 
-export const SimpleHeader = ({navigation, title, backIcon: showBackButton = false}) => {
+export const SimpleHeader = ({navigation, title, backIcon = false, onBackPress}) => {
+    const handleBackPress = () => {
+        if (onBackPress) {
+            onBackPress();
+        } else {
+            navigation.goBack();
+        }
+    }
     return (
         <View style={styles.headerContent}>
             <View style={styles.headerTextContainer}>
                 <Text style={styles.headerText}>{title}</Text></View>
-            <View>
-                <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon}
-                            onPress={() => navigation.goBack()}/>
-            </View>
+            {backIcon && (
+                <View>
+                    <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon}
+                                onPress={handleBackPress}/>
+                </View>
+            )}
         </View>
     );
 }

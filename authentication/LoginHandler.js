@@ -17,7 +17,6 @@ export function LoginHandler(props) {
     const {setSession, session, setSessionLoading} = useWixSession();
     const [loginState, setLoginState] = React.useState(null);
     const auth = useWixAuth();
-    const loginType = props?.loginType ?? "wix";
 
     const silentLogin = React.useCallback(
         async (sessionToken) => {
@@ -79,7 +78,7 @@ export function LoginHandler(props) {
     }, []);
 
     return (
-        <LoginHandlerContext.Provider value={{login, loginType}}>
+        <LoginHandlerContext.Provider value={{login}}>
             <LoginHandlerInvisibleWebview
                 loginState={loginState}
                 setLoginState={setLoginState}
