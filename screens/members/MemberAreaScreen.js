@@ -2,7 +2,7 @@ import {Image, SafeAreaView, ScrollView, Text, TextInput, View} from "react-nati
 import {SimpleHeader} from "../../components/Header/SimpleHeader";
 import {useWixSession} from "../../authentication/session";
 import {useWixAuth, useWixModules} from "@wix/sdk-react";
-import {useMutation, useQuery} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import * as SecureStorage from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
@@ -133,30 +133,39 @@ const SignInSection = () => {
     return loginScreen();
 }
 
-const MemberSection = ({session, handlers, values}) => {
-    const {getCurrentMember, listMembers} = useWixModules(members);
+const MemberSection = ({session, handlers, values, member}) => {
+    const queryClient = useQueryClient();
+    const {updateMember} = useWixModules(members);
     const {newVisitorSession} = useWixSession();
-
+    const [currentMember, setCurrentMember] = useState(member);
     const [visibleMenu, setVisibleMenu] = useState(false);
-    const getCurrentMemberRes = useQuery(["currentMember"], getCurrentMember);
-    // useEffect(() => {
-    //     const newSession = async () => {
-    //         await newVisitorSession()
-    //     }
-    //     newSession();
-    // }, []);
+    const updateMemberMutation = useMutation(
+        async ({firstName, lastName, phone}) => {
+            console.log(firstName, lastName, phone);
+            const contact = member?.contact;
+            const updatedContact = {
+                ...(contact || {}),
+                firstName,
+                lastName,
+                phones: [...(contact?.phones || []), phone],
+            };
+            const updatedMember = {
+                contact: updatedContact,
+            }
+            return await updateMember(
+                member?._id,
+                updatedMember,
+            );
+        },
+        {
+            onSuccess: async (response) => {
+                setCurrentMember(response);
+                queryClient.setQueryData(["currentMember"], response);
+            },
+        }
+    );
 
-
-    if (getCurrentMemberRes.isLoading) {
-        return <LoadingIndicator/>
-    }
-
-    if (getCurrentMemberRes.isError) {
-        return <ErrorView message={getCurrentMemberRes.error.message}/>
-    }
-
-    const member = getCurrentMemberRes.data.member;
-    const {profile, contact} = member;
+    const {profile, contact} = currentMember || {};
     const {firstName, lastName, phone} = contact || {};
 
     return (
@@ -208,7 +217,7 @@ const MemberSection = ({session, handlers, values}) => {
                     marginTop: 20,
                     color: '#403f2b'
                 }}>
-                    {firstName && lastName ? `${firstName} + ${lastName}` : profile?.nickname}
+                    {firstName && lastName ? `${firstName} ${lastName}` : profile?.nickname}
                 </Text>
             </View>
             <View style={{marginTop: 20, width: '100%'}}>
@@ -232,7 +241,7 @@ const MemberSection = ({session, handlers, values}) => {
                     </Text>
                 </List.Accordion>
             </View>
-            <View style={styles.memberDetails}>
+            <View style={styles.rrmemberDetails}>
                 <Text style={styles.memberDetailsTitle}>
                     My Account
                 </Text>
@@ -264,7 +273,7 @@ const MemberSection = ({session, handlers, values}) => {
                         mode="contained"
                         onPress={() => {
                             const {firstName, lastName, phone} = values;
-                            console.log(firstName, lastName, phone);
+                            updateMemberMutation.mutate({firstName, lastName, phone});
                         }} style={styles.memberActionButton}
                         labelStyle={{fontFamily: 'Fraunces-Regular', fontSize: 16}}
                         theme={{colors: {primary: '#403f2b'}, fonts: {fontFamily: 'Fraunces-Regular'}}}
@@ -282,7 +291,19 @@ const MemberArea = ({session, handlers, values}) => {
     if (session.refreshToken.role !== "member") {
         return <SignInSection/>
     } else {
-        return <MemberSection session={session} handlers={handlers} values={values}/>
+        const {getCurrentMember, updateMember} = useWixModules(members);
+        const getCurrentMemberRes = useQuery(["currentMember"], getCurrentMember);
+
+        if (getCurrentMemberRes.isLoading) {
+            return <LoadingIndicator/>
+        }
+
+        if (getCurrentMemberRes.isError) {
+            return <ErrorView message={getCurrentMemberRes.error.message}/>
+        }
+
+        const member = getCurrentMemberRes.data.member;
+        return <MemberSection session={session} handlers={handlers} values={values} member={member}/>
     }
 }
 

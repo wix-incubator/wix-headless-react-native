@@ -18,7 +18,7 @@ export function CustomLoginScreen({navigation}) {
             await login(email, password);
             navigation.navigate("Home");
         } catch (e) {
-            setErrorMessage(e);
+            setErrorMessage(e.toString());
             setError(true);
         }
     }
@@ -56,32 +56,10 @@ export function CustomLoginScreen({navigation}) {
                 <Button style={styles.loginButton} mode="contained" onPress={loginHandler} loading={sessionLoading}>
                     Login
                 </Button>
-                <HelperText type="error" visible={error}>
+                {!sessionLoading && <HelperText type="error" visible={error}>
                     {errorMessage}
-                </HelperText>
+                </HelperText>}
             </View>
-
-            {/*<TextInput*/}
-            {/*    label="Email"*/}
-            {/*    value={email}*/}
-            {/*    onChangeText={(text) => setEmail(text)}*/}
-            {/*/>*/}
-            {/*<TextInput*/}
-            {/*    label="Password"*/}
-            {/*    value={password}*/}
-            {/*    secureTextEntry={true}*/}
-            {/*    onChangeText={(text) => setPassword(text)}*/}
-            {/*/>*/}
-            {/*<Button*/}
-            {/*    mode="contained"*/}
-            {/*    onPress={async () => {*/}
-            {/*        await login(email, password);*/}
-            {/*        navigation.navigate("Home");*/}
-            {/*    }}*/}
-            {/*    loading={sessionLoading}*/}
-            {/*>*/}
-            {/*    Login*/}
-            {/*</Button>*/}
         </SafeAreaView>
     );
 }

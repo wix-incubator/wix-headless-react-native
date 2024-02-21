@@ -40,7 +40,7 @@ function App() {
                     })}
                 >
                     <WixSessionProvider clientId="2d3621e3-87dc-4afa-bf42-089a29d16a4c">
-                        <LoginHandler>
+                        <LoginHandler loginType={'custom'}>
                             <NavigationContainer
                                 linking={{
                                     prefixes: [Linking.createURL("/")],
