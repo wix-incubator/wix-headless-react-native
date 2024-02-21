@@ -1,4 +1,4 @@
-import {SafeAreaView, ScrollView, Text, TextInput, View} from "react-native";
+import {Image, SafeAreaView, ScrollView, Text, TextInput, View} from "react-native";
 import {SimpleHeader} from "../../components/Header/SimpleHeader";
 import {useWixSession} from "../../authentication/session";
 import {useWixAuth, useWixModules} from "@wix/sdk-react";
@@ -6,7 +6,7 @@ import {useMutation, useQuery} from "@tanstack/react-query";
 import * as Linking from "expo-linking";
 import * as SecureStorage from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
-import {Button} from "react-native-paper";
+import {Button, IconButton, List, Menu} from "react-native-paper";
 import {useState} from "react";
 import {styles} from "../../styles/members/styles";
 import {CustomLoginScreen} from "./CustomLoginScreen";
@@ -138,10 +138,7 @@ const MemberSection = ({session, handlers, values}) => {
     const {newVisitorSession} = useWixSession();
 
     const [visibleMenu, setVisibleMenu] = useState(false);
-    const [currentMember, setCurrentMember] = useState(null);
     const getCurrentMemberRes = useQuery(["currentMember"], getCurrentMember);
-    const getMembersRes = useQuery(["members"], listMembers);
-    let {profile, memberInfo, firstName, lastName, phone} = {};
     // useEffect(() => {
     //     const newSession = async () => {
     //         await newVisitorSession()
@@ -149,7 +146,8 @@ const MemberSection = ({session, handlers, values}) => {
     //     newSession();
     // }, []);
 
-    if (getCurrentMemberRes.isLoading || getMembersRes.isLoading) {
+
+    if (getCurrentMemberRes.isLoading) {
         return <LoadingIndicator/>
     }
 
@@ -157,137 +155,126 @@ const MemberSection = ({session, handlers, values}) => {
         return <ErrorView message={getCurrentMemberRes.error.message}/>
     }
 
-
-    // if (getCurrentMemberRes.isSuccess) {
-    //     setCurrentMember(getCurrentMemberRes.data);
-    // }
-    //
-    // if (getMembersRes.isSuccess) {
-    //     profile = getMembersRes.data?.members[1]?.profile;
-    //     memberInfo = getMembersRes.data?.members[1]?.contact;
-    //     firstName = memberInfo?.firstName;
-    //     lastName = memberInfo?.lastName;
-    //     phone = memberInfo?.phone;
-    //     console.log(getMembersRes.data.members[1]);
-    // }
+    const member = getCurrentMemberRes.data.member;
+    const {profile, contact} = member;
+    const {firstName, lastName, phone} = contact || {};
 
     return (
-        <></>
-        // <ScrollView style={styles.contentSection}
-        //             keyboardShouldPersistTaps="always"
-        //             alwaysBounceVertical={false}
-        //             showsVerticalScrollIndicator={false}
-        //             bounces={false}
-        // >
-        //     <View style={styles.memberHeader}/>
-        //     <View style={styles.memberSection}>
-        //         <View style={{
-        //             flexDirection: 'row',
-        //             justifyContent: 'space-between',
-        //             alignItems: 'center',
-        //             width: '100%',
-        //         }}>
-        //             <Image
-        //                 style={styles.memberImage}
-        //                 source={{
-        //                     uri: profile?.photo?.url ??
-        //                         `https://ui-avatars.com/api/?background=random&name=
-        //                      ${firstName && lastName ? `${firstName} + ${lastName}` : profile?.nickname}
-        //                       &color=fff&size=100&font-size=0.33&length=1&rounded=true&uppercase=true`
-        //                 }}
-        //             />
-        //             <Menu
-        //                 visible={visibleMenu}
-        //                 onDismiss={() => setVisibleMenu(false)}
-        //                 anchor={
-        //                     <IconButton icon={'dots-vertical'}
-        //                                 iconColor={'#403f2b'}
-        //                                 size={30}
-        //                                 onPress={() => setVisibleMenu(!visibleMenu)}
-        //                                 style={{backgroundColor: '#fdfbef'}}
-        //                     />
-        //                 }
-        //                 contentStyle={{backgroundColor: '#fdfbef', padding: 10, marginTop: 40}}
-        //                 theme={{colors: {text: '#403f2b'}}}
-        //             >
-        //                 <Menu.Item leadingIcon="logout" onPress={async () => {
-        //                     await newVisitorSession();
-        //                     navigation.navigate("Home");
-        //                 }} title="Signout"/>
-        //             </Menu>
-        //         </View>
-        //         <Text style={{
-        //             fontSize: 20,
-        //             marginTop: 20,
-        //             color: '#403f2b'
-        //         }}>
-        //             {firstName && lastName ? `${firstName} + ${lastName}` : profile?.nickname}
-        //         </Text>
-        //     </View>
-        //     <View style={{marginTop: 20, width: '100%'}}>
-        //         <List.Accordion title={'My Orders'}
-        //                         style={styles.membersOrders}
-        //                         titleStyle={{
-        //                             fontSize: 20,
-        //                             color: '#403f2b',
-        //                         }}
-        //                         right={(props) => <List.Icon {...props}
-        //                                                      icon={`chevron-${props.isExpanded ? 'up' : 'down'}`}
-        //                                                      color={'#403f2b'}
-        //                                                      style={styles.ordersShowMoreIcon}
-        //                         />}
-        //         >
-        //             {/*{orders.map((order, index) => (*/}
-        //             {/*    <List.Item key={index} title={order.title} description={order.description}/>*/}
-        //             {/*))}*/}
-        //             <Text style={styles.orderDetails}>
-        //                 You have no orders yet.
-        //             </Text>
-        //         </List.Accordion>
-        //     </View>
-        //     <View style={styles.memberDetails}>
-        //         <Text style={styles.memberDetailsTitle}>
-        //             My Account
-        //         </Text>
-        //         <Text style={styles.memberDetailsSubTitle}>
-        //             View and edit your personal info below.
-        //         </Text>
-        //         <View style={{
-        //             flexDirection: 'row',
-        //             justifyContent: 'space-between',
-        //             gap: 10,
-        //             width: '100%',
-        //             marginTop: 20,
-        //         }}>
-        //             <Button
-        //                 mode="outlined"
-        //                 onPress={() => {
-        //                     const {firstNameChangeHandler, lastNameChangeHandler, phoneChangeHandler} = handlers;
-        //                     firstNameChangeHandler(firstName);
-        //                     lastNameChangeHandler(lastName);
-        //                     phoneChangeHandler(phone);
-        //                 }}
-        //                 style={styles.memberActionButton}
-        //                 labelStyle={{fontFamily: 'Fraunces-Regular', fontSize: 16}}
-        //                 theme={{colors: {primary: '#403f2b'}}}
-        //             >
-        //                 Discard
-        //             </Button>
-        //             <Button
-        //                 mode="contained"
-        //                 onPress={() => {
-        //                     const {firstName, lastName, phone} = values;
-        //                     console.log(firstName, lastName, phone);
-        //                 }} style={styles.memberActionButton}
-        //                 labelStyle={{fontFamily: 'Fraunces-Regular', fontSize: 16}}
-        //                 theme={{colors: {primary: '#403f2b'}, fonts: {fontFamily: 'Fraunces-Regular'}}}
-        //             >
-        //                 Update Info
-        //             </Button>
-        //         </View>
-        //         <MemberForm session={session} handlers={handlers} values={values}/>
-        //     </View>
-        // </ScrollView>
+        <ScrollView style={styles.contentSection}
+                    keyboardShouldPersistTaps="always"
+                    alwaysBounceVertical={false}
+                    showsVerticalScrollIndicator={false}
+                    bounces={false}
+        >
+            <View style={styles.memberHeader}/>
+            <View style={styles.memberSection}>
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                }}>
+                    <Image
+                        style={styles.memberImage}
+                        source={{
+                            uri: profile?.photo?.url ??
+                                `https://ui-avatars.com/api/?background=random&name=
+                             ${firstName && lastName ? `${firstName} + ${lastName}` : profile?.nickname}
+                              &color=fff&size=100&font-size=0.33&length=1&rounded=true&uppercase=true`
+                        }}
+                    />
+                    <Menu
+                        visible={visibleMenu}
+                        onDismiss={() => setVisibleMenu(false)}
+                        anchor={
+                            <IconButton icon={'dots-vertical'}
+                                        iconColor={'#403f2b'}
+                                        size={30}
+                                        onPress={() => setVisibleMenu(!visibleMenu)}
+                                        style={{backgroundColor: '#fdfbef'}}
+                            />
+                        }
+                        contentStyle={{backgroundColor: '#fdfbef', padding: 10, marginTop: 40}}
+                        theme={{colors: {text: '#403f2b'}}}
+                    >
+                        <Menu.Item leadingIcon="logout" onPress={async () => {
+                            await newVisitorSession();
+                            navigation.navigate("Home");
+                        }} title="Signout"/>
+                    </Menu>
+                </View>
+                <Text style={{
+                    fontSize: 20,
+                    marginTop: 20,
+                    color: '#403f2b'
+                }}>
+                    {firstName && lastName ? `${firstName} + ${lastName}` : profile?.nickname}
+                </Text>
+            </View>
+            <View style={{marginTop: 20, width: '100%'}}>
+                <List.Accordion title={'My Orders'}
+                                style={styles.membersOrders}
+                                titleStyle={{
+                                    fontSize: 20,
+                                    color: '#403f2b',
+                                }}
+                                right={(props) => <List.Icon {...props}
+                                                             icon={`chevron-${props.isExpanded ? 'up' : 'down'}`}
+                                                             color={'#403f2b'}
+                                                             style={styles.ordersShowMoreIcon}
+                                />}
+                >
+                    {/*{orders.map((order, index) => (*/}
+                    {/*    <List.Item key={index} title={order.title} description={order.description}/>*/}
+                    {/*))}*/}
+                    <Text style={styles.orderDetails}>
+                        You have no orders yet.
+                    </Text>
+                </List.Accordion>
+            </View>
+            <View style={styles.memberDetails}>
+                <Text style={styles.memberDetailsTitle}>
+                    My Account
+                </Text>
+                <Text style={styles.memberDetailsSubTitle}>
+                    View and edit your personal info below.
+                </Text>
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    gap: 10,
+                    width: '100%',
+                    marginTop: 20,
+                }}>
+                    <Button
+                        mode="outlined"
+                        onPress={() => {
+                            const {firstNameChangeHandler, lastNameChangeHandler, phoneChangeHandler} = handlers;
+                            firstNameChangeHandler(firstName);
+                            lastNameChangeHandler(lastName);
+                            phoneChangeHandler(phone);
+                        }}
+                        style={styles.memberActionButton}
+                        labelStyle={{fontFamily: 'Fraunces-Regular', fontSize: 16}}
+                        theme={{colors: {primary: '#403f2b'}}}
+                    >
+                        Discard
+                    </Button>
+                    <Button
+                        mode="contained"
+                        onPress={() => {
+                            const {firstName, lastName, phone} = values;
+                            console.log(firstName, lastName, phone);
+                        }} style={styles.memberActionButton}
+                        labelStyle={{fontFamily: 'Fraunces-Regular', fontSize: 16}}
+                        theme={{colors: {primary: '#403f2b'}, fonts: {fontFamily: 'Fraunces-Regular'}}}
+                    >
+                        Update Info
+                    </Button>
+                </View>
+                <MemberForm session={session} handlers={handlers} values={values}/>
+            </View>
+        </ScrollView>
     );
 }
 
