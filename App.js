@@ -69,7 +69,8 @@ function App() {
                                         },
                                         tabBarStyle: {
                                             backgroundColor: "#C4C197",
-                                        }
+                                        },
+                                        tabBarHideOnKeyboard: true,
                                     })}
                                     tabBar={(props) => <TabBar {...props} />}
                                 >

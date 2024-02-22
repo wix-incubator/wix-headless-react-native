@@ -51,14 +51,6 @@ const HomePage = ({navigation}) => {
             style={styles.screen}
         >
             <StatusBar barStyle={'default'}/>
-            {/*<SafeAreaView style={{*/}
-            {/*    position: 'absolute',*/}
-            {/*    top: 0,*/}
-            {/*    width: '100%',*/}
-            {/*    zIndex: 1,*/}
-            {/*    backgroundColor: '#FEFBEF',*/}
-            {/*    height: StatusBar.currentHeight,*/}
-            {/*}}/>*/}
             {MainAnimatedBar(translateY, navigation)}
             <ScrollView style={styles.scrollView}
                         keyboardShouldPersistTaps="always"

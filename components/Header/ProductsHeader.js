@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-        // marginRight: 50,
+        marginRight: 50,
         height: '100%',
         paddingTop: StatusBar.currentHeight,
 

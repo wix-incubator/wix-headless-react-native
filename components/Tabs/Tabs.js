@@ -1,6 +1,7 @@
 import * as React from "react";
+import {useEffect, useState} from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import {Dimensions, Text, TouchableOpacity, View} from "react-native";
+import {Dimensions, Keyboard, Text, TouchableOpacity, View} from "react-native";
 import {Icon} from "react-native-paper";
 
 const Tab = createBottomTabNavigator();
@@ -8,8 +9,33 @@ const ScreenHeight = Dimensions.get("window").height;
 const ScreenWidth = Dimensions.get("window").width;
 
 export const TabBar = ({state, descriptors, navigation}) => {
+    const [keyboardVisible, setKeyboardVisible] = useState(false);
+    const keyboardDidShow = () => {
+        setKeyboardVisible(true);
+    };
+
+    const keyboardDidHide = () => {
+        setKeyboardVisible(false);
+    }
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            "keyboardDidShow",
+            keyboardDidShow
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+            "keyboardDidHide",
+            keyboardDidHide
+        );
+
+        return () => {
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
     return (
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', display: keyboardVisible ? "none" : "flex"}}>
             {state.routes.map((route, index) => {
                 const {options} = descriptors[route.key];
                 const label =

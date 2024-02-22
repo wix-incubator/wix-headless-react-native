@@ -1,4 +1,6 @@
-import {StyleSheet} from 'react-native';
+import {Dimensions, StyleSheet} from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
     view: {
@@ -24,6 +26,38 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
+    },
+    carousel: {
+        flex: 1,
+        borderRadius: 15,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: screenWidth * 0.6,
+        height: screenWidth * 0.7,
+        borderWidth: 10,
+        borderColor: 'transparent',
+    },
+    carouselImage: {
+        width: screenWidth * 0.6 - 20,
+        height: screenWidth * 0.7,
+        borderRadius: 15,
+    },
+    carouselTitle: {
+        width: screenWidth * 0.6,
+        textAlign: 'center',
+        color: '#333',
+        padding: 5,
+        marginTop: 10,
+        fontSize: 20,
+    },
+    carouselPrice: {
+        width: screenWidth * 0.6,
+        textAlign: 'center',
+        color: '#333',
+        padding: 5,
+        fontSize: 14,
     },
     indicators: {
         position: 'absolute',

@@ -2,9 +2,9 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useWix, useWixModules} from "@wix/sdk-react";
 import {members} from "@wix/members";
 import {useWixSession} from "../../../authentication/session";
-import {Image, ScrollView, Text, TextInput, View} from "react-native";
+import {Image, ScrollView, TextInput, View} from "react-native";
 import {styles} from "../../../styles/members/styles";
-import {Button, Divider, IconButton, List, Menu} from "react-native-paper";
+import {Button, Divider, IconButton, List, Menu, Text} from "react-native-paper";
 import {useEffect, useState} from "react";
 import {useMemberHandler} from "../../../authentication/MemberHandler";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
@@ -107,6 +107,11 @@ const Orders = () => {
                                 width: '100%',
                             }}
                             title={`Order number #${order.number}`}
+                            titleStyle={{
+                                fontSize: 16,
+                                fontWeight: 'bold',
+                                color: '#403f2b',
+                            }}
                             description={
                                 <View>
                                     <Text/>
@@ -136,8 +141,6 @@ const Orders = () => {
                                         }
                                     </Text>
                                     <View style={{
-                                        flexDirection: 'row',
-                                        justifyContent: 'space-between',
                                         backgroundColor: '#fdfbef'
                                     }}>
                                         <List.Accordion title={'Items'}
@@ -146,7 +149,7 @@ const Orders = () => {
                                                         }}
                                                         titleStyle={{
                                                             marginHorizontal: -15,
-                                                            paddingRight: 10,
+                                                            width: '100%',
                                                         }}
                                                         descriptionStyle={{
                                                             padding: 0,
@@ -162,32 +165,43 @@ const Orders = () => {
                                         >
                                             {order.lineItems.map((item, index) => (
                                                 <List.Item key={item.id + index}
-                                                           title={`${item.name}`}
-                                                           description={
-                                                               <View style={{
-                                                                   flexDirection: 'row',
-                                                                   justifyContent: 'space-between',
-                                                               }}>
-                                                                   <View>
-                                                                       <Image
-                                                                           source={{
-                                                                               uri: item.mediaItem?.url ??
-                                                                                   `https://via.placeholder.com/50`
-                                                                           }}
-                                                                           style={{
-                                                                               width: 50,
-                                                                               height: 50,
-                                                                           }}/>
-                                                                   </View>
-                                                                   <View style={{padding: 10}}>
-                                                                       <Text>
-                                                                           Quantity: {item.quantity}
-                                                                       </Text>
-                                                                       <Text>
-                                                                           Price: {getSymbolFromCurrency(order.currency)}{item.totalPrice}
-                                                                       </Text>
-                                                                   </View>
+                                                           title={<View style={{
+                                                               flexDirection: 'row',
+                                                               justifyContent: 'space-between',
+                                                               alignItems: 'center',
+                                                               height: 60,
+                                                           }}>
+                                                               <View>
+                                                                   <Image
+                                                                       source={{
+                                                                           uri: item.mediaItem?.url ??
+                                                                               `https://via.placeholder.com/50`
+                                                                       }}
+                                                                       style={{
+                                                                           width: 60,
+                                                                           height: 60,
+                                                                       }}/>
                                                                </View>
+                                                               <View style={{
+                                                                   paddingHorizontal: 10,
+                                                                   flexDirection: 'column',
+                                                                   justifyContent: 'space-between',
+                                                                   alignItems: 'flex-start',
+                                                               }}>
+                                                                   <Text variant="titleSmall" style={{
+                                                                       color: '#403f2b',
+                                                                       flex: 1,
+                                                                   }}>
+                                                                       {item.name}
+                                                                   </Text>
+                                                                   <Text>
+                                                                       Quantity: {item.quantity}
+                                                                   </Text>
+                                                                   <Text>
+                                                                       Price: {getSymbolFromCurrency(order.currency)}{item.totalPrice}
+                                                                   </Text>
+                                                               </View>
+                                                           </View>
                                                            }
                                                 />
                                             ))}

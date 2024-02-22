@@ -72,15 +72,7 @@ export const ShopCollectionsHome = ({navigation}) => {
                     renderItem={({index}) => {
                         return (
                             <View
-                                style={{
-                                    flex: 1,
-                                    borderRadius: 15,
-                                    justifyContent: 'center',
-                                    width: width * 0.6,
-                                    height: width * 0.7,
-                                    borderWidth: 10,
-                                    borderColor: 'transparent',
-                                }}
+                                style={styles.carousel}
                             >
                                 <Pressable
                                     onPress={() => {
@@ -91,32 +83,15 @@ export const ShopCollectionsHome = ({navigation}) => {
                                     }}
                                 >
                                     <Image
-                                        style={{
-                                            width: width * 0.6 - 20,
-                                            height: width * 0.7,
-                                            borderRadius: 15,
-                                        }}
+                                        style={styles.carouselImage}
                                         source={{
                                             uri: filteredProducts[index].media.mainMedia.image.url,
                                         }}
                                     />
-                                    <Text style={{
-                                        width: width * 0.6,
-                                        textAlign: 'center',
-                                        color: '#333',
-                                        padding: 5,
-                                        marginTop: 10,
-                                        fontSize: 20,
-                                    }}>
+                                    <Text style={styles.carouselTitle}>
                                         {filteredProducts[index].name}
                                     </Text>
-                                    <Text style={{
-                                        width: width * 0.6,
-                                        textAlign: 'center',
-                                        color: '#333',
-                                        padding: 5,
-                                        fontSize: 14,
-                                    }}>
+                                    <Text style={styles.carouselPrice}>
                                         {filteredProducts[index].convertedPriceData.formatted?.price}
                                     </Text>
                                 </Pressable>
