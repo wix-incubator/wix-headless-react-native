@@ -15,8 +15,8 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
     });
 
     const animateHeaderHeight = animHeaderValue.interpolate({
-        inputRange: [0, 2 * (Header_Max_Height + Header_Min_Height + 10)],
-        outputRange: [Header_Max_Height, Header_Min_Height + 10],
+        inputRange: [0, 2 * (Header_Max_Height + Header_Min_Height)],
+        outputRange: [Header_Max_Height, Header_Min_Height],
         extrapolate: 'clamp'
     })
 
@@ -36,69 +36,69 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
         >
             <View style={styles.headerContent}>
                 <View style={styles.headerTextContainer}>
-                    <Text style={styles.headerText}>{title}</Text></View>
+                    <Text style={styles.headerText}>{title}</Text>
+                </View>
                 <View>
-                    <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon} onPress={handleGoBack}/>
+                    <View>
+                        <IconButton icon={'arrow-left-thin'} size={36} style={styles.backIcon}
+                                    onPress={handleGoBack}/>
+                    </View>
                 </View>
             </View>
-            {visible && (
-                <>
-                    <Animated.Text style={
-                        [styles.subTitle,
-                            {
-                                opacity: animateHeaderTextOpacity,
-                                height: description ? animHeaderValue.interpolate({
-                                    inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
-                                    outputRange: [150, 0],
-                                    extrapolate: 'clamp',
-                                }) : 0,
-                                width: '100%',
-                                paddingHorizontal: 10
-                            }
-                        ]}>
-                        {description}
-                    </Animated.Text>
-                    {media && (
-                        <Animated.View style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            marginVertical: 15,
-                            opacity: animateHeaderTextOpacity,
-                            height: animHeaderValue.interpolate({
-                                inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
-                                outputRange: [0, 0],
-                                extrapolate: 'clamp',
-                            })
-                        }}>
-                            <WixMediaImage
-                                media={media?.image?.url}
-                                width={screenWidth / 2 - 20}
-                                height={screenWidth / 2}
-                            >
-                                {({url}) => {
-                                    return (
-                                        <Animated.Image
-                                            style={[styles.image, {
-                                                height: description ? animHeaderValue.interpolate({
-                                                    inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 400)],
-                                                    outputRange: [200, 0],
-                                                    extrapolate: 'clamp',
-                                                }) : 0,
-                                                width: screenWidth / 2 - 20
-                                            }]}
-                                            source={{
-                                                uri: url,
-                                            }}
-                                        />
-                                    );
-                                }}
-                            </WixMediaImage>
-                        </Animated.View>
-                    )}
-                </>
-            )}
 
+            <Animated.Text style={
+                [styles.subTitle,
+                    {
+                        opacity: animateHeaderTextOpacity,
+                        height: description ? animHeaderValue.interpolate({
+                            inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
+                            outputRange: [150, 0],
+                            extrapolate: 'clamp',
+                        }) : 0,
+                        width: '100%',
+                        paddingHorizontal: 10
+                    }
+                ]}>
+                {description}
+            </Animated.Text>
+            {media && (
+                <Animated.View style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginVertical: 15,
+                    opacity: animateHeaderTextOpacity,
+                    height: animHeaderValue.interpolate({
+                        inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
+                        outputRange: [0, 0],
+                        extrapolate: 'clamp',
+                    })
+                }}>
+                    <WixMediaImage
+                        media={media?.image?.url}
+                        width={screenWidth / 2 - 20}
+                        height={screenWidth / 2}
+                    >
+                        {({url}) => {
+                            return (
+                                <Animated.Image
+                                    style={[styles.image, {
+                                        height: description ? animHeaderValue.interpolate({
+                                            inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 400)],
+                                            outputRange: [200, 0],
+                                            extrapolate: 'clamp',
+                                        }) : 0,
+                                        width: screenWidth / 2 - 20
+                                    }]}
+                                    source={{
+                                        uri: url,
+                                    }}
+                                />
+                            );
+                        }}
+                    </WixMediaImage>
+                </Animated.View>
+            )}
         </Animated.View>
     );
 }
@@ -109,23 +109,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'column',
-        left: 0,
-        right: 0,
-        paddingTop: StatusBar.currentHeight + 10,
-        width: '100%'
+        width: '100%',
+        // paddingTop: StatusBar.currentHeight,
     },
     headerContent: {
         display: 'flex',
         flexDirection: 'row-reverse',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        paddingTop: StatusBar.currentHeight,
     },
     headerTextContainer: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 50
+        justifyContent: 'space-around',
+        // marginRight: 50,
+        height: '100%',
+        paddingTop: StatusBar.currentHeight,
+
     },
     headerText: {
         color: '#403f2b',
@@ -135,12 +137,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Fraunces-Regular',
         letterSpacing: 1.5,
         position: 'relative',
-        marginVertical: 10,
+        // marginVertical: 10,
         // width: '100%',
     },
     backIcon: {
         width: 50,
         height: 50,
+        paddingTop: StatusBar.currentHeight,
     },
     subTitle: {
         color: '#403f2b',

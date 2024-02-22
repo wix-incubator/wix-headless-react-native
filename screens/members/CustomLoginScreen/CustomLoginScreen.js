@@ -60,7 +60,7 @@ export function CustomLoginScreen({navigation, loading, disabled, onWixLogin}) {
                     {errorMessage}
                 </HelperText>}
                 <Text style={{textAlign: "center", color: "#403F2B"}}>
-                    Or sign in through wix?
+                    Or login with Wix
                 </Text>
                 <Button style={styles.wixLoginButton}
                         mode="outlined"

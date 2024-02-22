@@ -38,7 +38,6 @@ const MemberArea = ({showLoginHandler, showLogin}) => {
 }
 
 export const MemberAreaScreen = ({navigation}) => {
-    const {session} = useWixSession();
     const [showLogin, setShowLogin] = useState(false);
 
     const showLoginHandler = (val) => {

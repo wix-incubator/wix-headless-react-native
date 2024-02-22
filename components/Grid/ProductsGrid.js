@@ -2,7 +2,7 @@ import {Animated, Dimensions, FlatList, Image, Pressable, StyleSheet, Text, View
 import {WixMediaImage} from "../../WixMediaImage";
 
 const screenWidth = Dimensions.get('window').width;
-export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY, onScroll}) => {
+export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY}) => {
 
     return (
         <FlatList
@@ -12,9 +12,6 @@ export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY, onScroll
                 [{nativeEvent: {contentOffset: {y: scrollOffsetY}}}],
                 {
                     useNativeDriver: false,
-                    listener: (event) => {
-                        onScroll(event.nativeEvent.contentOffset.y)
-                    }
                 }
             )}
             keyboardShouldPersistTaps="always"

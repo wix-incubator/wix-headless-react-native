@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import {useWixModules} from "@wix/sdk-react";
 import * as React from "react";
-import {useCallback, useRef} from "react";
+import {useRef} from "react";
 import {Animated, Dimensions, SafeAreaView, View} from "react-native";
 import {ProductsGrid} from "../../../components/Grid/ProductsGrid";
 import {ProductsHeader} from "../../../components/Header/ProductsHeader";
@@ -44,14 +44,6 @@ export function ProductsScreen({navigation, route}) {
 
     const scrollOffsetY = useRef(animationState.animation).current;
 
-    const scrollHandler = useCallback((val = 0) => {
-        if (val > (Header_Max_Height - Header_Min_Height) - 20) {
-            setAnimationState({...animationState, visible: false});
-        } else {
-            setAnimationState({...animationState, visible: true});
-        }
-    }, [animationState]);
-    
     return (
         <>
             <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>
@@ -65,7 +57,7 @@ export function ProductsScreen({navigation, route}) {
                                 visible={animationState.visible} title={CollectionName}
                                 description={CollectionDescription} media={items[0]?.media?.mainMedia}/>
                 <ProductsGrid data={items} onPress={productPressHandler} navigation={navigation}
-                              scrollOffsetY={scrollOffsetY} onScroll={scrollHandler}/>
+                              scrollOffsetY={scrollOffsetY}/>
             </View>
         </>
     );
