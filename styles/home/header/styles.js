@@ -10,7 +10,6 @@ export const styles = StyleSheet.create({
         elevation: 0,
         height: '100%',
         backgroundColor: '#FEFBEF',
-
     },
     header: {
         backgroundColor: '#FEFBEF',

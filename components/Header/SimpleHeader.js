@@ -11,7 +11,9 @@ export const SimpleHeader = ({navigation, title, backIcon = false, onBackPress})
     }
     return (
         <View style={styles.headerContent}>
-            <View style={styles.headerTextContainer}>
+            <View style={[styles.headerTextContainer, {
+                marginRight: backIcon ? 50 : 0,
+            }]}>
                 <Text style={styles.headerText}>{title}</Text></View>
             {backIcon && (
                 <View>
@@ -36,7 +38,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 50,
         paddingTop: StatusBar.currentHeight,
     },
     headerText: {

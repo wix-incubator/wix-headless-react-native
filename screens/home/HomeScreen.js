@@ -1,4 +1,4 @@
-import {Animated, SafeAreaView, ScrollView, View} from "react-native";
+import {Animated, SafeAreaView, ScrollView, StatusBar, View} from "react-native";
 import {Toast} from "../../components/Toast/Toast";
 import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
@@ -50,9 +50,17 @@ const HomePage = ({navigation}) => {
         <SafeAreaView
             style={styles.screen}
         >
+            <StatusBar barStyle={'default'}/>
+            {/*<SafeAreaView style={{*/}
+            {/*    position: 'absolute',*/}
+            {/*    top: 0,*/}
+            {/*    width: '100%',*/}
+            {/*    zIndex: 1,*/}
+            {/*    backgroundColor: '#FEFBEF',*/}
+            {/*    height: StatusBar.currentHeight,*/}
+            {/*}}/>*/}
             {MainAnimatedBar(translateY, navigation)}
             <ScrollView style={styles.scrollView}
-                // contentContainerStyle={styles.scrollView}
                         keyboardShouldPersistTaps="always"
                         alwaysBounceVertical={false}
                         bounces={false}
@@ -63,6 +71,7 @@ const HomePage = ({navigation}) => {
                         }}
                         scrollEventThrottle={16}
             >
+
                 <View style={styles.spacer}/>
                 <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
                 <HeroSection navigation={navigation}/>

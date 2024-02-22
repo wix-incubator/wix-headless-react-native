@@ -1,4 +1,4 @@
-import {StatusBar, StyleSheet} from "react-native";
+import {StyleSheet} from "react-native";
 
 
 export const styles = StyleSheet.create({
@@ -12,6 +12,6 @@ export const styles = StyleSheet.create({
         flexGrow: 1,
     },
     spacer: {
-        paddingTop: StatusBar.currentHeight + 100,
+        marginTop: 100,
     },
 });

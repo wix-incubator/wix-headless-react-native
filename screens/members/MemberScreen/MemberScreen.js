@@ -5,7 +5,7 @@ import {useWixSession} from "../../../authentication/session";
 import {Image, ScrollView, Text, TextInput, View} from "react-native";
 import {styles} from "../../../styles/members/styles";
 import {Button, Divider, IconButton, List, Menu} from "react-native-paper";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useMemberHandler} from "../../../authentication/MemberHandler";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
@@ -26,7 +26,9 @@ const FormInput = ({labelValue, placeholderText, inputValue, ...rest}) => {
 
 const MemberForm = () => {
     const {firstName, lastName, phone, updateContact} = useMemberHandler();
+    const queryClient = useQueryClient();
 
+    const member = queryClient.getQueryData(["currentMember"])?.member;
     return (
         <View style={styles.accountInfo}>
             <Text style={styles.accountInfoTitle}>
@@ -39,7 +41,7 @@ const MemberForm = () => {
                 Login Email:
             </Text>
             <Text style={styles.accountInfoText}>
-                'demo@email'
+                {member?.loginEmail || "No email found"}
             </Text>
             <Text style={styles.accountInfoSmallText}>
                 Your Login email can't be changed.
@@ -199,9 +201,6 @@ const Orders = () => {
                     </View>
                 );
             })}
-            {/*{orders.map((order, index) => (*/}
-            {/*    <List.Item key={index} title={order.title} description={order.description}/>*/}
-            {/*))}*/}
             {!myOrdersQuery.data.orders.length && <Text style={styles.orderDetails}>
                 You have no orders yet.
             </Text>}
@@ -209,13 +208,28 @@ const Orders = () => {
     );
 
 }
-export const MemberScreen = ({member}) => {
+export const MemberScreen = () => {
     const queryClient = useQueryClient();
-    const {updateMember} = useWixModules(members);
+    const {getCurrentMember, updateMember} = useWixModules(members);
     const {newVisitorSession} = useWixSession();
     const {firstName, lastName, phone, updateContact} = useMemberHandler();
-    const [currentMember, setCurrentMember] = useState(member);
     const [visibleMenu, setVisibleMenu] = useState(false);
+    const getCurrentMemberRes = useQuery(["currentMember"], () => getCurrentMember({fieldSet: "FULL"}));
+    const [currentMember, setCurrentMember] = useState(null);
+
+    useEffect(() => {
+        const fetchCurrentMember = async () => {
+            const {member} = await getCurrentMember({fieldSet: "FULL"});
+            updateContact({
+                firstName: member?.contact?.firstName,
+                lastName: member?.contact?.lastName,
+                phone: member?.contact?.phones[0]
+            });
+            setCurrentMember(member);
+        }
+        fetchCurrentMember();
+    }, []);
+
     const updateMemberMutation = useMutation(
         async () => {
             if (!currentMember) return;
@@ -236,11 +250,29 @@ export const MemberScreen = ({member}) => {
         },
         {
             onSuccess: async (response) => {
+                const member = {
+                    member: {
+                        ...response
+                    }
+                }
+                queryClient.setQueryData(['currentMember'], member);
                 setCurrentMember(response);
-                queryClient.setQueryData(["currentMember"], response);
             },
         }
     );
+
+
+    if (getCurrentMemberRes.isError) {
+        return <ErrorView message={getCurrentMemberRes.error.message}/>
+    }
+
+    if (getCurrentMemberRes.isLoading || !currentMember) {
+        return <LoadingIndicator/>
+    }
+
+    if (updateMemberMutation.isLoading) {
+        return <LoadingIndicator loadingMessage={"Updating your info..."}/>
+    }
 
     const {profile, contact} = currentMember || {};
 
@@ -285,7 +317,6 @@ export const MemberScreen = ({member}) => {
                     >
                         <Menu.Item leadingIcon="logout" onPress={async () => {
                             await newVisitorSession();
-                            navigation.navigate("Home");
                         }} title="Signout"/>
                     </Menu>
                 </View>
