@@ -27,6 +27,11 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
+    carouselContainer: {
+        position: 'relative',
+        width: '100%',
+        alignItems: 'center'
+    },
     carousel: {
         flex: 1,
         borderRadius: 15,

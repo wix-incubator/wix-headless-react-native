@@ -4,7 +4,7 @@ import Carousel from "react-native-reanimated-carousel";
 import {data} from "../../data/followus/data";
 import {useCallback} from "react";
 
-export const FollowUsHome = () => {
+export const FollowUsHome = (callback, deps) => {
     const width = Dimensions.get('window').width;
     const handlePress = useCallback(async (url) => {
         const supported = await Linking.canOpenURL(url);
@@ -12,6 +12,11 @@ export const FollowUsHome = () => {
         if (supported) {
             await Linking.openURL(url);
         }
+    }, []);
+
+    const handleonProgressChange = useCallback((progress) => {
+        // detect device scroll
+
     }, []);
     return (
         <View style={styles.view}>
@@ -24,26 +29,19 @@ export const FollowUsHome = () => {
                 autoPlay={false}
                 data={data}
                 scrollAnimationDuration={1000}
-                onSnapToItem={(index) => {
-                }}
+                snapEnabled={false}
+                scrollEnabled={false}
+                overscrollEnabled={true}
+                onProgressChange={handleonProgressChange}
+                mode="parallax"
                 renderItem={({index}) => {
                     return (
                         <View
-                            style={{
-                                flex: 1,
-                                borderRadius: 15,
-                                justifyContent: 'center',
-                                width: width * 0.7,
-                                height: width * 0.8,
-                            }}
+                            style={styles.carouselItem}
                         >
                             <Pressable onPress={handlePress.bind(this, data[index].link)}>
                                 <Image
-                                    style={{
-                                        width: width * 0.7,
-                                        height: width * 0.8,
-                                        borderRadius: 15,
-                                    }}
+                                    style={styles.carouselItemImage}
                                     source={{
                                         uri: data[index].uri,
                                     }}

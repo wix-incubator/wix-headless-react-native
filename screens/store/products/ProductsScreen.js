@@ -2,7 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 import {useWixModules} from "@wix/sdk-react";
 import * as React from "react";
 import {useRef} from "react";
-import {Animated, Dimensions, SafeAreaView, View} from "react-native";
+import {Animated, Dimensions, SafeAreaView, StyleSheet, View} from "react-native";
 import {ProductsGrid} from "../../../components/Grid/ProductsGrid";
 import {ProductsHeader} from "../../../components/Header/ProductsHeader";
 import {products} from "@wix/stores";
@@ -46,12 +46,12 @@ export function ProductsScreen({navigation, route}) {
 
     return (
         <>
-            <SafeAreaView style={{flex: 0, backgroundColor: '#c3c198'}}/>
+            <SafeAreaView style={styles.safeView}/>
             <View
                 keyboardShouldPersistTaps="always"
                 alwaysBounceVertical={false}
                 showsVerticalScrollIndicator={false}
-                style={{height: '100%', flex: 1, backgroundColor: '#fdfbef'}}
+                style={styles.container}
             >
                 <ProductsHeader animHeaderValue={scrollOffsetY} navigation={navigation}
                                 visible={animationState.visible} title={CollectionName}
@@ -62,3 +62,14 @@ export function ProductsScreen({navigation, route}) {
         </>
     );
 }
+
+const styles = StyleSheet.create({
+    safeView: {
+        flex: 0, backgroundColor: '#c3c198'
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#fdfbef',
+        height: '100%',
+    },
+});

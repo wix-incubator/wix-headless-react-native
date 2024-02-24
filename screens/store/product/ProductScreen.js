@@ -132,16 +132,11 @@ export function ProductScreen({route, navigation}) {
                 styles={styles.container}
                 contentContainerStyle={styles.content}
             >
-                <View style={{flexDirection: "row", alignItems: "center", paddingHorizontal: 20}}>
+                <View style={styles.backContainer}>
                     <Pressable onPress={() => navigation.goBack()}
-                               style={{
-                                   flexDirection: "row",
-                                   alignItems: "center",
-                                   justifyContent: "flex-start",
-                                   width: '100%'
-                               }}>
+                               style={styles.backButton}>
                         <IconButton icon={"chevron-left"} onPress={() => navigation.goBack()}/>
-                        <Text style={{textAlign: "center", fontSize: 15}}>
+                        <Text style={styles.backButtonText}>
                             Back To {collectionName}
                         </Text>
                     </Pressable>
@@ -149,12 +144,12 @@ export function ProductScreen({route, navigation}) {
                 <Card style={styles.card} mode={"elevated"} elevation={0}>
                     <WixMediaImage media={product.media.mainMedia.image.url} height={400} width={300}>
                         {({url}) => <Card.Cover source={{uri: url}}
-                                                style={{marginHorizontal: 20, height: 400, borderRadius: 0}}/>}
+                                                style={styles.cardImage}/>}
                     </WixMediaImage>
                     {product.sku && <Card.Title title={''} subtitle={`SKU: ${product.sku}`}
-                                                subtitleStyle={{margin: 0, padding: 0}}/>}
+                                                subtitleStyle={styles.productSku}/>}
                     <Card.Title title={product.name} subtitle={price}
-                                titleStyle={{fontFamily: "Fraunces-Regular", fontSize: 40, paddingTop: 40}}/>
+                                titleStyle={styles.productTitle}/>
                     <Card.Content>
                         <View style={styles.flexJustifyStart}>
                             <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
@@ -219,10 +214,39 @@ export function ProductScreen({route, navigation}) {
 }
 
 const styles = StyleSheet.create({
+    backContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 20
+    },
+    backButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        width: '100%'
+    },
+    backButtonText: {
+        textAlign: "center",
+        fontSize: 15
+    },
     card: {
         marginHorizontal: 20,
         flex: 1,
         height: '100%',
+    },
+    cardImage: {
+        marginHorizontal: 20,
+        height: 400,
+        borderRadius: 0
+    },
+    productSku: {
+        margin: 0,
+        padding: 0
+    },
+    productTitle: {
+        fontFamily: "Fraunces-Regular",
+        fontSize: 40,
+        paddingTop: 40
     },
     container: {
         flex: 1,

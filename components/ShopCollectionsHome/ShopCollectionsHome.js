@@ -54,7 +54,7 @@ export const ShopCollectionsHome = ({navigation}) => {
                     })
                 }
             </View>
-            <View style={{position: 'relative', width: '100%', alignItems: 'center'}}>
+            <View style={styles.carouselContainer}>
                 <Text style={[styles.title, {
                     marginTop: 20,
                 }]}>New In</Text>

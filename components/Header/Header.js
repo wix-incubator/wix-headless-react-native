@@ -3,7 +3,7 @@ import {Text, View} from "react-native";
 import {styles} from "../../styles/home/header/styles";
 import {InputPrefix} from "../Input/InputPrefix";
 
-const header = (
+const HeaderContent = () => (
     <View style={styles.header_content}>
         <Text style={styles.header_title}>R.V</Text>
         <View style={styles.header_searchBox}>
@@ -20,7 +20,7 @@ export function Header() {
     return (
         <View style={styles.view}>
             <Appbar.Header style={styles.header}>
-                <Appbar.Content title={header}/>
+                <HeaderContent/>
             </Appbar.Header>
         </View>
     );
