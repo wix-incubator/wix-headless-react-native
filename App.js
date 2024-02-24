@@ -15,7 +15,7 @@ import {TabBar} from "./components/Tabs/Tabs";
 import {useFonts} from "expo-font";
 import {LoadingIndicator} from "./components/LoadingIndicator/LoadingIndicator";
 import {WIX_CLIENT_ID} from "@env";
-import {Platform, SafeAreaView} from "react-native";
+import {Platform, SafeAreaView, StyleSheet} from "react-native";
 
 global.crypto = Crypto;
 
