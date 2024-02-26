@@ -1,12 +1,12 @@
 import React from 'react';
-import {Animated, Dimensions, StatusBar, StyleSheet, Text, View} from 'react-native';
+import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
 import {IconButton} from "react-native-paper";
 import {WixMediaImage} from "../../WixMediaImage";
 
 const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2 - 10;
-const Header_Min_Height = 70 + StatusBar.currentHeight;
+const Header_Min_Height = 70;
 export const ProductsHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
@@ -46,7 +46,7 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                 </View>
             </View>
 
-            <Animated.Text style={
+            {description && (<Animated.Text style={
                 [styles.subTitle,
                     {
                         opacity: animateHeaderTextOpacity,
@@ -60,8 +60,8 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                     }
                 ]}>
                 {description}
-            </Animated.Text>
-            {media && (
+            </Animated.Text>)}
+            {description && media && (
                 <Animated.View style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -70,7 +70,7 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                     opacity: animateHeaderTextOpacity,
                     height: animHeaderValue.interpolate({
                         inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 300)],
-                        outputRange: [0, 0],
+                        outputRange: [200, 0],
                         extrapolate: 'clamp',
                     })
                 }}>
@@ -83,11 +83,11 @@ export const ProductsHeader = ({navigation, animHeaderValue, visible, title, des
                             return (
                                 <Animated.Image
                                     style={[styles.image, {
-                                        height: description ? animHeaderValue.interpolate({
+                                        height: animHeaderValue.interpolate({
                                             inputRange: [0, Math.min(Header_Max_Height - Header_Min_Height, 400)],
                                             outputRange: [200, 0],
                                             extrapolate: 'clamp',
-                                        }) : 0,
+                                        }),
                                         width: screenWidth / 2 - 20
                                     }]}
                                     source={{
@@ -109,25 +109,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         display: 'flex',
         flexDirection: 'column',
-        width: '100%',
+        // width: '100%',
         // paddingTop: StatusBar.currentHeight,
     },
     headerContent: {
         display: 'flex',
         flexDirection: 'row-reverse',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-        paddingTop: StatusBar.currentHeight,
+        backgroundColor: '#c3c198',
     },
     headerTextContainer: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'space-around',
-        marginRight: 50,
-        height: '100%',
-        paddingTop: StatusBar.currentHeight,
-
+        justifyContent: 'center',
+        // paddingTop: StatusBar.currentHeight,
     },
     headerText: {
         color: '#403f2b',
@@ -137,13 +134,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Fraunces-Regular',
         letterSpacing: 1.5,
         position: 'relative',
-        // marginVertical: 10,
-        // width: '100%',
+        marginVertical: 10,
+        paddingRight: 50,
     },
     backIcon: {
         width: 50,
         height: 50,
-        paddingTop: StatusBar.currentHeight,
+        // paddingTop: StatusBar.currentHeight,
     },
     subTitle: {
         color: '#403f2b',

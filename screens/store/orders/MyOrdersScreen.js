@@ -4,7 +4,7 @@ import * as React from "react";
 import {RefreshControl, ScrollView, View} from "react-native";
 import {Text} from "react-native-paper";
 import {useWixSession} from "../../../authentication/session";
-import {format} from "date-fns";
+// import {format} from "date-fns";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
 
@@ -64,7 +64,7 @@ export function MyOrdersScreen() {
                         return (
                             <View key={order.id}>
                                 <Text>
-                                    Date: {format(new Date(order.dateCreated), "MMM dd, yyyy")}
+                                    {/*Date: {format(new Date(order.dateCreated), "MMM dd, yyyy")}*/}
                                 </Text>
                                 <Text>Order #{order.number}</Text>
                                 <Text>

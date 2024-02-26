@@ -33,7 +33,6 @@ export const HomeScreen = ({navigation}) => {
                 options={{headerShown: false}}
             />
             <Stack.Screen name="Cart" component={CartScreen}/>
-
         </Stack.Navigator>
     )
 }

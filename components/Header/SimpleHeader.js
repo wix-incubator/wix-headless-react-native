@@ -1,4 +1,4 @@
-import {StatusBar, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {IconButton} from "react-native-paper";
 
 export const SimpleHeader = ({navigation, title, backIcon = false, onBackPress}) => {
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingTop: StatusBar.currentHeight,
+        // paddingTop: StatusBar.currentHeight,
     },
     headerText: {
         color: '#403f2b',
@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     backIcon: {
         width: 50,
         height: 50,
-        paddingTop: StatusBar.currentHeight,
-
+        // paddingTop: StatusBar.currentHeight,
     },
 });
