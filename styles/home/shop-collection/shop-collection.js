@@ -47,6 +47,7 @@ export const styles = StyleSheet.create({
     carouselImage: {
         width: screenWidth * 0.6 - 20,
         height: screenWidth * 0.7,
+        marginLeft: 10,
         borderRadius: 15,
     },
     carouselTitle: {
