@@ -50,7 +50,6 @@ const HomePage = ({navigation}) => {
         navigation.addListener('focus', () => {
             Platform.OS === 'android' && StatusBar.setBackgroundColor('#FEFBEF', false);
             StatusBar.setBarStyle('dark-content', false);
-            StatusBar.set
         });
     }, [navigation]);
 
