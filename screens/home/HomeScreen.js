@@ -1,4 +1,4 @@
-import {Animated, SafeAreaView, ScrollView, StatusBar, View} from "react-native";
+import {Animated, Platform, SafeAreaView, ScrollView, StatusBar, View} from "react-native";
 import {Toast} from "../../components/Toast/Toast";
 import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
@@ -11,6 +11,7 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {ProductScreen} from "../store/product/ProductScreen";
 import {CheckoutThankYouScreen} from "../store/checkout/CheckoutThankYouScreen";
 import {CartScreen} from "../store/cart/CartScreen";
+import {useEffect} from "react";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,11 +46,18 @@ const HomePage = ({navigation}) => {
         extrapolate: 'clamp',
     });
 
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            Platform.OS === 'android' && StatusBar.setBackgroundColor('#FEFBEF', false);
+            StatusBar.setBarStyle('dark-content', false);
+            StatusBar.set
+        });
+    }, [navigation]);
+
     return (
         <SafeAreaView
             style={styles.screen}
         >
-            <StatusBar barStyle={'default'}/>
             {MainAnimatedBar(translateY, navigation)}
             <ScrollView style={styles.scrollView}
                         keyboardShouldPersistTaps="always"

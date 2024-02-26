@@ -1,12 +1,12 @@
 import React from 'react';
-import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Animated, Dimensions, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {IconButton} from "react-native-paper";
 import {WixMediaImage} from "../../WixMediaImage";
 
 const screenHigh = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2 - 10;
-const Header_Min_Height = 70;
+const Header_Min_Height = 70 + StatusBar.currentHeight;
 export const ProductsHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        // paddingTop: StatusBar.currentHeight,
+        paddingTop: StatusBar.currentHeight,
     },
     headerText: {
         color: '#403f2b',
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     backIcon: {
         width: 50,
         height: 50,
-        // paddingTop: StatusBar.currentHeight,
+        paddingTop: StatusBar.currentHeight,
     },
     subTitle: {
         color: '#403f2b',

@@ -1,10 +1,8 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {Dimensions, Keyboard, Text, TouchableOpacity, View} from "react-native";
 import {Icon} from "react-native-paper";
 
-const Tab = createBottomTabNavigator();
 const ScreenHeight = Dimensions.get("window").height;
 const ScreenWidth = Dimensions.get("window").width;
 

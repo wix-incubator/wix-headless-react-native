@@ -1,7 +1,17 @@
-import {StyleSheet, Text, View} from "react-native";
+import {Platform, StatusBar, StyleSheet, Text, View} from "react-native";
 import {IconButton} from "react-native-paper";
+import {useEffect} from "react";
 
 export const SimpleHeader = ({navigation, title, backIcon = false, onBackPress}) => {
+
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            Platform.OS === 'android' && StatusBar.setBackgroundColor('#c3c198', false);
+            StatusBar.setBarStyle('dark-content', false);
+            StatusBar.setTranslucent(true);
+        });
+    }, [navigation]);
+
     const handleBackPress = () => {
         if (onBackPress) {
             onBackPress();
@@ -38,7 +48,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        // paddingTop: StatusBar.currentHeight,
+        paddingTop: StatusBar.currentHeight,
     },
     headerText: {
         color: '#403f2b',
@@ -49,11 +59,10 @@ const styles = StyleSheet.create({
         letterSpacing: 1.5,
         position: 'relative',
         marginVertical: 10,
-
     },
     backIcon: {
         width: 50,
         height: 50,
-        // paddingTop: StatusBar.currentHeight,
+        paddingTop: StatusBar.currentHeight,
     },
 });
