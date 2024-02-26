@@ -2,7 +2,7 @@ import * as React from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {checkout, currentCart} from "@wix/ecom";
 import {useWixSessionModules} from "../../../authentication/session";
-import {Button, Surface, TouchableRipple,} from "react-native-paper";
+import {Button, Surface, useTheme,} from "react-native-paper";
 import {Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
 import {usePrice} from "../price";
 import {redirects} from "@wix/redirects";
@@ -15,6 +15,10 @@ import _ from 'lodash';
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
+import {createNativeStackNavigator} from "@react-navigation/native-stack";
+import {CheckoutScreen} from "../checkout/CheckoutScreen";
+
+const Stack = createNativeStackNavigator();
 
 const EmptyCart = ({navigation}) => {
     return (
@@ -38,7 +42,57 @@ const EmptyCart = ({navigation}) => {
     )
 }
 
-export function CartScreen({navigation}) {
+
+function CartItem({item, currency}) {
+    const queryClient = useQueryClient();
+    const {updateCurrentCartLineItemQuantity, removeLineItemsFromCurrentCart} =
+        useWixSessionModules(currentCart);
+
+    const updateQuantityMutation = useMutation(
+        async (quantity) => {
+            return updateCurrentCartLineItemQuantity([
+                {
+                    _id: item._id,
+                    quantity,
+                },
+            ]);
+        },
+        {
+            onSuccess: (response) => {
+                queryClient.setQueryData(["currentCart"], response.cart);
+            },
+        }
+    );
+
+    const removeMutation = useMutation(
+        async () => {
+            return removeLineItemsFromCurrentCart([item._id]);
+        },
+        {
+            onSuccess: (response) => {
+                queryClient.setQueryData(["currentCart"], response.cart);
+            },
+        }
+    );
+    return (
+        <CartListItem
+            name={item.productName.translated}
+            price={usePrice({
+                amount: Number.parseFloat(item.price?.amount) * item.quantity,
+                currencyCode: currency,
+            })}
+            image={item.image}
+            quantity={item.quantity}
+            quantityOnEdit={!updateQuantityMutation.isLoading}
+            quantityHandlerChange={(quantity) =>
+                updateQuantityMutation.mutateAsync(quantity)
+            }
+            removeHandler={() => removeMutation.mutateAsync()}
+        />
+    );
+}
+
+function CartView({navigation}) {
     const [userNote, setUserNote] = React.useState('');
     const [userDiscount, setUserDiscount] = React.useState('');
     const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
@@ -46,6 +100,7 @@ export function CartScreen({navigation}) {
     const {getCurrentCart, createCheckoutFromCurrentCart} = useWixModules(currentCart);
     const {updateCheckout} = useWixModules(checkout);
     const {createRedirectSession} = useWixSessionModules(redirects);
+    const theme = useTheme();
 
     const currentCartQuery = useQuery(["currentCart"], () => {
         try {
@@ -151,6 +206,13 @@ export function CartScreen({navigation}) {
         setUserDiscount(text);
     }, 250);
 
+    const handleCheckout = () => {
+        if (checkoutRedirect) {
+            return;
+        }
+        !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
+    }
+
     return (
         <SimpleContainer navigation={navigation} title={'My Cart'}>
             <ScrollView
@@ -255,21 +317,17 @@ export function CartScreen({navigation}) {
                             <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>Total</Text>
                             <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>{subTotal}</Text>
                         </View>
-                        <TouchableRipple
-                            onPress={() => {
-                                !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
-                            }}
-                            rippleColor="rgba(0, 0, 0, .32)"
+                        <Button
+                            mode="contained"
+                            onPress={handleCheckout}
+                            loading={checkoutRedirect}
+                            contentStyle={{color: '#fdfbef'}}
                             style={styles.checkoutButton}
+                            buttonColor={theme.colors.secondary}
                         >
-                            <Button
-                                theme={{colors: {primary: '#fdfbef'}}}
-                                loading={checkoutRedirect}
-                                contentStyle={{color: '#fdfbef'}}
-                            >
-                                <Text style={styles.checkoutButtonText}>Checkout</Text>
-                            </Button>
-                        </TouchableRipple>
+                            <Text style={styles.checkoutButtonText}>Checkout</Text>
+
+                        </Button>
                         <View style={{flexDirection: "row", justifyContent: "center", paddingBottom: 20}}>
                             <PrefixText icon="lock">
                                 Secure Checkout
@@ -282,63 +340,25 @@ export function CartScreen({navigation}) {
     );
 }
 
-function CartItem({item, currency}) {
-    const queryClient = useQueryClient();
-    const {updateCurrentCartLineItemQuantity, removeLineItemsFromCurrentCart} =
-        useWixSessionModules(currentCart);
-
-    const updateQuantityMutation = useMutation(
-        async (quantity) => {
-            return updateCurrentCartLineItemQuantity([
-                {
-                    _id: item._id,
-                    quantity,
-                },
-            ]);
-        },
-        {
-            onSuccess: (response) => {
-                queryClient.setQueryData(["currentCart"], response.cart);
-            },
-        }
-    );
-
-    const removeMutation = useMutation(
-        async () => {
-            return removeLineItemsFromCurrentCart([item._id]);
-        },
-        {
-            onSuccess: (response) => {
-                queryClient.setQueryData(["currentCart"], response.cart);
-            },
-        }
-    );
+export function CartScreen({navigation}) {
     return (
-        <CartListItem
-            name={item.productName.translated}
-            price={usePrice({
-                amount: Number.parseFloat(item.price?.amount) * item.quantity,
-                currencyCode: currency,
-            })}
-            image={item.image}
-            quantity={item.quantity}
-            quantityOnEdit={!updateQuantityMutation.isLoading}
-            quantityHandlerChange={(quantity) =>
-                updateQuantityMutation.mutateAsync(quantity)
-            }
-            removeHandler={() => removeMutation.mutateAsync()}
-        />
-    );
+        <Stack.Navigator
+            screenOptions={{
+                headerShown: false
+            }}
+        >
+            <Stack.Screen name="CartView" component={CartView}/>
+            <Stack.Screen name="Checkout" component={CheckoutScreen}/>
+        </Stack.Navigator>
+    )
 }
 
 const styles = StyleSheet.create({
     checkoutButton: {
+        flexGrow: 1,
+        marginTop: 20,
         backgroundColor: '#403f2a',
-        justifyContent: 'center',
-        alignItems: 'center',
         margin: 20,
-        padding: 10,
-        borderRadius: 50,
     },
     checkoutButtonText: {
         color: '#fdfbef',

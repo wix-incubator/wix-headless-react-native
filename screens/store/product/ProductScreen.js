@@ -197,15 +197,18 @@ export function ProductScreen({route, navigation}) {
                     <Snackbar
                         visible={addToCartSnackBarVisible}
                         onDismiss={() => setAddToCartSnackBarVisible(false)}
+                        style={{backgroundColor: '#FDFBEF'}}
                         action={{
                             label: "View Cart",
+                            labelStyle: {color: '#403F2B'},
                             onPress: () => {
                                 navigation.navigate("Cart");
                             },
                         }}
+                        label
                         duration={5000}
                     >
-                        Added to cart!
+                        <Text style={{color: '#403F2B'}}>Added to Cart</Text>
                     </Snackbar>
                 </Portal>
             </ScrollView>

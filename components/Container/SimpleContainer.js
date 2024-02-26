@@ -7,7 +7,7 @@ export const SimpleContainer = ({children, navigation, title, backIcon = true, s
             <SafeAreaView style={defaultStyles.safeArea}/>
             <SimpleHeader navigation={navigation} title={title} backIcon={backIcon}/>
             <View
-                style={[styles, defaultStyles.container]}
+                style={[defaultStyles.container, styles]}
             >
                 {children}
             </View>

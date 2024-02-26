@@ -8,7 +8,6 @@ export const SimpleHeader = ({navigation, title, backIcon = false, onBackPress})
         navigation.addListener('focus', () => {
             Platform.OS === 'android' && StatusBar.setBackgroundColor('#c3c198', false);
             StatusBar.setBarStyle('dark-content', false);
-            StatusBar.setTranslucent(true);
         });
     }, [navigation]);
 
