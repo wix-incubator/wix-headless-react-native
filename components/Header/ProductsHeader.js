@@ -1,5 +1,5 @@
-import React from 'react';
-import {Animated, Dimensions, StatusBar, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect} from 'react';
+import {Animated, Dimensions, Platform, StatusBar, StyleSheet, Text, View} from 'react-native';
 import {IconButton} from "react-native-paper";
 import {WixMediaImage} from "../../WixMediaImage";
 
@@ -8,6 +8,13 @@ const screenWidth = Dimensions.get('window').width;
 const Header_Max_Height = screenHigh / 2 - 10;
 const Header_Min_Height = 70 + StatusBar.currentHeight;
 export const ProductsHeader = ({navigation, animHeaderValue, visible, title, description, media}) => {
+    useEffect(() => {
+        navigation.addListener('focus', () => {
+            Platform.OS === 'android' && StatusBar.setBackgroundColor('#c3c198', false);
+            StatusBar.setBarStyle('dark-content', false);
+        });
+    }, [navigation]);
+
     const animateHeaderTextOpacity = animHeaderValue.interpolate({
         inputRange: [0, Header_Max_Height - Header_Min_Height],
         outputRange: [1, 0],
