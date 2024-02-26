@@ -38,7 +38,7 @@ export function CustomLoginScreen({navigation, loading, disabled, onWixLogin}) {
                     }}
                     autoCorrect={false}
                     autoCapitalize='none'
-                    label={'Email Or Username'}
+                    label={'Email'}
                 />
                 <TextInput
                     theme={{colors: {primary: '#403F2B'}}}

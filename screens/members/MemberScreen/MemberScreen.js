@@ -4,8 +4,8 @@ import {members} from "@wix/members";
 import {useWixSession} from "../../../authentication/session";
 import {Image, ScrollView, TextInput, View} from "react-native";
 import {styles} from "../../../styles/members/styles";
-import {Button, Divider, IconButton, List, Menu, Text} from "react-native-paper";
-import {useEffect, useState} from "react";
+import {Avatar, Button, Divider, IconButton, List, Menu, Text} from "react-native-paper";
+import React, {useEffect, useState} from "react";
 import {useMemberHandler} from "../../../authentication/MemberHandler";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
@@ -305,16 +305,17 @@ export const MemberScreen = () => {
                     alignItems: 'center',
                     width: '100%',
                 }}>
-                    <Image
-                        style={styles.memberImage}
-                        source={{
-                            uri: profile?.photo?.url ??
-                                `https://ui-avatars.com/api/?background=random&name=
-                             ${contact?.firstName && contact?.lastName ?
-                                    `${contact?.firstName} ${contact?.lastName}` : profile?.nickname}
-                              &color=fff&size=100&font-size=0.33&length=1&rounded=true&uppercase=true`
-                        }}
-                    />
+                    {profile?.photo?.url ? (
+                        <Avatar.Image size={100}
+                                      theme={{colors: {primary: '#403f2b'}}}
+                                      source={{
+                                          uri: profile?.photo?.url,
+                                      }}/>
+                    ) : (
+                        <Avatar.Text size={100}
+                                     label={contact?.firstName && contact?.lastName ?
+                                         `${contact?.firstName[0]}${contact?.lastName[0]}` : profile?.nickname[0]}/>
+                    )}
                     <Menu
                         visible={visibleMenu}
                         onDismiss={() => setVisibleMenu(false)}
