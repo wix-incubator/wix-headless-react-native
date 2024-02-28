@@ -241,7 +241,6 @@ export const MemberScreen = () => {
                 phone: member?.contact?.phones[0]
             });
             setCurrentMember(member);
-            console.log(member)
         }
         fetchCurrentMember();
     }, []);
