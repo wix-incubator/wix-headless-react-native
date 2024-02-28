@@ -15,7 +15,6 @@ import {TabBar} from "./components/Tabs/Tabs";
 import {useFonts} from "expo-font";
 import {LoadingIndicator} from "./components/LoadingIndicator/LoadingIndicator";
 import {WIX_CLIENT_ID} from "@env";
-import {Platform, SafeAreaView, StyleSheet} from "react-native";
 
 global.crypto = Crypto;
 
@@ -31,19 +30,6 @@ function App() {
 
     if (!fontsLoaded) {
         return <LoadingIndicator/>;
-    }
-
-    if (Platform.OS === 'web') {
-        return (
-            <SafeAreaView style={styles.container}>
-                <Text style={styles.h1}>Hello User</Text>
-                <br/>
-                <Text style={styles.paragraph}>
-                    Open Expo on your mobile device with scanning the QR code in the
-                    application log under the start tab.
-                </Text>
-            </SafeAreaView>
-        )
     }
 
     const clientId = WIX_CLIENT_ID || "";
@@ -108,32 +94,5 @@ function App() {
         </PaperProvider>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: "center",
-        backgroundColor: "#ecf0f1",
-        padding: 8,
-    },
-    paragraph: {
-        margin: 8,
-        fontSize: 16,
-        textAlign: "center",
-    },
-    h1: {
-        margin: 28,
-        fontSize: 36,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    h2: {
-        margin: 16,
-        fontSize: 28,
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-});
-
 
 export default App;

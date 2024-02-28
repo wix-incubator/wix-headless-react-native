@@ -228,7 +228,8 @@ export const MemberScreen = () => {
     const {newVisitorSession} = useWixSession();
     const {firstName, lastName, phone, updateContact} = useMemberHandler();
     const [visibleMenu, setVisibleMenu] = useState(false);
-    const getCurrentMemberRes = useQuery(["currentMember"], () => getCurrentMember({fieldSet: "FULL"}));
+    const getCurrentMemberRes =
+        useQuery(["currentMember"], () => getCurrentMember({fieldSet: "FULL"}));
     const [currentMember, setCurrentMember] = useState(null);
 
     useEffect(() => {
@@ -240,6 +241,7 @@ export const MemberScreen = () => {
                 phone: member?.contact?.phones[0]
             });
             setCurrentMember(member);
+            console.log(member)
         }
         fetchCurrentMember();
     }, []);
@@ -248,11 +250,13 @@ export const MemberScreen = () => {
         async () => {
             if (!currentMember) return;
             const contact = currentMember?.contact;
+            const newPhones = [...(contact?.phones || [])];
+            newPhones[0] = phone;
             const updatedContact = {
                 ...(contact || {}),
                 firstName,
                 lastName,
-                phones: [...(contact?.phones || []), phone],
+                phones: newPhones,
             };
             const updatedMember = {
                 contact: updatedContact,
