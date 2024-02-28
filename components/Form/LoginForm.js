@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import {SafeAreaView, StyleSheet, Text, View} from "react-native";
 import {Button, HelperText, TextInput} from "react-native-paper";
-import {useLoginHandler} from "../../../authentication/LoginHandler";
-import {useWixSession} from "../../../authentication/session";
+import {useLoginHandler} from "../../authentication/LoginHandler";
+import {useWixSession} from "../../authentication/session";
 
-export function CustomLoginScreen({navigation, loading, disabled, onWixLogin}) {
+export function LoginForm({navigation, loading, disabled, onWixLogin}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(false);

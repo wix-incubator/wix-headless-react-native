@@ -10,7 +10,7 @@ import {useMemberHandler} from "../../../authentication/MemberHandler";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
 import {format} from "date-fns";
-import getSymbolFromCurrency from 'currency-symbol-map'
+import {usePrice} from "../../store/price";
 
 const FormInput = ({labelValue, placeholderText, inputValue, ...rest}) => {
     return (
@@ -198,7 +198,10 @@ const Orders = () => {
                                                                        Quantity: {item.quantity}
                                                                    </Text>
                                                                    <Text>
-                                                                       Price: {getSymbolFromCurrency(order.currency)}{item.totalPrice}
+                                                                       Price: {usePrice({
+                                                                       amount: Number.parseFloat(item.totalPrice),
+                                                                       currencyCode: order.currency,
+                                                                   })}
                                                                    </Text>
                                                                </View>
                                                            </View>
@@ -208,7 +211,12 @@ const Orders = () => {
                                         </List.Accordion>
                                     </View>
                                     <Text/>
-                                    <Text>Total: {getSymbolFromCurrency(order.currency)}{order.totals.total}</Text>
+                                    <Text>
+                                        Total: {usePrice({
+                                        amount: Number.parseFloat(order.totals.total),
+                                        currencyCode: order.currency,
+                                    })}
+                                    </Text>
                                 </View>
                             }/>
                         <Divider/>
@@ -222,7 +230,7 @@ const Orders = () => {
     );
 
 }
-export const MemberScreen = () => {
+export const MemberView = () => {
     const queryClient = useQueryClient();
     const {getCurrentMember, updateMember} = useWixModules(members);
     const {newVisitorSession} = useWixSession();

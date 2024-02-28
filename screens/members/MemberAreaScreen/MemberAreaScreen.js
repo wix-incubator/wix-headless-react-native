@@ -3,33 +3,33 @@ import {SimpleHeader} from "../../../components/Header/SimpleHeader";
 import {useWixSession} from "../../../authentication/session";
 import {useState} from "react";
 import {styles} from "../../../styles/members/styles";
-import {SignInScreen} from "../SignInScreen/SignInScreen";
-import {MemberScreen} from "../MemberScreen/MemberScreen";
+import {SignInView} from "./SignInView";
+import {MemberView} from "./MemberView";
 import {MemberHandler} from "../../../authentication/MemberHandler";
 
-const MemberArea = ({showLoginHandler, showLogin,}) => {
+const MemberArea = ({showWixLoginHandler, showWixLogin,}) => {
     const {session} = useWixSession();
     if (session.refreshToken.role !== "member") {
-        return <SignInScreen showLoginHandler={showLoginHandler} showLogin={showLogin}/>
+        return <SignInView showWixLoginHandler={showWixLoginHandler} showWixLogin={showWixLogin}/>
     } else {
         return (
             <MemberHandler>
-                <MemberScreen/>
+                <MemberView/>
             </MemberHandler>
         )
     }
 }
 
 export const MemberAreaScreen = ({navigation}) => {
-    const [showLogin, setShowLogin] = useState(false);
+    const [showWixLogin, setShowWixLogin] = useState(false);
 
-    const showLoginHandler = (val) => {
-        setShowLogin(val);
+    const showWixLoginHandler = (val) => {
+        setShowWixLogin(val);
     }
 
     const navigateBack = () => {
-        if (showLogin) {
-            showLoginHandler(false);
+        if (showWixLogin) {
+            showWixLoginHandler(false);
             return;
         }
         navigation.goBack();
@@ -51,7 +51,7 @@ export const MemberAreaScreen = ({navigation}) => {
                     styles={styles.container}
                     contentContainerStyle={styles.content}
                 >
-                    <MemberArea showLoginHandler={showLoginHandler} showLogin={showLogin}/>
+                    <MemberArea showWixLoginHandler={showWixLoginHandler} showWixLogin={showWixLogin}/>
                 </ScrollView>
             </View>
         </>

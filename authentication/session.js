@@ -12,7 +12,7 @@ import "react-native-url-polyfill/auto";
  * setSession: (session: import("@wix/sdk-react").Tokens) => Promise<void>,
  * newVisitorSession: () => Promise<void> }>}
  */
-const WixSessionContext = React.createContext(null);
+const WixSessionContext = React.createContext(undefined);
 
 export function WixSessionProvider(props) {
     const [session, setSessionState] = React.useState(null);

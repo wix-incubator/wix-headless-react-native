@@ -1,18 +1,16 @@
 import {useWixAuth} from "@wix/sdk-react";
 import {useWixSession} from "../../../authentication/session";
-import {useLoginHandler} from "../../../authentication/LoginHandler";
 import * as Linking from "expo-linking";
 import {useMutation} from "@tanstack/react-query";
 import * as SecureStorage from "expo-secure-store";
 import {View} from "react-native";
 import {WebView} from "react-native-webview";
-import {CustomLoginScreen} from "../CustomLoginScreen/CustomLoginScreen";
+import {LoginForm} from "../../../components/Form/LoginForm";
 import {useState} from "react";
 
-export const SignInScreen = ({showLoginHandler, showLogin}) => {
+export const SignInView = ({showWixLoginHandler, showWixLogin}) => {
     const auth = useWixAuth();
     const {sessionLoading} = useWixSession();
-    const {loginType} = useLoginHandler();
     const [authUrl, setAuthUrl] = useState("");
 
     const isValidLoginUrl = async () => {
@@ -29,7 +27,7 @@ export const SignInScreen = ({showLoginHandler, showLogin}) => {
 
     const authSessionMutation = useMutation(
         async () => {
-            showLoginHandler(false)
+            showWixLoginHandler(false)
             if (!await isValidLoginUrl()) {
                 console.error('Failed to fetch the URL, make sure to follow this guide: https://dev.wix.com/docs/go-headless/getting-started/setup/manage-urls/overview-of-urls');
                 return Promise.reject('Failed to fetch the URL, make sure to follow this guide: https://dev.wix.com/docs/go-headless/getting-started/setup/manage-urls/overview-of-urls');
@@ -53,7 +51,7 @@ export const SignInScreen = ({showLoginHandler, showLogin}) => {
                     return;
                 }
                 setAuthUrl(authUrl);
-                showLoginHandler(true);
+                showWixLoginHandler(true);
                 // await WebBrowser.openBrowserAsync(authUrl, {});
             },
         }
@@ -61,14 +59,14 @@ export const SignInScreen = ({showLoginHandler, showLogin}) => {
 
     return (
         <>
-            {showLogin ? (
+            {showWixLogin ? (
                 <View style={{flex: 1, width: '100%', height: '100%'}}>
                     <WebView
                         style={{flex: 1}}
                         setSupportMultipleWindows={false}
                         contentMode={"mobile"}
                         source={{uri: authUrl}}
-                        goBack={() => showLoginHandler(false)}
+                        goBack={() => showWixLoginHandler(false)}
                         scalesPageToFit={true}
                         bounces={false}
                         scrollEnabled={false}
@@ -77,9 +75,9 @@ export const SignInScreen = ({showLoginHandler, showLogin}) => {
                     />
                 </View>
             ) : (
-                <CustomLoginScreen loading={authSessionMutation.isLoading || sessionLoading}
-                                   disabled={authSessionMutation.isLoading || sessionLoading}
-                                   onWixLogin={() => authSessionMutation.mutate()}/>
+                <LoginForm loading={authSessionMutation.isLoading || sessionLoading}
+                           disabled={authSessionMutation.isLoading || sessionLoading}
+                           onWixLogin={() => authSessionMutation.mutate()}/>
             )}
         </>
     );
