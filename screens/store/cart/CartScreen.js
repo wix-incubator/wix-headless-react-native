@@ -325,7 +325,9 @@ function CartView({navigation}) {
                             style={styles.checkoutButton}
                             buttonColor={theme.colors.secondary}
                         >
-                            <Text style={styles.checkoutButtonText}>Checkout</Text>
+                            <Text style={styles.checkoutButtonText}>
+                                Checkout
+                            </Text>
 
                         </Button>
                         <View style={{flexDirection: "row", justifyContent: "center", paddingBottom: 20}}>
@@ -355,7 +357,6 @@ export function CartScreen({navigation}) {
 
 const styles = StyleSheet.create({
     checkoutButton: {
-        flexGrow: 1,
         marginTop: 20,
         backgroundColor: '#403f2a',
         margin: 20,

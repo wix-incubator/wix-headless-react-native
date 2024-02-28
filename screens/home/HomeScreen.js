@@ -12,6 +12,7 @@ import {ProductScreen} from "../store/product/ProductScreen";
 import {CheckoutThankYouScreen} from "../store/checkout/CheckoutThankYouScreen";
 import {CartScreen} from "../store/cart/CartScreen";
 import {useEffect} from "react";
+import {ProductsScreen} from "../store/products/ProductsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +24,7 @@ export const HomeScreen = ({navigation}) => {
             }}
         >
             <Stack.Screen name="HomePage" component={HomePage}/>
+            <Stack.Screen name="Products" component={ProductsScreen}/>
             <Stack.Screen
                 name="Product"
                 component={ProductScreen}

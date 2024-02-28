@@ -55,30 +55,37 @@ export const ShopCollectionsHome = ({navigation}) => {
                             <View key={index} style={{
                                 marginVertical: 10,
                             }}>
-                                {item.media?.mainMedia?.image?.url ? (
-                                    <WixMediaImage
-                                        media={item.media.mainMedia.image.url}
-                                        width={screenWidth * 0.8}
-                                        height={screenWidth * 0.8}
-                                    >
-                                        {({url}) => {
-                                            return (
-                                                <ImageCard imageSrc={{
-                                                    uri: url,
-                                                }}
-                                                           title={item.name}
-                                                />
-                                            );
-                                        }}
-                                    </WixMediaImage>) : (
-                                    <ImageCard
-                                        source={{
-                                            uri: `https://via.placeholder.com/${screenWidth / 2}`
-                                        }}
-                                        title={item.name}
+                                <Pressable
+                                    onPress={() => {
+                                        navigation.navigate("Products", {items: item});
+                                    }}>
+                                    {item.media?.mainMedia?.image?.url ? (
+                                        <WixMediaImage
+                                            media={item.media.mainMedia.image.url}
+                                            width={screenWidth * 0.8}
+                                            height={screenWidth * 0.8}
+                                        >
+                                            {({url}) => {
+                                                return (
+                                                    <ImageCard imageSrc={{
+                                                        uri: url,
+                                                    }}
+                                                               title={item.name}
+                                                    />
+                                                );
+                                            }}
+                                        </WixMediaImage>
 
-                                    />)
-                                }
+                                    ) : (
+                                        <ImageCard
+                                            source={{
+                                                uri: `https://via.placeholder.com/${screenWidth / 2}`
+                                            }}
+                                            title={item.name}
+
+                                        />)
+                                    }
+                                </Pressable>
                             </View>
                         );
                     })
