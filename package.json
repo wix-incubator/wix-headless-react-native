@@ -45,7 +45,8 @@
     "react-native-svg": "^14.1.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-webview": "13.6.4",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "expo-auth-session": "~5.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9"
