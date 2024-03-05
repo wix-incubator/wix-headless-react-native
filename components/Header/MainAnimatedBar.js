@@ -1,7 +1,19 @@
 import {Animated} from 'react-native';
 import {Header} from './Header';
+import {useEffect, useState} from "react";
 
-export const MainAnimatedBar = (translateY, navigation) => {
+export const MainAnimatedBar = ({translateY}) => {
+    const [showResults, setShowResults] = useState(false);
+    const [transformY, setTransformY] = useState(translateY);
+
+    useEffect(() => {
+        setTransformY(showResults ? 0 : translateY);
+    }, [showResults, translateY]);
+
+    const handleShowResults = (value) => {
+        setShowResults(value);
+    };
+
     return (
         <Animated.View
             style={{
@@ -17,10 +29,9 @@ export const MainAnimatedBar = (translateY, navigation) => {
                 left: 0,
                 right: 0,
                 zIndex: 1,
-                transform: [{translateY: translateY}],
+                transform: [{translateY: transformY}],
             }}>
-
-            <Header/>
+            <Header handleShowResults={handleShowResults} showResults={showResults}/>
         </Animated.View>
     );
 };

@@ -1,4 +1,4 @@
-import {Animated, Platform, SafeAreaView, ScrollView, StatusBar, View} from "react-native";
+import {Animated, Platform, SafeAreaView, StatusBar, View} from "react-native";
 import {Toast} from "../../components/Toast/Toast";
 import {HeroSection} from "../../components/Hero/HeroSection";
 import {styles} from "../../styles/home/styles";
@@ -13,6 +13,7 @@ import {CheckoutThankYouScreen} from "../store/checkout/CheckoutThankYouScreen";
 import {CartScreen} from "../store/cart/CartScreen";
 import {useEffect} from "react";
 import {ProductsScreen} from "../store/products/ProductsScreen";
+import {DismissKeyboardScrollView} from "../../components/DismissKeyboardHOC/DismissKeyboardScrollView";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,17 +60,17 @@ const HomePage = ({navigation}) => {
         <SafeAreaView
             style={styles.screen}
         >
-            {MainAnimatedBar(translateY, navigation)}
-            <ScrollView style={styles.scrollView}
-                        keyboardShouldPersistTaps="always"
-                        alwaysBounceVertical={false}
-                        bounces={false}
-                        bouncesZoom={false}
-                        showsVerticalScrollIndicator={false}
-                        onScroll={e => {
-                            scrollY.setValue(e.nativeEvent.contentOffset.y);
-                        }}
-                        scrollEventThrottle={16}
+            <MainAnimatedBar translateY={translateY}/>
+            <DismissKeyboardScrollView style={styles.scrollView}
+                                       alwaysBounceVertical={false}
+                                       nestedScrollEnabled={true}
+                                       bounces={false}
+                                       bouncesZoom={false}
+                                       showsVerticalScrollIndicator={false}
+                                       onScroll={e => {
+                                           scrollY.setValue(e.nativeEvent.contentOffset.y);
+                                       }}
+                                       scrollEventThrottle={16}
             >
 
                 <View style={styles.spacer}/>
@@ -79,7 +80,7 @@ const HomePage = ({navigation}) => {
                 <MissionSectionHome/>
                 <FollowUsHome/>
                 <Footer/>
-            </ScrollView>
+            </DismissKeyboardScrollView>
         </SafeAreaView>
     );
 }

@@ -1,8 +1,9 @@
 import React, {useState} from "react";
-import {SafeAreaView, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {Button, HelperText, TextInput} from "react-native-paper";
 import {useLoginHandler} from "../../authentication/LoginHandler";
 import {useWixSession} from "../../authentication/session";
+import {DismissKeyboardSafeAreaView} from "../DismissKeyboardHOC/DismissKeyboardSafeAreaView";
 
 export function LoginForm({navigation, loading, disabled, onWixLogin}) {
     const [email, setEmail] = useState("");
@@ -24,7 +25,7 @@ export function LoginForm({navigation, loading, disabled, onWixLogin}) {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <DismissKeyboardSafeAreaView style={styles.container}>
             <Text style={styles.title}>Login</Text>
             <View style={styles.inputView}>
                 <TextInput
@@ -73,7 +74,7 @@ export function LoginForm({navigation, loading, disabled, onWixLogin}) {
                     Wix Login
                 </Button>
             </View>
-        </SafeAreaView>
+        </DismissKeyboardSafeAreaView>
     );
 }
 
