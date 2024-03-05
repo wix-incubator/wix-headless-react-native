@@ -7,6 +7,7 @@ import {useQuery} from "@tanstack/react-query";
 import {usePreventBackNavigation} from "../../../utils/usePreventBackNavigation";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
+import Routes from "../../../routes/routes";
 
 export function CheckoutThankYouScreen({route, navigation}) {
     usePreventBackNavigation({navigation});
@@ -84,7 +85,7 @@ export function CheckoutThankYouScreen({route, navigation}) {
                     style={{width: "100%"}}
                     mode="elevated"
                     onPress={() => {
-                        navigation.navigate("Products");
+                        navigation.navigate(Routes.Products);
                     }}
                 >
                     Continue Shopping

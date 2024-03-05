@@ -13,6 +13,7 @@ import {NumericInput} from "../../../components/Input/NumericInput";
 import {useWixModules} from "@wix/sdk-react";
 import {inventory} from "@wix/stores";
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
+import Routes from "../../../routes/routes";
 
 export function ProductScreen({route, navigation}) {
     const {product, collectionName} = route.params;
@@ -61,7 +62,7 @@ export function ProductScreen({route, navigation}) {
         },
         {
             onSuccess: (redirectSession) => {
-                navigation.navigate("Checkout", {redirectSession});
+                navigation.navigate(Routes.Checkout, {redirectSession});
             },
         }
     );
@@ -202,7 +203,7 @@ export function ProductScreen({route, navigation}) {
                             label: "View Cart",
                             labelStyle: {color: '#403F2B'},
                             onPress: () => {
-                                navigation.navigate("Cart");
+                                navigation.navigate(Routes.Cart);
                             },
                         }}
                         label

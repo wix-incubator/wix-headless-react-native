@@ -11,9 +11,9 @@ import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {ProductScreen} from "../store/product/ProductScreen";
 import {CheckoutThankYouScreen} from "../store/checkout/CheckoutThankYouScreen";
 import {CartScreen} from "../store/cart/CartScreen";
-import {useEffect} from "react";
+import {useEffect, useRef} from "react";
 import {ProductsScreen} from "../store/products/ProductsScreen";
-import {DismissKeyboardScrollView} from "../../components/DismissKeyboardHOC/DismissKeyboardScrollView";
+import {GestureHandlerRootView, ScrollView} from "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +41,7 @@ export const HomeScreen = ({navigation}) => {
     )
 }
 const HomePage = ({navigation}) => {
+    const searchRef = useRef(null);
     const scrollY = new Animated.Value(0);
     const diffClamp = Animated.diffClamp(scrollY, 0, 200);
     const translateY = diffClamp.interpolate({
@@ -57,30 +58,31 @@ const HomePage = ({navigation}) => {
     }, [navigation]);
 
     return (
-        <SafeAreaView
-            style={styles.screen}
-        >
-            <MainAnimatedBar translateY={translateY}/>
-            <DismissKeyboardScrollView style={styles.scrollView}
-                                       alwaysBounceVertical={false}
-                                       nestedScrollEnabled={true}
-                                       bounces={false}
-                                       bouncesZoom={false}
-                                       showsVerticalScrollIndicator={false}
-                                       onScroll={e => {
-                                           scrollY.setValue(e.nativeEvent.contentOffset.y);
-                                       }}
-                                       scrollEventThrottle={16}
+        <GestureHandlerRootView style={{flex: 1}}>
+            <SafeAreaView
+                style={styles.screen}
             >
+                <MainAnimatedBar translateY={translateY} searchRef={searchRef}/>
+                <ScrollView style={styles.scrollView}
+                            alwaysBounceVertical={false}
+                            bounces={false}
+                            bouncesZoom={false}
+                            showsVerticalScrollIndicator={false}
+                            onScroll={e => {
+                                scrollY.setValue(e.nativeEvent.contentOffset.y);
+                            }}
+                            scrollEventThrottle={16}
+                >
 
-                <View style={styles.spacer}/>
-                <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
-                <HeroSection navigation={navigation}/>
-                <ShopCollectionsHome navigation={navigation}/>
-                <MissionSectionHome/>
-                <FollowUsHome/>
-                <Footer/>
-            </DismissKeyboardScrollView>
-        </SafeAreaView>
+                    <View style={styles.spacer}/>
+                    <Toast message={`Free shipping on all\ninternational orders over 35$ 📦`}/>
+                    <HeroSection navigation={navigation}/>
+                    <ShopCollectionsHome navigation={navigation}/>
+                    <MissionSectionHome/>
+                    <FollowUsHome/>
+                    <Footer/>
+                </ScrollView>
+            </SafeAreaView>
+        </GestureHandlerRootView>
     );
 }

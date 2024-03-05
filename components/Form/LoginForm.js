@@ -4,6 +4,7 @@ import {Button, HelperText, TextInput} from "react-native-paper";
 import {useLoginHandler} from "../../authentication/LoginHandler";
 import {useWixSession} from "../../authentication/session";
 import {DismissKeyboardSafeAreaView} from "../DismissKeyboardHOC/DismissKeyboardSafeAreaView";
+import Routes from "../../routes/routes";
 
 export function LoginForm({navigation, loading, disabled, onWixLogin}) {
     const [email, setEmail] = useState("");
@@ -17,7 +18,7 @@ export function LoginForm({navigation, loading, disabled, onWixLogin}) {
         setError(false);
         try {
             await login(email, password);
-            navigation.navigate("Home");
+            navigation.navigate(Routes.Home);
         } catch (e) {
             setErrorMessage(e.toString());
             setError(true);

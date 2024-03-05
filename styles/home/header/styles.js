@@ -73,13 +73,14 @@ export const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 1,
-        opacity: 1,
         backgroundColor: '#FEFBEF',
         elevation: 0,
         flex: 1,
         borderWidth: 1,
         borderColor: '#403F2B',
+        width: '100%',
         maxHeight: 200,
+        overflow: 'hidden',
     },
     searchResultFont: {
         fontFamily: "Fraunces-Regular",
@@ -91,6 +92,7 @@ export const styles = StyleSheet.create({
         gap: 10,
         padding: 0,
         margin: 0,
+        width: '100%',
     },
     image: {
         backgroundColor: '#f1ede6',

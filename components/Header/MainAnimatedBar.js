@@ -2,7 +2,7 @@ import {Animated} from 'react-native';
 import {Header} from './Header';
 import {useEffect, useState} from "react";
 
-export const MainAnimatedBar = ({translateY}) => {
+export const MainAnimatedBar = ({translateY, searchRef}) => {
     const [showResults, setShowResults] = useState(false);
     const [transformY, setTransformY] = useState(translateY);
 
@@ -31,7 +31,7 @@ export const MainAnimatedBar = ({translateY}) => {
                 zIndex: 1,
                 transform: [{translateY: transformY}],
             }}>
-            <Header handleShowResults={handleShowResults} showResults={showResults}/>
+            <Header handleShowResults={handleShowResults} showResults={showResults} searchRef={searchRef}/>
         </Animated.View>
     );
 };

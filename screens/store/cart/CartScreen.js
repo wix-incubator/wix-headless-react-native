@@ -17,6 +17,7 @@ import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndi
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {CheckoutScreen} from "../checkout/CheckoutScreen";
+import Routes from "../../../routes/routes";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,7 +32,7 @@ const EmptyCart = ({navigation}) => {
         >
             <Text>Your cart is empty</Text>
             <Button
-                onPress={() => navigation.navigate('Collections', {})}
+                onPress={() => navigation.navigate(Routes.Collections, {})}
                 mode="contained"
                 style={{marginTop: 10}}
                 theme={{colors: {primary: '#403f2b'}}}
@@ -148,7 +149,7 @@ function CartView({navigation}) {
         {
             onSuccess: (redirectSession) => {
                 if (!redirectSession) return;
-                navigation.navigate("Checkout", {redirectSession});
+                navigation.navigate(Routes.Checkout, {redirectSession});
                 setCheckoutRedirect(false);
             },
         }
@@ -297,7 +298,7 @@ function CartView({navigation}) {
                                 <Text style={{margin: 10, color: '#403f2b'}}>Subtotal</Text>
                                 <Text style={{margin: 10, color: '#403f2b'}}>{subTotal}</Text>
                             </View>
-                            <Pressable onPress={() => navigation.navigate('Shipping', {})}>
+                            <Pressable onPress={() => navigation.navigate(Routes.Shipping, {})}>
                                 <Text style={{margin: 10, color: '#403f2b', textDecorationLine: 'underline'}}>
                                     Estimated delivery
                                 </Text>

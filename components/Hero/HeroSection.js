@@ -1,6 +1,7 @@
 import React from 'react';
 import {Image, Pressable, Text, View} from 'react-native';
 import {styles} from '../../styles/home/hero/styles';
+import Routes from "../../routes/routes";
 
 export const HeroSection = ({navigation}) => {
     return (
@@ -20,7 +21,7 @@ export const HeroSection = ({navigation}) => {
                 <Text style={styles.heroSubtitle}>Home Essentials for Sustainable Living</Text>
             </View>
             <View style={styles.heroShopNow}>
-                <Pressable style={styles.heroButton} onPress={() => navigation.navigate('Collections')}>
+                <Pressable style={styles.heroButton} onPress={() => navigation.navigate(Routes.Collections)}>
                     <Text style={styles.heroButtonText}>Shop Now</Text>
                 </Pressable>
             </View>

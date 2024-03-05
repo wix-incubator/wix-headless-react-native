@@ -2,25 +2,26 @@ import {HomeScreen} from "../../screens/home/HomeScreen";
 import {StoreScreen} from "../../screens/store/StoreScreen";
 import {CartScreen} from "../../screens/store/cart/CartScreen";
 import {MemberAreaScreen} from "../../screens/members/MemberAreaScreen/MemberAreaScreen";
+import Routes from "../../routes/routes";
 
 export const tabs = [
     {
-        name: "Home",
+        name: Routes.Home,
         component: HomeScreen,
         icon: 'home-outline'
     },
     {
-        name: "Collections",
+        name: Routes.Store,
         component: StoreScreen,
         icon: 'view-grid-outline'
     },
     {
-        name: "Members Area",
+        name: Routes.Profile,
         component: MemberAreaScreen,
         icon: 'account-outline'
     },
     {
-        name: "Cart",
+        name: Routes.Cart,
         component: CartScreen,
         icon: 'cart-outline'
     }

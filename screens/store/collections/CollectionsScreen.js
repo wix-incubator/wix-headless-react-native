@@ -10,6 +10,7 @@ import {ProductScreen} from "../product/ProductScreen";
 import {CheckoutThankYouScreen} from "../checkout/CheckoutThankYouScreen";
 import {CartScreen} from "../cart/CartScreen";
 import {ProductsScreen} from "../products/ProductsScreen";
+import Routes from "../../../routes/routes";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,7 +53,7 @@ export const Collections = ({navigation}) => {
     }
 
     const collectionPressHandler = (items) => {
-        navigation.navigate("Products", {items});
+        navigation.navigate(Routes.Products, {items});
     }
 
     return (
