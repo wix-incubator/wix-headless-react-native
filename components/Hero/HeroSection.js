@@ -1,11 +1,23 @@
 import React from 'react';
-import {Image, Pressable, Text, View} from 'react-native';
+import {Dimensions, Image, Pressable, StatusBar, Text, View} from 'react-native';
 import {styles} from '../../styles/home/hero/styles';
 import Routes from "../../routes/routes";
 
+const windowHeight = Dimensions.get('window').height;
+
 export const HeroSection = ({navigation}) => {
+    const [height, setHeight] = React.useState(0);
+
     return (
-        <View style={styles.heroSection}>
+        <View style={[styles.heroSection, {
+            height: windowHeight - height,
+        }]}
+              onLayout={(event) => {
+                  const {y} = event.nativeEvent.layout;
+                  const bottomTabHeight = windowHeight * 0.1;
+                  setHeight(y + bottomTabHeight - StatusBar.currentHeight);
+              }}
+        >
             <View style={styles.heroImageContainer}>
                 <Image
                     source={{

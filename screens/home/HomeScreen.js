@@ -7,24 +7,9 @@ import {ShopCollectionsHome} from "../../components/ShopCollectionsHome/ShopColl
 import {MissionSectionHome} from "../../components/MissionSectionHome/MissionSectionHome";
 import {FollowUsHome} from "../../components/FollowUsHome/FollowUsHome";
 import {Footer} from "../../components/Footer/Footer";
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {useEffect, useRef} from "react";
 import {GestureHandlerRootView, ScrollView} from "react-native-gesture-handler";
 
-const Stack = createNativeStackNavigator();
-
-// export const HomeScreen = ({navigation}) => {
-//     return (
-//         <Stack.Navigator
-//             screenOptions={{
-//                 headerShown: false
-//             }}
-//         >
-//             <Stack.Screen name="HomePage" component={HomePage}/>
-//             <Stack.Screen name="Store" component={StoreScreen}/>
-//         </Stack.Navigator>
-//     )
-// }
 export const HomeScreen = ({navigation}) => {
     const searchRef = useRef(null);
     const scrollY = new Animated.Value(0);

@@ -44,7 +44,6 @@ function App() {
                     <WixSessionProvider clientId={clientId}>
                         <LoginHandler loginType={'custom'}>
                             <NavigationContainer
-
                                 linking={{
                                     prefixes: [Linking.createURL("/")],
                                     config: {
