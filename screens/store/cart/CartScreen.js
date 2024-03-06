@@ -20,6 +20,7 @@ import {CheckoutScreen} from "../checkout/CheckoutScreen";
 import Routes from "../../../routes/routes";
 import {styles} from "../../../styles/store/cart/styles";
 import {useNavigation} from "@react-navigation/native";
+import {CheckoutThankYouScreen} from "../checkout/CheckoutThankYouScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -357,6 +358,7 @@ export function CartScreen({navigation}) {
         >
             <Stack.Screen name="CartView" component={CartView}/>
             <Stack.Screen name="Checkout" component={CheckoutScreen}/>
+            <Stack.Screen name="CheckoutThankYou" component={CheckoutThankYouScreen}/>
         </Stack.Navigator>
     )
 }

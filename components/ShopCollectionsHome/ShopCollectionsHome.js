@@ -81,8 +81,12 @@ export const ShopCollectionsHome = ({navigation}) => {
                             }}>
                                 <Pressable
                                     onPress={() => {
-                                        navigation.navigate(Routes.Products, {items: item});
-                                    }}>
+                                        navigation.navigate(Routes.Store, {
+                                            screen: Routes.Products,
+                                            params: {items: item}
+                                        });
+                                    }}
+                                >
                                     {item.media?.mainMedia?.image?.url ? (
                                         <WixMediaImage
                                             media={item.media.mainMedia.image.url}
@@ -134,9 +138,12 @@ export const ShopCollectionsHome = ({navigation}) => {
                             >
                                 <Pressable
                                     onPress={() => {
-                                        navigation.navigate(Routes.Product, {
-                                            product: filteredProducts[index],
-                                            collectionName: filteredProducts[index].name
+                                        navigation.navigate(Routes.Store, {
+                                            screen: Routes.Product,
+                                            params: {
+                                                product: filteredProducts[index],
+                                                collectionName: filteredProducts[index].name
+                                            }
                                         });
                                     }}
                                 >

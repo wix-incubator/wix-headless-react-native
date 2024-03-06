@@ -54,19 +54,10 @@ function App() {
                                                     CheckoutThankYou: "checkout/thank-you",
                                                     Cart: "cart",
                                                     Products: "products",
+                                                    Product: "products/product",
                                                     Collections: "collections",
                                                 },
                                             },
-                                            Home: {
-                                                path: "home",
-                                                screens: {
-                                                    Home: "home",
-                                                    CheckoutThankYou: "checkout/thank-you",
-                                                    Cart: "cart",
-                                                    Products: "products",
-                                                    Collections: "collections",
-                                                },
-                                            }
                                         },
                                     },
                                 }}
