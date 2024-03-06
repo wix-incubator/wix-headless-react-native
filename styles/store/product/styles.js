@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     },
     flexGrow1Button: {
         flexGrow: 1,
-        marginTop: 20,
+        marginVertical: 20,
         // backgroundColor: '#403f2a',
     },
     flexJustifyCenter: {
@@ -58,5 +58,11 @@ export const styles = StyleSheet.create({
         justifyContent: "flex-start",
         alignContent: "flex-start",
         alignItems: "flex-start",
+    },
+    variantsContainer: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center",
     },
 });
