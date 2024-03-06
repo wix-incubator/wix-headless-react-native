@@ -22,9 +22,11 @@ export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY}) => {
             renderItem={({item, index}) => {
                 return (
                     <View style={styles.container}>
-                        <Pressable onPress={() => {
-                            onPress(item)
-                        }}>
+                        <Pressable
+                            style={styles.card}
+                            onPress={() => {
+                                onPress(item)
+                            }}>
                             <WixMediaImage
                                 media={item.media.mainMedia.image.url}
                                 width={screenWidth / 2 - 20}
@@ -45,7 +47,9 @@ export const ProductsGrid = ({navigation, data, onPress, scrollOffsetY}) => {
                                 }}
                             </WixMediaImage>
                             <Text style={styles.title}>{item.name}</Text>
-                            <Text style={styles.title}>{item.convertedPriceData?.formatted?.price}</Text>
+                            <View style={styles.priceContainer}>
+                                <Text style={styles.title}>{item.convertedPriceData?.formatted?.price}</Text>
+                            </View>
                         </Pressable>
                     </View>
                 )
@@ -60,9 +64,13 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 25,
         elevation: 0,
-        textAlign: 'left',
         width: '100%',
         paddingBottom: 20,
+    },
+    card: {
+        flex: 1,
+        width: '100%',
+        height: '100%'
     },
     image: {
         borderRadius: 25,
@@ -74,4 +82,12 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         color: '#333',
     },
+    priceContainer: {
+        flexDirection: 'row',
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
+    }
 });
