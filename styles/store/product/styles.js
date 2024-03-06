@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
     flexGrow1Button: {
         flexGrow: 1,
         marginTop: 20,
-        backgroundColor: '#403f2a',
+        // backgroundColor: '#403f2a',
     },
     flexJustifyCenter: {
         marginTop: 20,
