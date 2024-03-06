@@ -1,7 +1,7 @@
 import {Dimensions, Image, Linking, Pressable, Text, View} from "react-native";
-import {styles} from "../../styles/home/followus/styles";
+import {styles} from "../../styles/home/follow-us/styles";
 import Carousel from "react-native-reanimated-carousel";
-import {data} from "../../data/followus/data";
+import {data} from "../../data/followUs/data";
 import {useCallback} from "react";
 
 export const FollowUsHome = (callback, deps) => {

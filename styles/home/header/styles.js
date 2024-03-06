@@ -77,6 +77,7 @@ export const styles = StyleSheet.create({
         elevation: 0,
         flex: 1,
         borderWidth: 1,
+        borderTopWidth: 0,
         borderColor: '#403F2B',
         width: '100%',
         maxHeight: 200,
@@ -93,6 +94,12 @@ export const styles = StyleSheet.create({
         padding: 0,
         margin: 0,
         width: '100%',
+    },
+    productName: {
+        fontFamily: "Fraunces-Regular",
+        fontSize: 16,
+        color: '#403F2B',
+        flexShrink: 1,
     },
     image: {
         backgroundColor: '#f1ede6',

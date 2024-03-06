@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {Appbar, List, Searchbar} from 'react-native-paper';
-import {Image, Text, View} from 'react-native';
+import {Appbar, Divider, List, Searchbar, Text} from 'react-native-paper';
+import {Image, View} from 'react-native';
 import {styles} from '../../styles/home/header/styles';
 import {useWixModules} from "@wix/sdk-react";
 import {useQuery} from "@tanstack/react-query";
@@ -33,6 +33,7 @@ const HeaderContent = ({handleShowResults, showResults, searchRef}) => {
 
 
     const redirectToProduct = (product) => {
+        handleShowResults(false);
         navigation.navigate(Routes.Product, {product, collectionName: product.name})
     };
     return (
@@ -50,16 +51,18 @@ const HeaderContent = ({handleShowResults, showResults, searchRef}) => {
                     showDivider={false}
                     elevation={0}
                     ref={searchRef}
-                    onFocus={() => {
-                        handleShowResults(true);
-                    }}
                     scrollEnabled={true}
                     nestedScrollEnabled={true}
+                    onFocus={() => {
+                        handleShowResults(true);
+                        searchRef?.current?.focus();
+                    }}
                     onBlur={() => {
                         handleShowResults(searchQuery.length > 0);
+                        searchRef?.current?.blur();
                     }}
                     onClearIconPress={() => {
-                        handleShowResults(false);
+                        !searchRef?.current?.isFocused() && handleShowResults(false);
                     }}
                 />
                 {showResults && (!productsResponse.isLoading && productsResponse?.data?.items ?
@@ -68,38 +71,43 @@ const HeaderContent = ({handleShowResults, showResults, searchRef}) => {
                                         nestedScrollEnabled={true}
                             >
                                 {filteredProducts.length > 0 ? filteredProducts.map((product, i) => (
-                                        <List.Item
-                                            key={i}
-                                            title={
-                                                <View
-                                                    style={styles.searchResultItem}
-                                                >
-                                                    <View style={{flex: 1}}>
-                                                        <WixMediaImage
-                                                            media={product.media.mainMedia.image.url}
-                                                            width={100}
-                                                            height={100}
-                                                        >
-                                                            {({url}) => {
-                                                                return (
-                                                                    <Image
-                                                                        style={{
-                                                                            width: 30,
-                                                                            height: 30,
-                                                                        }}
-                                                                        source={{
-                                                                            uri: url,
-                                                                        }}
-                                                                    />
-                                                                );
-                                                            }}
-                                                        </WixMediaImage>
+                                        <View key={i}>
+                                            <List.Item
+                                                key={i}
+                                                title={
+                                                    <View
+                                                        style={styles.searchResultItem}
+                                                    >
+                                                        <View>
+                                                            <WixMediaImage
+                                                                media={product.media.mainMedia.image.url}
+                                                                width={100}
+                                                                height={100}
+                                                            >
+                                                                {({url}) => {
+                                                                    return (
+                                                                        <Image
+                                                                            style={[styles.image, {
+                                                                                width: 30,
+                                                                                height: 30,
+                                                                            }]}
+                                                                            source={{
+                                                                                uri: url,
+                                                                            }}
+                                                                        />
+                                                                    );
+                                                                }}
+                                                            </WixMediaImage>
+                                                        </View>
+                                                        <Text style={styles.productName}
+                                                              numberOfLines={null}>{product.name}</Text>
                                                     </View>
-                                                    <Text>{product.name}</Text>
-                                                </View>
-                                            }
-                                            onPress={redirectToProduct.bind(this, product)}
-                                        />
+                                                }
+                                                onPress={redirectToProduct.bind(this, product)}
+                                            />
+                                            {i < filteredProducts.length - 1 &&
+                                                <Divider style={{backgroundColor: '#ccc', opacity: 0.6}}/>}
+                                        </View>
                                     )
                                 ) : <List.Item
                                     titleStyle={styles.searchResultItem}

@@ -10,9 +10,9 @@ import {useRef} from "react";
 import {LoadingIndicator} from "../LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../ErrorView/ErrorView";
 import {WixMediaImage} from "../../WixMediaImage";
-import {data as ProductData} from "../../data/defaultProducts/data";
-import {data as CollectionData} from "../../data/defaultCollections/data";
-import {NEW_COLLECTION_SLUG} from "@env";
+import {data as StaticProductsData} from "../../data/staticdProductsData/data";
+import {data as StaticCollectionsData} from "../../data/staticCollectionsData/data";
+import {DISPLAY_COLLECTIONS_SLUGS, NEW_COLLECTION_SLUG} from "@env";
 import Routes from "../../routes/routes";
 
 const screenWidth = Dimensions.get('window').width;
@@ -43,28 +43,38 @@ export const ShopCollectionsHome = ({navigation}) => {
         carouselRef.current?.prev();
     }
     const shopCollections = [...collectionsResponse.data.items];
-    const firstThreeCollections = shopCollections.length >= 0 ?
-        shopCollections.slice(0, Math.min(3, shopCollections.length)).map(collection => {
-                switch (collection.slug.toLowerCase()) {
-                    case NEW_COLLECTION_SLUG:
-                        return shopCollections[4] || collection;
-                    case "all-products":
-                        return shopCollections[3] || collection;
-                    default:
-                        return collection;
-                }
-            }
-        ) : CollectionData.items;
+    const preferredCollections = DISPLAY_COLLECTIONS_SLUGS.split(' ').map(slug => slug.toLowerCase());
+    const displayedCollections =
+        preferredCollections.length > 0 ?
+            shopCollections
+                .filter(collection => preferredCollections.includes(collection.slug.toLowerCase()))
+                .sort((a, b) =>
+                    preferredCollections.indexOf(a.slug.toLowerCase()) - preferredCollections.indexOf(b.slug.toLowerCase()))
+
+            :
+            shopCollections.length >= 0 ?
+                shopCollections.slice(0, Math.min(3, shopCollections.length)).map(collection => {
+                        switch (collection.slug.toLowerCase()) {
+                            case NEW_COLLECTION_SLUG:
+                                return shopCollections[4] || collection;
+                            case "all-products":
+                                return shopCollections[3] || collection;
+                            default:
+                                return collection;
+                        }
+                    }
+                ) :
+                StaticCollectionsData.items;
 
     const newInCollection = shopCollections.find(collection => collection.slug === NEW_COLLECTION_SLUG);
-    const newProducts = [...productsResponse.data.items].filter((product) => product.collectionIds.includes(newInCollection._id));
-    const filteredProducts = newProducts.length > 0 ? newProducts : ProductData.items;
+    const newProducts = [...productsResponse.data.items].filter((product) => product.collectionIds.includes(newInCollection?._id));
+    const filteredProducts = newProducts.length > 0 ? newProducts : StaticProductsData.items;
     return (
         <View style={styles.view}>
             <Text style={styles.title}>Shop Collections</Text>
             <View style={styles.collections}>
                 {
-                    firstThreeCollections.map((item, index) => {
+                    displayedCollections.map((item, index) => {
                         return (
                             <View key={index} style={{
                                 marginVertical: 10,

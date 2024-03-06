@@ -19,6 +19,7 @@ export const styles = StyleSheet.create({
         marginBottom: 10,
         color: '#403F2B',
         fontFamily: 'Fraunces-Regular',
+        textAlign: 'center',
     },
     missionText: {
         fontSize: 16,

@@ -21,7 +21,7 @@ export const HeroSection = ({navigation}) => {
                 <Text style={styles.heroSubtitle}>Home Essentials for Sustainable Living</Text>
             </View>
             <View style={styles.heroShopNow}>
-                <Pressable style={styles.heroButton} onPress={() => navigation.navigate(Routes.Collections)}>
+                <Pressable style={styles.heroButton} onPress={() => navigation.navigate(Routes.Store)}>
                     <Text style={styles.heroButtonText}>Shop Now</Text>
                 </Pressable>
             </View>

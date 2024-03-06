@@ -2,7 +2,7 @@ import {checkout, currentCart} from "@wix/ecom";
 import {redirects} from "@wix/redirects";
 import * as Linking from "expo-linking";
 import * as React from "react";
-import {Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
+import {Pressable, ScrollView, Text, useWindowDimensions, View,} from "react-native";
 import {Button, Card, IconButton, List, Portal, Snackbar, useTheme,} from "react-native-paper";
 import RenderHtml from "react-native-render-html";
 import {usePrice} from "../price";
@@ -14,6 +14,7 @@ import {useWixModules} from "@wix/sdk-react";
 import {inventory} from "@wix/stores";
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 import Routes from "../../../routes/routes";
+import {styles} from "../../../styles/store/product/styles";
 
 export function ProductScreen({route, navigation}) {
     const {product, collectionName} = route.params;
@@ -216,64 +217,3 @@ export function ProductScreen({route, navigation}) {
         </SimpleContainer>
     );
 }
-
-const styles = StyleSheet.create({
-    backContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 20
-    },
-    backButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: '100%'
-    },
-    backButtonText: {
-        textAlign: "center",
-        fontSize: 15
-    },
-    card: {
-        marginHorizontal: 20,
-        flex: 1,
-        height: '100%',
-    },
-    cardImage: {
-        marginHorizontal: 20,
-        height: 400,
-        borderRadius: 0
-    },
-    productSku: {
-        margin: 0,
-        padding: 0
-    },
-    productTitle: {
-        fontFamily: "Fraunces-Regular",
-        fontSize: 40,
-        paddingTop: 40
-    },
-    container: {
-        flex: 1,
-        height: '100%',
-    },
-    content: {
-        paddingHorizontal: 1,
-    },
-    flexGrow1Button: {
-        flexGrow: 1,
-        marginTop: 20,
-        backgroundColor: '#403f2a',
-    },
-    flexJustifyCenter: {
-        marginTop: 20,
-        justifyContent: "center",
-        alignContent: "center",
-        alignItems: "center",
-    },
-    flexJustifyStart: {
-        marginTop: 20,
-        justifyContent: "flex-start",
-        alignContent: "flex-start",
-        alignItems: "flex-start",
-    },
-});

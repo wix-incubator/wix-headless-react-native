@@ -7,7 +7,7 @@ import Vegan from "../../Icons/Vegan";
 import Recycled from "../../Icons/Recycled";
 import FairTrade from "../../Icons/FairTrade";
 
-export const MissionSectionHome = (props) => {
+export const MissionSectionHome = () => {
     return (
         <View style={styles.view}>
             <Text style={styles.missionTitle}>The Re.vert Mission</Text>

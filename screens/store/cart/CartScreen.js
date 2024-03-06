@@ -3,7 +3,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {checkout, currentCart} from "@wix/ecom";
 import {useWixSessionModules} from "../../../authentication/session";
 import {Button, Surface, useTheme,} from "react-native-paper";
-import {Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Pressable, RefreshControl, ScrollView, Text, View} from "react-native";
 import {usePrice} from "../price";
 import {redirects} from "@wix/redirects";
 import {useWixModules} from "@wix/sdk-react";
@@ -18,10 +18,13 @@ import {ErrorView} from "../../../components/ErrorView/ErrorView";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import {CheckoutScreen} from "../checkout/CheckoutScreen";
 import Routes from "../../../routes/routes";
+import {styles} from "../../../styles/store/cart/styles";
+import {useNavigation} from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
-const EmptyCart = ({navigation}) => {
+const EmptyCart = () => {
+    const navigation = useNavigation();
     return (
         <View
             style={{
@@ -32,7 +35,7 @@ const EmptyCart = ({navigation}) => {
         >
             <Text>Your cart is empty</Text>
             <Button
-                onPress={() => navigation.navigate(Routes.Collections, {})}
+                onPress={() => navigation.navigate(Routes.Store, {})}
                 mode="contained"
                 style={{marginTop: 10}}
                 theme={{colors: {primary: '#403f2b'}}}
@@ -93,7 +96,7 @@ function CartItem({item, currency}) {
     );
 }
 
-function CartView({navigation}) {
+function CartView() {
     const [userNote, setUserNote] = React.useState('');
     const [userDiscount, setUserDiscount] = React.useState('');
     const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
@@ -102,6 +105,7 @@ function CartView({navigation}) {
     const {updateCheckout} = useWixModules(checkout);
     const {createRedirectSession} = useWixSessionModules(redirects);
     const theme = useTheme();
+    const navigation = useNavigation();
 
     const currentCartQuery = useQuery(["currentCart"], () => {
         try {
@@ -184,7 +188,7 @@ function CartView({navigation}) {
                             />
                         }
                     >
-                        <EmptyCart navigation={navigation}/>
+                        <EmptyCart/>
                     </ScrollView>
                 </SimpleContainer>
             );
@@ -347,7 +351,8 @@ export function CartScreen({navigation}) {
     return (
         <Stack.Navigator
             screenOptions={{
-                headerShown: false
+                headerShown: false,
+                animation: "ios",
             }}
         >
             <Stack.Screen name="CartView" component={CartView}/>
@@ -355,16 +360,3 @@ export function CartScreen({navigation}) {
         </Stack.Navigator>
     )
 }
-
-const styles = StyleSheet.create({
-    checkoutButton: {
-        marginTop: 20,
-        backgroundColor: '#403f2a',
-        margin: 20,
-    },
-    checkoutButtonText: {
-        color: '#fdfbef',
-        fontSize: 18,
-        textAlign: 'center',
-    }
-});

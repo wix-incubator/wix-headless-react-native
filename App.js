@@ -44,6 +44,7 @@ function App() {
                     <WixSessionProvider clientId={clientId}>
                         <LoginHandler loginType={'custom'}>
                             <NavigationContainer
+
                                 linking={{
                                     prefixes: [Linking.createURL("/")],
                                     config: {
@@ -54,9 +55,19 @@ function App() {
                                                     CheckoutThankYou: "checkout/thank-you",
                                                     Cart: "cart",
                                                     Products: "products",
-                                                    Collections: "collections"
+                                                    Collections: "collections",
                                                 },
                                             },
+                                            Home: {
+                                                path: "home",
+                                                screens: {
+                                                    Home: "home",
+                                                    CheckoutThankYou: "checkout/thank-you",
+                                                    Cart: "cart",
+                                                    Products: "products",
+                                                    Collections: "collections",
+                                                },
+                                            }
                                         },
                                     },
                                 }}
@@ -72,6 +83,7 @@ function App() {
                                         },
                                         tabBarHideOnKeyboard: true,
                                     })}
+                                    initialRouteName={tabs[0].name}
                                     tabBar={(props) => <TabBar {...props} />}
                                 >
                                     {tabs.map((tab) => (

@@ -1,9 +1,9 @@
 import * as React from "react";
 import {useRef} from "react";
 import {WebView} from "react-native-webview";
-import {StyleSheet} from "react-native";
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {styles} from "../../../styles/store/checkout/checkout-screen/styles";
 
 export function CheckoutScreen({navigation, route}) {
     const {redirectSession} = route.params;
@@ -41,9 +41,3 @@ export function CheckoutScreen({navigation, route}) {
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-});
