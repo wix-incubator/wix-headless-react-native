@@ -5,7 +5,8 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "format": "prettier . --write"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.5.11",
@@ -22,6 +23,7 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "date-fns": "^3.3.1",
     "expo": "^50.0.6",
+    "expo-auth-session": "~5.4.0",
     "expo-crypto": "^12.8.0",
     "expo-font": "^11.10.2",
     "expo-linking": "^6.2.2",
@@ -45,11 +47,11 @@
     "react-native-svg": "^14.1.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-webview": "13.6.4",
-    "validator": "^13.11.0",
-    "expo-auth-session": "~5.4.0"
+    "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9"
+    "@babel/core": "^7.23.9",
+    "prettier": "3.2.5"
   },
   "private": true
 }

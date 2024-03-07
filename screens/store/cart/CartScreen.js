@@ -69,7 +69,7 @@ function CartItem({ item, currency }) {
       onSuccess: (response) => {
         queryClient.setQueryData(["currentCart"], response.cart);
       },
-    }
+    },
   );
 
   const removeMutation = useMutation(
@@ -80,7 +80,7 @@ function CartItem({ item, currency }) {
       onSuccess: (response) => {
         queryClient.setQueryData(["currentCart"], response.cart);
       },
-    }
+    },
   );
   return (
     <CartListItem
@@ -124,7 +124,7 @@ function CartView() {
     async () => {
       setCheckoutRedirect(true);
       let currentCheckout = await createCheckoutFromCurrentCart(
-        currentCart.ChannelType.OTHER_PLATFORM
+        currentCart.ChannelType.OTHER_PLATFORM,
       );
       if (userNote !== "") {
         currentCheckout.buyerNote = userNote;
@@ -140,7 +140,7 @@ function CartView() {
             currentCheckout,
             {
               couponCode: userDiscount,
-            }
+            },
           );
         } catch (e) {
           setTriggerInvalidCoupon(true);
@@ -164,7 +164,7 @@ function CartView() {
         navigation.navigate(Routes.Checkout, { redirectSession });
         setCheckoutRedirect(false);
       },
-    }
+    },
   );
 
   if (currentCartQuery.isLoading) {

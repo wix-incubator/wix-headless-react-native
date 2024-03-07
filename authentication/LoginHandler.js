@@ -26,7 +26,7 @@ export function LoginHandler(props) {
   const silentLogin = React.useCallback(
     async (sessionToken) => {
       const data = auth.generateOAuthData(
-        Linking.createURL("/wix/oauth/callback")
+        Linking.createURL("/wix/oauth/callback"),
       );
       const { authUrl } = await auth.getAuthUrl(data, {
         prompt: "none",
@@ -37,7 +37,7 @@ export function LoginHandler(props) {
         data,
       });
     },
-    [auth, setSessionLoading]
+    [auth, setSessionLoading],
   );
 
   const login = React.useCallback(
@@ -60,7 +60,7 @@ export function LoginHandler(props) {
       }
       await silentLogin(result.data.sessionToken);
     },
-    [auth, setSessionLoading]
+    [auth, setSessionLoading],
   );
 
   React.useEffect(() => {
@@ -106,7 +106,7 @@ function LoginHandlerInvisibleWebview(props) {
           ) {
             const { code, state } = auth.parseFromUrl(
               request.url,
-              props.loginState.data
+              props.loginState.data,
             );
             auth
               .getMemberTokens(code, state, props.loginState.data)
@@ -164,7 +164,7 @@ export function useLoginByWixManagedPages() {
     },
     {
       authorizationEndpoint,
-    }
+    },
   );
 
   React.useEffect(() => {
@@ -182,7 +182,7 @@ export function useLoginByWixManagedPages() {
         },
         {
           tokenEndpoint: "https://www.wixapis.com/oauth2/token",
-        }
+        },
       )
         .then((response) => {
           if (!aborted) {
