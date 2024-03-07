@@ -6,7 +6,7 @@ import {Pressable, ScrollView, useWindowDimensions, View,} from "react-native";
 import {Button, Card, IconButton, List, Portal, Snackbar, Text, useTheme,} from "react-native-paper";
 import RenderHtml from "react-native-render-html";
 import {usePrice} from "../price";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useWixSessionModules} from "../../../authentication/session";
 import {WixMediaImage} from "../../../WixMediaImage";
 import {NumericInput} from "../../../components/Input/NumericInput";
@@ -14,6 +14,9 @@ import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 import Routes from "../../../routes/routes";
 import {styles} from "../../../styles/store/product/styles";
 import {isNumber} from "lodash";
+import {useWixModules} from "@wix/sdk-react";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {inventory} from "@wix/stores";
 
 export function ProductScreen({route, navigation}) {
     const {product, collectionName} = route.params;
@@ -115,9 +118,15 @@ export function ProductScreen({route, navigation}) {
     const onQuantityChanged = (val) => {
         setQuantity(val);
     }
-    const inventoryQuantity = product?.stock?.quantity;
-    const inStock = product?.stock?.inventoryStatus === "IN_STOCK"
-        || (isNumber(inventoryQuantity) && inventoryQuantity > 0);
+    const prodInventoryId = product?.inventoryItemId;
+    const {getInventoryVariants} = useWixModules(inventory);
+    const inventoryVariantsResponse = useQuery(["inventoryVariants", prodInventoryId], () =>
+        getInventoryVariants(prodInventoryId)
+    );
+
+    const inventoryQuantity = inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.quantity;
+    const inStock = inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.inStock
+        && (!isNumber(inventoryQuantity) || inventoryQuantity > 0)
 
     const addToCartHandler = () => {
         !addToCurrentCartMutation.isLoading ? addToCurrentCartMutation.mutateAsync(quantity) : {}
@@ -149,37 +158,39 @@ export function ProductScreen({route, navigation}) {
                                                 subtitleStyle={styles.productSku}/>}
                     <Card.Title title={product.name} subtitle={price}
                                 titleStyle={styles.productTitle}/>
-                    <Card.Content>
-                        <View style={styles.flexJustifyStart}>
-                            <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
-                            {inStock ? (<NumericInput
-                                    value={1}
-                                    onChange={onQuantityChanged}
-                                    min={1}
-                                    max={inventoryQuantity}
-                                    style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
-                                />) :
-                                (<Text style={{color: "#B22D1D"}}>Out of Stock</Text>
-                                )}
-                        </View>
+                    {!inventoryVariantsResponse.isLoading ? (<Card.Content>
+                            <View style={styles.flexJustifyStart}>
+                                <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
+                                {inStock ? (<NumericInput
+                                        value={1}
+                                        onChange={onQuantityChanged}
+                                        min={1}
+                                        max={inventoryQuantity}
+                                        style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
+                                    />) :
+                                    (<Text style={{color: "#B22D1D"}}>Out of Stock</Text>
+                                    )}
+                            </View>
 
-                        <Button
-                            mode="contained"
-                            onPress={addToCartHandler}
-                            loading={addToCurrentCartMutation.isLoading}
-                            style={
-                                [styles.flexGrow1Button,
-                                    {backgroundColor: !inStock ? theme.colors.surfaceDisabled : '#403f2a'}
-                                ]
-                            }
-                            buttonColor={theme.colors.secondary}
-                            disabled={!inStock}
-                        >
-                            Add to Cart
-                        </Button>
-                        <RenderHtml style={styles.flexJustifyStart} source={{html: description}}
-                                    contentWidth={width}/>
-                    </Card.Content>
+                            <Button
+                                mode="contained"
+                                onPress={addToCartHandler}
+                                loading={addToCurrentCartMutation.isLoading}
+                                style={
+                                    [styles.flexGrow1Button,
+                                        {backgroundColor: !inStock ? theme.colors.surfaceDisabled : '#403f2a'}
+                                    ]
+                                }
+                                buttonColor={theme.colors.secondary}
+                                disabled={!inStock}
+                            >
+                                Add to Cart
+                            </Button>
+                            <RenderHtml style={styles.flexJustifyStart} source={{html: description}}
+                                        contentWidth={width}/>
+                        </Card.Content>)
+                        : <LoadingIndicator/>
+                    }
                 </Card>
 
                 {product.additionalInfoSections.map((section) => (

@@ -11,7 +11,7 @@ import * as Linking from "expo-linking";
 import {CartListItem} from "../../../components/List/CartListItem";
 import {InputPrefix} from "../../../components/Input/InputPrefix";
 import {PrefixText} from "../../../components/PrefixText/PrefixText";
-import _ from 'lodash';
+import _, {isInteger} from 'lodash';
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
@@ -55,6 +55,10 @@ function CartItem({item, currency}) {
 
     const updateQuantityMutation = useMutation(
         async (quantity) => {
+            quantity <= 0 ? quantity = 1 : quantity;
+            if (isInteger(quantity) === false) {
+                quantity = Math.round(quantity);
+            }
             return updateCurrentCartLineItemQuantity([
                 {
                     _id: item._id,
@@ -88,7 +92,7 @@ function CartItem({item, currency}) {
             })}
             image={item.image}
             quantity={item.quantity}
-            quantityOnEdit={!updateQuantityMutation.isLoading}
+            quantityOnEdit={updateQuantityMutation.isLoading}
             quantityHandlerChange={(quantity) =>
                 updateQuantityMutation.mutateAsync(quantity)
             }
