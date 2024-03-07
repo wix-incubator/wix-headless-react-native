@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Button, HelperText, TextInput } from "react-native-paper";
 import { useLoginHandler } from "../../authentication/LoginHandler";
 import { useWixSession } from "../../authentication/session";
+import { DismissKeyboardSafeAreaView } from "../DismissKeyboardHOC/DismissKeyboardSafeAreaView";
+import Routes from "../../routes/routes";
 
 export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
   const [email, setEmail] = useState("");
@@ -16,7 +18,7 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
     setError(false);
     try {
       await login(email, password);
-      navigation.navigate("Home");
+      navigation.navigate(Routes.Home);
     } catch (e) {
       setErrorMessage(e.toString());
       setError(true);
@@ -24,7 +26,7 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <DismissKeyboardSafeAreaView style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <View style={styles.inputView}>
         <TextInput
@@ -62,14 +64,11 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
         >
           Login
         </Button>
-        {!sessionLoading && error && (
+        {!sessionLoading && (
           <HelperText type="error" visible={error}>
             {errorMessage}
           </HelperText>
         )}
-        <Text style={{ textAlign: "center", color: "blue" }}>
-          Forgot your password?
-        </Text>
         <Text style={{ textAlign: "center", color: "#403F2B" }}>
           Or login with Wix Managed Login
         </Text>
@@ -85,7 +84,7 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
           Wix Managed Login
         </Button>
       </View>
-    </SafeAreaView>
+    </DismissKeyboardSafeAreaView>
   );
 }
 

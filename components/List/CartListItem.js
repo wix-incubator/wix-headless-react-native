@@ -2,9 +2,17 @@ import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import NumericInput from "react-native-numeric-input";
 import {WixMediaImage} from "../../WixMediaImage";
-import {IconButton} from "react-native-paper";
+import {ActivityIndicator, IconButton} from "react-native-paper";
 
 export const CartListItem = ({image, name, price, quantity, quantityOnEdit, quantityHandlerChange, removeHandler}) => {
+    const [isFocused, setIsFocused] = React.useState(false);
+    const [newQuantity, setNewQuantity] = React.useState(quantity);
+    const [quantityError, setQuantityError] = React.useState(
+        {
+            isError: false,
+            message: ""
+        }
+    );
     return (
         <View style={{width: '100%'}}>
             <View style={styles.card}>
@@ -38,23 +46,65 @@ export const CartListItem = ({image, name, price, quantity, quantityOnEdit, quan
                     justifyContent: 'space-around',
                     width: '100%',
                 }}>
+                    {quantityOnEdit &&
+                        <View style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: -10,
+                            width: '100%',
+                            height: '100%',
+                            zIndex: 100
+                        }}>
+                            <ActivityIndicator
+                                style={{
+                                    flex: 1,
+                                    flexDirection: 'row',
+                                    justifyContent: 'flex-start',
+                                    alignItems: 'center'
+                                }}/>
+                        </View>
+                    }
                     <NumericInput
-                        value={quantity}
+                        initValue={newQuantity}
+                        value={newQuantity}
                         totalWidth={100}
-                        editable={quantityOnEdit}
-                        onChange={(quantity) =>
-                            quantityHandlerChange(quantity)
-                        }
+                        valueType='integer'
+                        onBlur={() => {
+                            setIsFocused(false)
+                            if (!newQuantity || newQuantity < 1) {
+                                setQuantityError({isError: true, message: "Quantity must be at least 1"})
+                                setNewQuantity(0);
+                                return
+                            }
+                            quantityError.isError && setQuantityError({isError: false, message: ""})
+                            quantity !== newQuantity && quantityHandlerChange(newQuantity)
+                        }}
+                        onFocus={() => setIsFocused(true)}
+                        onChange={(quantity) => {
+                            setNewQuantity(quantity)
+                            if (!isFocused && !quantityError.isError) quantityHandlerChange(quantity)
+                        }}
                         minValue={1}
-                        containerStyle={{backgroundColor: 'transparent', borderColor: '#908e80'}}
+                        containerStyle={{
+                            backgroundColor: 'transparent',
+                            borderColor: '#908e80',
+                            opacity: quantityOnEdit ? 0.5 : 1
+                        }}
                         rightButtonBackgroundColor={'transparent'}
                         leftButtonBackgroundColor={'transparent'}
                         borderColor={'transparent'}
                         inputStyle={{backgroundColor: 'transparent', color: '#403f2b'}}
                     />
-                    <Text style={styles.price}>{price}</Text>
+                    <Text style={[styles.price, {opacity: quantityOnEdit ? 0.5 : 1}]}>{price}</Text>
                 </View>
             </View>
+            {quantityError.isError &&
+                (
+                    <View style={styles.errorContainer}>
+                        {<Text style={{color: '#B22D1D'}}>{quantityError.message}</Text>}
+                    </View>
+                )
+            }
         </View>
     );
 };
@@ -106,4 +156,11 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         paddingHorizontal: 5,
     },
+    errorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 10,
+        width: '100%'
+    }
 });

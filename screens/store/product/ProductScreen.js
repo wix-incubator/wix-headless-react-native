@@ -2,17 +2,21 @@ import {checkout, currentCart} from "@wix/ecom";
 import {redirects} from "@wix/redirects";
 import * as Linking from "expo-linking";
 import * as React from "react";
-import {Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View,} from "react-native";
-import {Button, Card, IconButton, List, Portal, Snackbar, useTheme,} from "react-native-paper";
+import {Pressable, ScrollView, useWindowDimensions, View,} from "react-native";
+import {Button, Card, IconButton, List, Portal, Snackbar, Text, useTheme,} from "react-native-paper";
 import RenderHtml from "react-native-render-html";
 import {usePrice} from "../price";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useWixSessionModules} from "../../../authentication/session";
 import {WixMediaImage} from "../../../WixMediaImage";
 import {NumericInput} from "../../../components/Input/NumericInput";
-import {useWixModules} from "@wix/sdk-react";
-import {inventory} from "@wix/stores";
 import {SimpleContainer} from "../../../components/Container/SimpleContainer";
+import Routes from "../../../routes/routes";
+import {styles} from "../../../styles/store/product/styles";
+import {isNumber} from "lodash";
+import {useWixModules} from "@wix/sdk-react";
+import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
+import {inventory} from "@wix/stores";
 
 export function ProductScreen({route, navigation}) {
     const {product, collectionName} = route.params;
@@ -61,7 +65,7 @@ export function ProductScreen({route, navigation}) {
         },
         {
             onSuccess: (redirectSession) => {
-                navigation.navigate("Checkout", {redirectSession});
+                navigation.navigate(Routes.Checkout, {redirectSession});
             },
         }
     );
@@ -112,14 +116,18 @@ export function ProductScreen({route, navigation}) {
     );
 
     const onQuantityChanged = (val) => {
-        setQuantity(parseInt(val));
+        setQuantity(val);
     }
     const prodInventoryId = product?.inventoryItemId;
     const {getInventoryVariants} = useWixModules(inventory);
     const inventoryVariantsResponse = useQuery(["inventoryVariants", prodInventoryId], () =>
         getInventoryVariants(prodInventoryId)
     );
-    const inventoryQuantity = (inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.quantity)
+
+    const inventoryQuantity = inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.quantity;
+    const inStock = inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.inStock
+        && (!isNumber(inventoryQuantity) || inventoryQuantity > 0)
+
     const addToCartHandler = () => {
         !addToCurrentCartMutation.isLoading ? addToCurrentCartMutation.mutateAsync(quantity) : {}
     }
@@ -150,30 +158,39 @@ export function ProductScreen({route, navigation}) {
                                                 subtitleStyle={styles.productSku}/>}
                     <Card.Title title={product.name} subtitle={price}
                                 titleStyle={styles.productTitle}/>
-                    <Card.Content>
-                        <View style={styles.flexJustifyStart}>
-                            <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
-                            <NumericInput
-                                value={1}
-                                onChange={onQuantityChanged}
-                                min={1}
-                                max={inventoryQuantity}
-                                style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
-                            />
-                        </View>
+                    {!inventoryVariantsResponse.isLoading ? (<Card.Content>
+                            <View style={styles.flexJustifyStart}>
+                                <Text style={{fontSize: 13, marginBottom: 8}}>Quantity</Text>
+                                {inStock ? (<NumericInput
+                                        value={1}
+                                        onChange={onQuantityChanged}
+                                        min={1}
+                                        max={inventoryQuantity}
+                                        style={{width: 100, justifyContent: "flex-start", alignItems: "flex-start"}}
+                                    />) :
+                                    (<Text style={{color: "#B22D1D"}}>Out of Stock</Text>
+                                    )}
+                            </View>
 
-                        <Button
-                            mode="contained"
-                            onPress={addToCartHandler}
-                            loading={addToCurrentCartMutation.isLoading}
-                            style={styles.flexGrow1Button}
-                            buttonColor={theme.colors.secondary}
-                        >
-                            Add to Cart
-                        </Button>
-                        <RenderHtml style={styles.flexJustifyStart} source={{html: description}}
-                                    contentWidth={width}/>
-                    </Card.Content>
+                            <Button
+                                mode="contained"
+                                onPress={addToCartHandler}
+                                loading={addToCurrentCartMutation.isLoading}
+                                style={
+                                    [styles.flexGrow1Button,
+                                        {backgroundColor: !inStock ? theme.colors.surfaceDisabled : '#403f2a'}
+                                    ]
+                                }
+                                buttonColor={theme.colors.secondary}
+                                disabled={!inStock}
+                            >
+                                Add to Cart
+                            </Button>
+                            <RenderHtml style={styles.flexJustifyStart} source={{html: description}}
+                                        contentWidth={width}/>
+                        </Card.Content>)
+                        : <LoadingIndicator/>
+                    }
                 </Card>
 
                 {product.additionalInfoSections.map((section) => (
@@ -202,7 +219,7 @@ export function ProductScreen({route, navigation}) {
                             label: "View Cart",
                             labelStyle: {color: '#403F2B'},
                             onPress: () => {
-                                navigation.navigate("Cart");
+                                navigation.navigate(Routes.Cart);
                             },
                         }}
                         label
@@ -215,64 +232,3 @@ export function ProductScreen({route, navigation}) {
         </SimpleContainer>
     );
 }
-
-const styles = StyleSheet.create({
-    backContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 20
-    },
-    backButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "flex-start",
-        width: '100%'
-    },
-    backButtonText: {
-        textAlign: "center",
-        fontSize: 15
-    },
-    card: {
-        marginHorizontal: 20,
-        flex: 1,
-        height: '100%',
-    },
-    cardImage: {
-        marginHorizontal: 20,
-        height: 400,
-        borderRadius: 0
-    },
-    productSku: {
-        margin: 0,
-        padding: 0
-    },
-    productTitle: {
-        fontFamily: "Fraunces-Regular",
-        fontSize: 40,
-        paddingTop: 40
-    },
-    container: {
-        flex: 1,
-        height: '100%',
-    },
-    content: {
-        paddingHorizontal: 1,
-    },
-    flexGrow1Button: {
-        flexGrow: 1,
-        marginTop: 20,
-        backgroundColor: '#403f2a',
-    },
-    flexJustifyCenter: {
-        marginTop: 20,
-        justifyContent: "center",
-        alignContent: "center",
-        alignItems: "center",
-    },
-    flexJustifyStart: {
-        marginTop: 20,
-        justifyContent: "flex-start",
-        alignContent: "flex-start",
-        alignItems: "flex-start",
-    },
-});

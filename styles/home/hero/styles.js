@@ -1,13 +1,11 @@
-import {Dimensions, Platform, StyleSheet} from "react-native";
+import {StyleSheet} from "react-native";
 
-const windowHeight = Dimensions.get('window').height;
 export const styles = StyleSheet.create({
     heroSection: {
         width: '100%',
         flexGrow: 1,
         display: 'flex',
         justifyContent: 'start',
-        height: windowHeight * 0.8 - windowHeight * 0.1 - (Platform.OS === 'ios' ? 30 : 0)
     },
     heroImageContainer: {
         position: 'absolute',

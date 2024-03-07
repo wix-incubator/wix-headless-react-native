@@ -3,14 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { checkout, currentCart } from "@wix/ecom";
 import { useWixSessionModules } from "../../../authentication/session";
 import { Button, Surface, useTheme } from "react-native-paper";
-import {
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { usePrice } from "../price";
 import { redirects } from "@wix/redirects";
 import { useWixModules } from "@wix/sdk-react";
@@ -18,16 +11,21 @@ import * as Linking from "expo-linking";
 import { CartListItem } from "../../../components/List/CartListItem";
 import { InputPrefix } from "../../../components/Input/InputPrefix";
 import { PrefixText } from "../../../components/PrefixText/PrefixText";
-import _ from "lodash";
+import _, { isInteger } from "lodash";
 import { SimpleContainer } from "../../../components/Container/SimpleContainer";
 import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
 import { ErrorView } from "../../../components/ErrorView/ErrorView";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { CheckoutScreen } from "../checkout/CheckoutScreen";
+import Routes from "../../../routes/routes";
+import { styles } from "../../../styles/store/cart/styles";
+import { useNavigation } from "@react-navigation/native";
+import { CheckoutThankYouScreen } from "../checkout/CheckoutThankYouScreen";
 
 const Stack = createNativeStackNavigator();
 
-const EmptyCart = ({ navigation }) => {
+const EmptyCart = () => {
+  const navigation = useNavigation();
   return (
     <View
       style={{
@@ -38,7 +36,7 @@ const EmptyCart = ({ navigation }) => {
     >
       <Text>Your cart is empty</Text>
       <Button
-        onPress={() => navigation.navigate("Collections", {})}
+        onPress={() => navigation.navigate(Routes.Store, {})}
         mode="contained"
         style={{ marginTop: 10 }}
         theme={{ colors: { primary: "#403f2b" } }}
@@ -56,6 +54,10 @@ function CartItem({ item, currency }) {
 
   const updateQuantityMutation = useMutation(
     async (quantity) => {
+      quantity <= 0 ? (quantity = 1) : quantity;
+      if (isInteger(quantity) === false) {
+        quantity = Math.round(quantity);
+      }
       return updateCurrentCartLineItemQuantity([
         {
           _id: item._id,
@@ -89,7 +91,7 @@ function CartItem({ item, currency }) {
       })}
       image={item.image}
       quantity={item.quantity}
-      quantityOnEdit={!updateQuantityMutation.isLoading}
+      quantityOnEdit={updateQuantityMutation.isLoading}
       quantityHandlerChange={(quantity) =>
         updateQuantityMutation.mutateAsync(quantity)
       }
@@ -98,7 +100,7 @@ function CartItem({ item, currency }) {
   );
 }
 
-function CartView({ navigation }) {
+function CartView() {
   const [userNote, setUserNote] = React.useState("");
   const [userDiscount, setUserDiscount] = React.useState("");
   const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
@@ -108,15 +110,13 @@ function CartView({ navigation }) {
   const { updateCheckout } = useWixModules(checkout);
   const { createRedirectSession } = useWixSessionModules(redirects);
   const theme = useTheme();
+  const navigation = useNavigation();
 
-  const currentCartQuery = useQuery(["currentCart"], async () => {
+  const currentCartQuery = useQuery(["currentCart"], () => {
     try {
-      return await getCurrentCart();
+      return getCurrentCart();
     } catch (e) {
-      if (e.details.applicationError.code === "OWNED_CART_NOT_FOUND") {
-        return null;
-      }
-      throw e;
+      return console.error(e);
     }
   });
 
@@ -161,7 +161,7 @@ function CartView({ navigation }) {
     {
       onSuccess: (redirectSession) => {
         if (!redirectSession) return;
-        navigation.navigate("Checkout", { redirectSession });
+        navigation.navigate(Routes.Checkout, { redirectSession });
         setCheckoutRedirect(false);
       },
     }
@@ -176,14 +176,40 @@ function CartView({ navigation }) {
   }
 
   if (currentCartQuery.isError) {
-    return <ErrorView message={currentCartQuery.error.message} />;
+    if (
+      !currentCartQuery.error.message.includes("code: OWNED_CART_NOT_FOUND")
+    ) {
+      return <ErrorView message={currentCartQuery.error.message} />;
+    } else {
+      return (
+        <SimpleContainer navigation={navigation} title={"My Cart"}>
+          <ScrollView
+            style={{ flexGrow: 1, height: "100%" }}
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
+            keyboardShouldPersistTaps="always"
+            alwaysBounceVertical={false}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={currentCartQuery.isFetching}
+                onRefresh={currentCartQuery.refetch}
+              />
+            }
+          >
+            <EmptyCart />
+          </ScrollView>
+        </SimpleContainer>
+      );
+    }
   }
 
   const subTotal = usePrice({
-    amount: currentCartQuery.data?.lineItems.reduce((acc, item) => {
+    amount: currentCartQuery.data.lineItems.reduce((acc, item) => {
       return acc + Number.parseFloat(item.price?.amount) * item.quantity;
     }, 0),
-    currencyCode: currentCartQuery.data?.currency,
+    currencyCode: currentCartQuery.data.currency,
   });
 
   const userAddNoteHandler = _.debounce((text) => {
@@ -219,8 +245,7 @@ function CartView({ navigation }) {
           />
         }
       >
-        {currentCartQuery.data === null ||
-        currentCartQuery.data.lineItems?.length === 0 ? (
+        {currentCartQuery?.data?.lineItems?.length === 0 ? (
           <EmptyCart navigation={navigation} />
         ) : (
           <View
@@ -229,10 +254,10 @@ function CartView({ navigation }) {
               justifyContent: "flex-start",
             }}
           >
-            {currentCartQuery.data?.lineItems.map((item, index) => (
+            {currentCartQuery.data.lineItems.map((item, index) => (
               <View key={item._id}>
                 <CartItem
-                  currency={currentCartQuery.data?.currency}
+                  currency={currentCartQuery.data.currency}
                   key={item._id}
                   item={item}
                 />
@@ -300,17 +325,6 @@ function CartView({ navigation }) {
                 <Text style={{ margin: 10, color: "#403f2b" }}>Subtotal</Text>
                 <Text style={{ margin: 10, color: "#403f2b" }}>{subTotal}</Text>
               </View>
-              <Pressable onPress={() => navigation.navigate("Shipping", {})}>
-                <Text
-                  style={{
-                    margin: 10,
-                    color: "#403f2b",
-                    textDecorationLine: "underline",
-                  }}
-                >
-                  Estimated delivery
-                </Text>
-              </Pressable>
             </View>
             <Surface
               style={{
@@ -363,23 +377,15 @@ export function CartScreen({ navigation }) {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
+        animation: "ios",
       }}
     >
       <Stack.Screen name="CartView" component={CartView} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
+      <Stack.Screen
+        name="CheckoutThankYou"
+        component={CheckoutThankYouScreen}
+      />
     </Stack.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  checkoutButton: {
-    marginTop: 20,
-    backgroundColor: "#403f2a",
-    margin: 20,
-  },
-  checkoutButtonText: {
-    color: "#fdfbef",
-    fontSize: 18,
-    textAlign: "center",
-  },
-});

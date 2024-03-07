@@ -2,12 +2,13 @@ import {useQuery} from "@tanstack/react-query";
 import {useWixModules} from "@wix/sdk-react";
 import * as React from "react";
 import {useRef} from "react";
-import {Animated, SafeAreaView, StyleSheet, View} from "react-native";
+import {Animated, SafeAreaView, View} from "react-native";
 import {ProductsGrid} from "../../../components/Grid/ProductsGrid";
 import {ProductsHeader} from "../../../components/Header/ProductsHeader";
 import {products} from "@wix/stores";
 import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
+import {styles} from "../../../styles/store/products/styles";
 
 export function ProductsScreen({navigation, route}) {
     const {
@@ -58,14 +59,3 @@ export function ProductsScreen({navigation, route}) {
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    safeView: {
-        flex: 0, backgroundColor: '#c3c198'
-    },
-    container: {
-        flex: 1,
-        backgroundColor: '#fdfbef',
-        height: '100%',
-    },
-});

@@ -2,7 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useWix, useWixModules} from "@wix/sdk-react";
 import {members} from "@wix/members";
 import {useWixSession} from "../../../authentication/session";
-import {Image, ScrollView, TextInput, View} from "react-native";
+import {Image, TextInput, View} from "react-native";
 import {styles} from "../../../styles/members/styles";
 import {Avatar, Button, Divider, IconButton, List, Menu, Text} from "react-native-paper";
 import React, {useEffect, useState} from "react";
@@ -11,6 +11,7 @@ import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndi
 import {ErrorView} from "../../../components/ErrorView/ErrorView";
 import {format} from "date-fns";
 import {usePrice} from "../../store/price";
+import {DismissKeyboardScrollView} from "../../../components/DismissKeyboardHOC/DismissKeyboardScrollView";
 
 const FormInput = ({labelValue, placeholderText, inputValue, ...rest}) => {
     return (
@@ -302,11 +303,14 @@ export const MemberView = () => {
     const {profile, contact} = currentMember || {};
 
     return (
-        <ScrollView style={styles.contentSection}
-                    keyboardShouldPersistTaps="always"
-                    alwaysBounceVertical={false}
-                    showsVerticalScrollIndicator={false}
-                    bounces={false}
+        <DismissKeyboardScrollView style={styles.contentSection}
+                                   keyboardShouldPersistTaps="never"
+                                   alwaysBounceVertical={false}
+                                   showsVerticalScrollIndicator={false}
+                                   bounces={false}
+                                   bouncesZoom={false}
+                                   automaticallyAdjustKeyboardInsets={true}
+                                   scrollEventThrottle={16}
         >
             <View style={styles.memberHeader}/>
             <View style={styles.memberSection}>
@@ -400,6 +404,6 @@ export const MemberView = () => {
                 </View>
                 <MemberForm/>
             </View>
-        </ScrollView>
+        </DismissKeyboardScrollView>
     );
 }
