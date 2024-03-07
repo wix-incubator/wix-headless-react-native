@@ -6,6 +6,7 @@ import "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
 import { useWixSession } from "./session";
+import validator from "validator";
 
 const LoginHandlerContext = React.createContext(null);
 
@@ -38,10 +39,22 @@ export function LoginHandler(props) {
   const login = React.useCallback(
     async (email, password) => {
       setSessionLoading(true);
+      if (!validator.isEmail(email)) {
+        setSessionLoading(false);
+        return Promise.reject("Invalid email address!");
+      }
+
       const result = await auth.login({
         email,
         password,
       });
+      if (!result?.data?.sessionToken) {
+        setSessionLoading(false);
+        if (result?.loginState === "FAILURE") {
+          return Promise.reject("Email address or password is incorrect!");
+        }
+        return Promise.reject("An error occurred!");
+      }
       await silentLogin(result.data.sessionToken);
     },
     [auth, setSessionLoading],
