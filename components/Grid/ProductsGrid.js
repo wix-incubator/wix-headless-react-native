@@ -9,15 +9,60 @@ import {
   View,
 } from "react-native";
 import { WixMediaImage } from "../../WixMediaImage";
+import { memo, useMemo } from "react";
 
 const screenWidth = Dimensions.get("window").width;
-export const ProductsGrid = ({ navigation, data, onPress, scrollOffsetY }) => {
+
+const ProductCard = ({ item, onPress }) => {
+  return useMemo(() => {
+    return (
+      <View style={styles.container}>
+        <Pressable
+          style={styles.card}
+          onPress={() => {
+            onPress(item);
+          }}
+        >
+          <WixMediaImage
+            media={item.media.mainMedia.image.url}
+            width={screenWidth / 2 - 20}
+            height={screenWidth / 2}
+          >
+            {({ url }) => {
+              return (
+                <Image
+                  style={[
+                    styles.image,
+                    {
+                      width: screenWidth / 2 - 20, // Adjust the width as needed
+                      height: screenWidth / 2,
+                    },
+                  ]}
+                  source={{
+                    uri: url,
+                  }}
+                />
+              );
+            }}
+          </WixMediaImage>
+          <Text style={styles.title}>{item.name}</Text>
+          <View style={styles.priceContainer}>
+            <Text style={styles.title}>
+              {item.convertedPriceData?.formatted?.price}
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+    );
+  }, [item]);
+};
+export const ProductsGrid = memo(({ data, scrollOffsetY, onPress }) => {
   return (
     <FlatList
       scrollEventThrottle={16}
       data={data}
       numColumns={2}
-      keyExtractor={(item) => item._id}
+      keyExtractor={(item, index) => index.toString()}
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
         {
@@ -29,51 +74,13 @@ export const ProductsGrid = ({ navigation, data, onPress, scrollOffsetY }) => {
       alwaysBounceHorizontal={false}
       alwaysBounceVertical={false}
       bounces={false}
-      renderItem={({ item, index }) => {
-        return (
-          <View style={styles.container}>
-            <Pressable
-              style={styles.card}
-              onPress={() => {
-                onPress(item);
-              }}
-            >
-              <WixMediaImage
-                media={item.media.mainMedia.image.url}
-                width={screenWidth / 2 - 20}
-                height={screenWidth / 2}
-              >
-                {({ url }) => {
-                  return (
-                    <Image
-                      style={[
-                        styles.image,
-                        {
-                          width: screenWidth / 2 - 20, // Adjust the width as needed
-                          height: screenWidth / 2,
-                        },
-                      ]}
-                      source={{
-                        uri: url,
-                      }}
-                    />
-                  );
-                }}
-              </WixMediaImage>
-              <Text style={styles.title}>{item.name}</Text>
-              <View style={styles.priceContainer}>
-                <Text style={styles.title}>
-                  {item.convertedPriceData?.formatted?.price}
-                </Text>
-              </View>
-            </Pressable>
-          </View>
-        );
+      renderItem={({ item }) => {
+        return <ProductCard item={item} onPress={onPress} />;
       }}
       style={{ zIndex: -1 }}
     ></FlatList>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {
