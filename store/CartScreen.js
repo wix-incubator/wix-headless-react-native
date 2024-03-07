@@ -27,7 +27,7 @@ export function CartScreen({ navigation }) {
   const checkoutMutation = useMutation(
     async () => {
       const currentCheckout = await createCheckoutFromCurrentCart(
-        currentCart.ChannelType.OTHER_PLATFORM
+        currentCart.ChannelType.OTHER_PLATFORM,
       );
 
       const { redirectSession } = await createRedirectSession({
@@ -43,7 +43,7 @@ export function CartScreen({ navigation }) {
       onSuccess: (redirectSession) => {
         navigation.navigate("Checkout", { redirectSession });
       },
-    }
+    },
   );
 
   if (currentCartQuery.isLoading) {
@@ -163,7 +163,7 @@ function CartItem({ item, currency }) {
       onSuccess: (response) => {
         queryClient.setQueryData(["currentCart"], response.cart);
       },
-    }
+    },
   );
 
   const removeMutation = useMutation(
@@ -174,7 +174,7 @@ function CartItem({ item, currency }) {
       onSuccess: (response) => {
         queryClient.setQueryData(["currentCart"], response.cart);
       },
-    }
+    },
   );
 
   return (

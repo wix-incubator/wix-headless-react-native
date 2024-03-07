@@ -73,7 +73,7 @@ export function ProductScreen({ route, navigation }) {
       onSuccess: (redirectSession) => {
         navigation.navigate("Checkout", { redirectSession });
       },
-    }
+    },
   );
 
   const [addToCartSnackBarVisible, setAddToCartSnackBarVisible] =
@@ -98,7 +98,7 @@ export function ProductScreen({ route, navigation }) {
         queryClient.setQueryData(["currentCart"], response.cart);
         setAddToCartSnackBarVisible(true);
       },
-    }
+    },
   );
 
   return (

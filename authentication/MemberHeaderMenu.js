@@ -32,7 +32,7 @@ function SignInButton() {
   const authSessionMutation = useMutation(
     async () => {
       const data = auth.generateOAuthData(
-        Linking.createURL("oauth/wix/callback")
+        Linking.createURL("oauth/wix/callback"),
       );
 
       await SecureStorage.setItemAsync("oauthState", JSON.stringify(data));
@@ -44,7 +44,7 @@ function SignInButton() {
       onSuccess: async (authUrl) => {
         WebBrowser.openBrowserAsync(authUrl, {});
       },
-    }
+    },
   );
 
   return (

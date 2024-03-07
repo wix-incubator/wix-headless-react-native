@@ -21,7 +21,7 @@ export function LoginHandler(props) {
   const silentLogin = React.useCallback(
     async (sessionToken) => {
       const data = auth.generateOAuthData(
-        Linking.createURL("/oauth/wix/callback")
+        Linking.createURL("/oauth/wix/callback"),
       );
       const { authUrl } = await auth.getAuthUrl(data, {
         prompt: "none",
@@ -32,7 +32,7 @@ export function LoginHandler(props) {
         data,
       });
     },
-    [auth, setSessionLoading]
+    [auth, setSessionLoading],
   );
 
   const login = React.useCallback(
@@ -44,7 +44,7 @@ export function LoginHandler(props) {
       });
       await silentLogin(result.data.sessionToken);
     },
-    [auth, setSessionLoading]
+    [auth, setSessionLoading],
   );
 
   React.useEffect(() => {
@@ -60,7 +60,7 @@ export function LoginHandler(props) {
       ) {
         setSessionLoading(true);
         const oauthData = JSON.parse(
-          await SecureStore.getItemAsync("oauthState")
+          await SecureStore.getItemAsync("oauthState"),
         );
         const { code, state } = auth.parseFromUrl(event.url);
         const tokens = await auth.getMemberTokens(code, state, oauthData);
@@ -98,7 +98,7 @@ function LoginHandlerInvisibleWebview(props) {
           ) {
             const { code, state } = auth.parseFromUrl(
               request.url,
-              props.loginState.data
+              props.loginState.data,
             );
             auth
               .getMemberTokens(code, state, props.loginState.data)

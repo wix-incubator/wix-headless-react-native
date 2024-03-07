@@ -11,7 +11,7 @@ export function CheckoutThankYouScreen({ route, navigation }) {
 
   const { getOrder } = useWixSessionModules(orders);
   const orderQuery = useQuery(["order", route.params.orderId], () =>
-    getOrder(route.params.orderId)
+    getOrder(route.params.orderId),
   );
 
   if (orderQuery.isLoading) {

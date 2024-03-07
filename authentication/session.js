@@ -24,12 +24,12 @@ export function WixSessionProvider(props) {
       auth.setTokens(tokens);
       await SecureStore.setItemAsync(
         "wixSession",
-        JSON.stringify({ tokens, clientId: props.clientId })
+        JSON.stringify({ tokens, clientId: props.clientId }),
       );
       setSessionState(tokens);
       setSessionLoading(false);
     },
-    [auth, setSessionState]
+    [auth, setSessionState],
   );
 
   const newVisitorSession = React.useCallback(async () => {
