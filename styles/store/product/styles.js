@@ -34,6 +34,7 @@ export const styles = StyleSheet.create({
     fontFamily: "Fraunces-Regular",
     fontSize: 40,
     paddingTop: 40,
+    flexWrap: "wrap",
   },
   container: {
     flex: 1,

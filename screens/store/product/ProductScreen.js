@@ -78,7 +78,11 @@ export function ProductScreen({ route, navigation }) {
     },
     {
       onSuccess: (redirectSession) => {
-        navigation.navigate(Routes.Checkout, { redirectSession });
+        navigation.navigate(Routes.Cart, {
+          screen: Routes.Checkout,
+          params: { redirectSession, cameFrom: Routes.Store },
+          goBack: Routes.Products,
+        });
       },
     },
   );
@@ -152,6 +156,10 @@ export function ProductScreen({ route, navigation }) {
     !addToCurrentCartMutation.isLoading
       ? addToCurrentCartMutation.mutateAsync(quantity)
       : {};
+  };
+
+  const buyNowHandler = () => {
+    !buyNowMutation.isLoading ? buyNowMutation.mutateAsync(quantity) : {};
   };
   return (
     <SimpleContainer
@@ -237,6 +245,27 @@ export function ProductScreen({ route, navigation }) {
                 disabled={!inStock}
               >
                 Add to Cart
+              </Button>
+              <Button
+                mode="contained-tonal"
+                onPress={buyNowHandler}
+                loading={buyNowMutation.isLoading}
+                style={[
+                  styles.flexGrow1Button,
+                  {
+                    // backgroundColor: "transparent",
+                    borderColor: !inStock
+                      ? theme.colors.surfaceDisabled
+                      : "#403f2a",
+                    marginTop: 0,
+                  },
+                ]}
+                icon={"shopping-outline"}
+                buttonColor={theme.colors.secondary}
+                textColor={theme.colors.surface}
+                disabled={!inStock}
+              >
+                Buy Now
               </Button>
               <RenderHtml
                 style={styles.flexJustifyStart}

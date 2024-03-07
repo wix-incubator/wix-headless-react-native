@@ -17,7 +17,9 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
   const loginHandler = async () => {
     setError(false);
     try {
+      console.log("loginHandler");
       await login(email, password);
+      console.log("loginHandler done");
       navigation.navigate(Routes.Home);
     } catch (e) {
       setErrorMessage(e.toString());
