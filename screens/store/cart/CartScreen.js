@@ -3,7 +3,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {checkout, currentCart} from "@wix/ecom";
 import {useWixSessionModules} from "../../../authentication/session";
 import {Button, Surface, useTheme,} from "react-native-paper";
-import {Pressable, RefreshControl, ScrollView, Text, View} from "react-native";
+import {RefreshControl, ScrollView, Text, View} from "react-native";
 import {usePrice} from "../price";
 import {redirects} from "@wix/redirects";
 import {useWixModules} from "@wix/sdk-react";
@@ -307,11 +307,6 @@ function CartView() {
                                 <Text style={{margin: 10, color: '#403f2b'}}>Subtotal</Text>
                                 <Text style={{margin: 10, color: '#403f2b'}}>{subTotal}</Text>
                             </View>
-                            <Pressable onPress={() => navigation.navigate(Routes.Shipping, {})}>
-                                <Text style={{margin: 10, color: '#403f2b', textDecorationLine: 'underline'}}>
-                                    Estimated delivery
-                                </Text>
-                            </Pressable>
                         </View>
                         <Surface
                             style={{

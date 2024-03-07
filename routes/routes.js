@@ -8,7 +8,6 @@ const Routes = {
     Checkout: 'Checkout',
     Home: 'Home',
     Profile: 'Members Area',
-    Shipping: 'Shipping',
 };
 
 export default Routes;
