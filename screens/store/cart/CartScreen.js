@@ -1,369 +1,385 @@
 import * as React from "react";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {checkout, currentCart} from "@wix/ecom";
-import {useWixSessionModules} from "../../../authentication/session";
-import {Button, Surface, useTheme,} from "react-native-paper";
-import {Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from "react-native";
-import {usePrice} from "../price";
-import {redirects} from "@wix/redirects";
-import {useWixModules} from "@wix/sdk-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { checkout, currentCart } from "@wix/ecom";
+import { useWixSessionModules } from "../../../authentication/session";
+import { Button, Surface, useTheme } from "react-native-paper";
+import {
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { usePrice } from "../price";
+import { redirects } from "@wix/redirects";
+import { useWixModules } from "@wix/sdk-react";
 import * as Linking from "expo-linking";
-import {CartListItem} from "../../../components/List/CartListItem";
-import {InputPrefix} from "../../../components/Input/InputPrefix";
-import {PrefixText} from "../../../components/PrefixText/PrefixText";
-import _ from 'lodash';
-import {SimpleContainer} from "../../../components/Container/SimpleContainer";
-import {LoadingIndicator} from "../../../components/LoadingIndicator/LoadingIndicator";
-import {ErrorView} from "../../../components/ErrorView/ErrorView";
-import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import {CheckoutScreen} from "../checkout/CheckoutScreen";
+import { CartListItem } from "../../../components/List/CartListItem";
+import { InputPrefix } from "../../../components/Input/InputPrefix";
+import { PrefixText } from "../../../components/PrefixText/PrefixText";
+import _ from "lodash";
+import { SimpleContainer } from "../../../components/Container/SimpleContainer";
+import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
+import { ErrorView } from "../../../components/ErrorView/ErrorView";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { CheckoutScreen } from "../checkout/CheckoutScreen";
 
 const Stack = createNativeStackNavigator();
 
-const EmptyCart = ({navigation}) => {
-    return (
-        <View
-            style={{
-                flexGrow: 1,
-                justifyContent: "center",
-                alignItems: "center",
-            }}
-        >
-            <Text>Your cart is empty</Text>
-            <Button
-                onPress={() => navigation.navigate('Collections', {})}
-                mode="contained"
-                style={{marginTop: 10}}
-                theme={{colors: {primary: '#403f2b'}}}
-            >
-                Go to products
-            </Button>
-        </View>
-    )
+const EmptyCart = ({ navigation }) => {
+  return (
+    <View
+      style={{
+        flexGrow: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>Your cart is empty</Text>
+      <Button
+        onPress={() => navigation.navigate("Collections", {})}
+        mode="contained"
+        style={{ marginTop: 10 }}
+        theme={{ colors: { primary: "#403f2b" } }}
+      >
+        Go to products
+      </Button>
+    </View>
+  );
+};
+
+function CartItem({ item, currency }) {
+  const queryClient = useQueryClient();
+  const { updateCurrentCartLineItemQuantity, removeLineItemsFromCurrentCart } =
+    useWixSessionModules(currentCart);
+
+  const updateQuantityMutation = useMutation(
+    async (quantity) => {
+      return updateCurrentCartLineItemQuantity([
+        {
+          _id: item._id,
+          quantity,
+        },
+      ]);
+    },
+    {
+      onSuccess: (response) => {
+        queryClient.setQueryData(["currentCart"], response.cart);
+      },
+    }
+  );
+
+  const removeMutation = useMutation(
+    async () => {
+      return removeLineItemsFromCurrentCart([item._id]);
+    },
+    {
+      onSuccess: (response) => {
+        queryClient.setQueryData(["currentCart"], response.cart);
+      },
+    }
+  );
+  return (
+    <CartListItem
+      name={item.productName.translated}
+      price={usePrice({
+        amount: Number.parseFloat(item.price?.amount) * item.quantity,
+        currencyCode: currency,
+      })}
+      image={item.image}
+      quantity={item.quantity}
+      quantityOnEdit={!updateQuantityMutation.isLoading}
+      quantityHandlerChange={(quantity) =>
+        updateQuantityMutation.mutateAsync(quantity)
+      }
+      removeHandler={() => removeMutation.mutateAsync()}
+    />
+  );
 }
 
+function CartView({ navigation }) {
+  const [userNote, setUserNote] = React.useState("");
+  const [userDiscount, setUserDiscount] = React.useState("");
+  const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
+  const [checkoutRedirect, setCheckoutRedirect] = React.useState(false);
+  const { getCurrentCart, createCheckoutFromCurrentCart } =
+    useWixModules(currentCart);
+  const { updateCheckout } = useWixModules(checkout);
+  const { createRedirectSession } = useWixSessionModules(redirects);
+  const theme = useTheme();
 
-function CartItem({item, currency}) {
-    const queryClient = useQueryClient();
-    const {updateCurrentCartLineItemQuantity, removeLineItemsFromCurrentCart} =
-        useWixSessionModules(currentCart);
+  const currentCartQuery = useQuery(["currentCart"], async () => {
+    try {
+      return await getCurrentCart();
+    } catch (e) {
+      if (e.details.applicationError.code === "OWNED_CART_NOT_FOUND") {
+        return null;
+      }
+      throw e;
+    }
+  });
 
-    const updateQuantityMutation = useMutation(
-        async (quantity) => {
-            return updateCurrentCartLineItemQuantity([
-                {
-                    _id: item._id,
-                    quantity,
-                },
-            ]);
-        },
-        {
-            onSuccess: (response) => {
-                queryClient.setQueryData(["currentCart"], response.cart);
-            },
-        }
-    );
+  const checkoutMutation = useMutation(
+    async () => {
+      setCheckoutRedirect(true);
+      let currentCheckout = await createCheckoutFromCurrentCart(
+        currentCart.ChannelType.OTHER_PLATFORM
+      );
+      if (userNote !== "") {
+        currentCheckout.buyerNote = userNote;
+      }
+      if (userDiscount !== "") {
+        currentCheckout.discountCode = userDiscount;
+      }
 
-    const removeMutation = useMutation(
-        async () => {
-            return removeLineItemsFromCurrentCart([item._id]);
-        },
-        {
-            onSuccess: (response) => {
-                queryClient.setQueryData(["currentCart"], response.cart);
-            },
-        }
-    );
-    return (
-        <CartListItem
-            name={item.productName.translated}
-            price={usePrice({
-                amount: Number.parseFloat(item.price?.amount) * item.quantity,
-                currencyCode: currency,
-            })}
-            image={item.image}
-            quantity={item.quantity}
-            quantityOnEdit={!updateQuantityMutation.isLoading}
-            quantityHandlerChange={(quantity) =>
-                updateQuantityMutation.mutateAsync(quantity)
-            }
-            removeHandler={() => removeMutation.mutateAsync()}
-        />
-    );
-}
-
-function CartView({navigation}) {
-    const [userNote, setUserNote] = React.useState('');
-    const [userDiscount, setUserDiscount] = React.useState('');
-    const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
-    const [checkoutRedirect, setCheckoutRedirect] = React.useState(false);
-    const {getCurrentCart, createCheckoutFromCurrentCart} = useWixModules(currentCart);
-    const {updateCheckout} = useWixModules(checkout);
-    const {createRedirectSession} = useWixSessionModules(redirects);
-    const theme = useTheme();
-
-    const currentCartQuery = useQuery(["currentCart"], () => {
+      if (userDiscount !== "") {
         try {
-            return getCurrentCart();
+          currentCheckout = await updateCheckout(
+            currentCheckout.checkoutId,
+            currentCheckout,
+            {
+              couponCode: userDiscount,
+            }
+          );
         } catch (e) {
-            return console.error(e);
+          setTriggerInvalidCoupon(true);
+          setCheckoutRedirect(false);
+          return undefined;
         }
-    });
+      }
 
-    const checkoutMutation = useMutation(
-        async () => {
-            setCheckoutRedirect(true);
-            let currentCheckout = await createCheckoutFromCurrentCart(
-                currentCart.ChannelType.OTHER_PLATFORM
-            );
-            if (userNote !== '') {
-                currentCheckout.buyerNote = userNote;
-            }
-            if (userDiscount !== '') {
-                currentCheckout.discountCode = userDiscount;
-            }
-
-            if (userDiscount !== '') {
-                try {
-                    currentCheckout = await updateCheckout(currentCheckout.checkoutId, currentCheckout, {
-                        couponCode: userDiscount,
-                    });
-                } catch (e) {
-                    setTriggerInvalidCoupon(true);
-                    setCheckoutRedirect(false);
-                    return undefined;
-                }
-            }
-
-            const {redirectSession} = await createRedirectSession({
-                ecomCheckout: {checkoutId: currentCheckout.checkoutId},
-                callbacks: {
-                    thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
-                },
-            });
-
-            return redirectSession;
-
+      const { redirectSession } = await createRedirectSession({
+        ecomCheckout: { checkoutId: currentCheckout.checkoutId },
+        callbacks: {
+          thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
         },
-        {
-            onSuccess: (redirectSession) => {
-                if (!redirectSession) return;
-                navigation.navigate("Checkout", {redirectSession});
-                setCheckoutRedirect(false);
-            },
-        }
-    );
+      });
 
-    if (currentCartQuery.isLoading) {
-        return (
-            <SimpleContainer navigation={navigation} title={'My Cart'}>
-                <LoadingIndicator/>
-            </SimpleContainer>
-        );
+      return redirectSession;
+    },
+    {
+      onSuccess: (redirectSession) => {
+        if (!redirectSession) return;
+        navigation.navigate("Checkout", { redirectSession });
+        setCheckoutRedirect(false);
+      },
     }
+  );
 
-    if (currentCartQuery.isError) {
-        if (!currentCartQuery.error.message.includes('code: OWNED_CART_NOT_FOUND')) {
-            return <ErrorView message={currentCartQuery.error.message}/>
-        } else {
-            return (
-                <SimpleContainer navigation={navigation} title={'My Cart'}>
-                    <ScrollView
-                        style={{flexGrow: 1, height: "100%"}}
-                        contentContainerStyle={{
-                            flexGrow: 1,
-                        }}
-                        keyboardShouldPersistTaps="always"
-                        alwaysBounceVertical={false}
-                        showsVerticalScrollIndicator={false}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={currentCartQuery.isFetching}
-                                onRefresh={currentCartQuery.refetch}
-                            />
-                        }
-                    >
-                        <EmptyCart navigation={navigation}/>
-                    </ScrollView>
-                </SimpleContainer>
-            );
-        }
-    }
-
-    const subTotal = usePrice({
-        amount: currentCartQuery.data.lineItems.reduce((acc, item) => {
-            return acc + Number.parseFloat(item.price?.amount) * item.quantity;
-        }, 0),
-        currencyCode: currentCartQuery.data.currency,
-    });
-
-    const userAddNoteHandler = _.debounce((text) => {
-        setUserNote(text);
-    }, 250);
-
-    const userAddDiscountHandler = _.debounce((text) => {
-        setTriggerInvalidCoupon(false);
-        setUserDiscount(text);
-    }, 250);
-
-    const handleCheckout = () => {
-        if (checkoutRedirect) {
-            return;
-        }
-        !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
-    }
-
+  if (currentCartQuery.isLoading) {
     return (
-        <SimpleContainer navigation={navigation} title={'My Cart'}>
-            <ScrollView
-                style={{flexGrow: 1, height: "100%"}}
-                contentContainerStyle={{
-                    flexGrow: 1,
-                }}
-                keyboardShouldPersistTaps="always"
-                alwaysBounceVertical={false}
-                showsVerticalScrollIndicator={false}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={currentCartQuery.isFetching}
-                        onRefresh={currentCartQuery.refetch}
-                    />
-                }
-            >
-                {currentCartQuery?.data?.lineItems?.length === 0 ? (
-                    <EmptyCart navigation={navigation}/>
-                ) : (
-                    <View
-                        style={{
-                            flexGrow: 1,
-                            justifyContent: "flex-start",
-                        }}
-                    >
-                        {currentCartQuery.data.lineItems.map((item, index) => (
-                            <View key={item._id}>
-                                <CartItem
-                                    currency={currentCartQuery.data.currency}
-                                    key={item._id}
-                                    item={item}
-                                />
-                                <Surface
-                                    style={{
-                                        margin: 10,
-                                        height: 1,
-                                        backgroundColor: "#c7c7bd",
-                                    }}
-                                    mode="elevated"
-                                    elevation={0}
-                                    children={null}
-                                />
-                            </View>
-                        ))}
-                        <InputPrefix iconName={'tag-outline'} style={{margin: 10, borderWidth: 0}}
-                                     placeholder={'Enter your promo code'}
-                                     onChangeText={userAddDiscountHandler}
-                                     placeholderTextColor={'#403f2b'}
-                                     error={triggerInvalidCoupon}
-                                     errorMessage={`${userDiscount} is not a valid coupon code`}
-
-                        />
-                        <Surface
-                            style={{
-                                margin: 10,
-                                height: 1,
-                                backgroundColor: "#c7c7bd",
-                            }}
-                            mode="elevated"
-                            elevation={0}
-                            children={null}
-                        />
-                        <InputPrefix iconName={'note-text-outline'} style={{margin: 10, borderWidth: 0}}
-                                     placeholder={'Add a note'}
-                                     onChangeText={userAddNoteHandler}
-                                     placeholderTextColor={'#403f2b'}
-                                     outlineStyle={{borderWidth: 1, borderColor: '#403f2b'}}
-                        />
-                        <Surface
-                            style={{
-                                margin: 10,
-                                height: 1,
-                                backgroundColor: "#c7c7bd",
-                            }}
-                            mode="elevated"
-                            elevation={0}
-                            children={null}
-                        />
-                        <View style={{flexDirection: "column", justifyContent: "space-between"}}>
-                            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                                <Text style={{margin: 10, color: '#403f2b'}}>Subtotal</Text>
-                                <Text style={{margin: 10, color: '#403f2b'}}>{subTotal}</Text>
-                            </View>
-                            <Pressable onPress={() => navigation.navigate('Shipping', {})}>
-                                <Text style={{margin: 10, color: '#403f2b', textDecorationLine: 'underline'}}>
-                                    Estimated delivery
-                                </Text>
-                            </Pressable>
-                        </View>
-                        <Surface
-                            style={{
-                                margin: 10,
-                                height: 1,
-                                backgroundColor: "#c7c7bd",
-                            }}
-                            mode="elevated"
-                            elevation={0}
-                            children={null}
-                        />
-                        <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-                            <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>Total</Text>
-                            <Text style={{margin: 10, color: '#403f2b', fontSize: 18}}>{subTotal}</Text>
-                        </View>
-                        <Button
-                            mode="contained"
-                            onPress={handleCheckout}
-                            loading={checkoutRedirect}
-                            contentStyle={{color: '#fdfbef'}}
-                            style={styles.checkoutButton}
-                            buttonColor={theme.colors.secondary}
-                        >
-                            <Text style={styles.checkoutButtonText}>
-                                Checkout
-                            </Text>
-
-                        </Button>
-                        <View style={{flexDirection: "row", justifyContent: "center", paddingBottom: 20}}>
-                            <PrefixText icon="lock">
-                                Secure Checkout
-                            </PrefixText>
-                        </View>
-                    </View>
-                )}
-            </ScrollView>
-        </SimpleContainer>
+      <SimpleContainer navigation={navigation} title={"My Cart"}>
+        <LoadingIndicator />
+      </SimpleContainer>
     );
+  }
+
+  if (currentCartQuery.isError) {
+    return <ErrorView message={currentCartQuery.error.message} />;
+  }
+
+  const subTotal = usePrice({
+    amount: currentCartQuery.data?.lineItems.reduce((acc, item) => {
+      return acc + Number.parseFloat(item.price?.amount) * item.quantity;
+    }, 0),
+    currencyCode: currentCartQuery.data?.currency,
+  });
+
+  const userAddNoteHandler = _.debounce((text) => {
+    setUserNote(text);
+  }, 250);
+
+  const userAddDiscountHandler = _.debounce((text) => {
+    setTriggerInvalidCoupon(false);
+    setUserDiscount(text);
+  }, 250);
+
+  const handleCheckout = () => {
+    if (checkoutRedirect) {
+      return;
+    }
+    !checkoutRedirect ? checkoutMutation.mutateAsync() : {};
+  };
+
+  return (
+    <SimpleContainer navigation={navigation} title={"My Cart"}>
+      <ScrollView
+        style={{ flexGrow: 1, height: "100%" }}
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+        keyboardShouldPersistTaps="always"
+        alwaysBounceVertical={false}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={currentCartQuery.isFetching}
+            onRefresh={currentCartQuery.refetch}
+          />
+        }
+      >
+        {currentCartQuery.data === null ||
+        currentCartQuery.data.lineItems?.length === 0 ? (
+          <EmptyCart navigation={navigation} />
+        ) : (
+          <View
+            style={{
+              flexGrow: 1,
+              justifyContent: "flex-start",
+            }}
+          >
+            {currentCartQuery.data?.lineItems.map((item, index) => (
+              <View key={item._id}>
+                <CartItem
+                  currency={currentCartQuery.data?.currency}
+                  key={item._id}
+                  item={item}
+                />
+                <Surface
+                  style={{
+                    margin: 10,
+                    height: 1,
+                    backgroundColor: "#c7c7bd",
+                  }}
+                  mode="elevated"
+                  elevation={0}
+                  children={null}
+                />
+              </View>
+            ))}
+            <InputPrefix
+              iconName={"tag-outline"}
+              style={{ margin: 10, borderWidth: 0 }}
+              placeholder={"Enter your promo code"}
+              onChangeText={userAddDiscountHandler}
+              placeholderTextColor={"#403f2b"}
+              error={triggerInvalidCoupon}
+              errorMessage={`${userDiscount} is not a valid coupon code`}
+            />
+            <Surface
+              style={{
+                margin: 10,
+                height: 1,
+                backgroundColor: "#c7c7bd",
+              }}
+              mode="elevated"
+              elevation={0}
+              children={null}
+            />
+            <InputPrefix
+              iconName={"note-text-outline"}
+              style={{ margin: 10, borderWidth: 0 }}
+              placeholder={"Add a note"}
+              onChangeText={userAddNoteHandler}
+              placeholderTextColor={"#403f2b"}
+              outlineStyle={{ borderWidth: 1, borderColor: "#403f2b" }}
+            />
+            <Surface
+              style={{
+                margin: 10,
+                height: 1,
+                backgroundColor: "#c7c7bd",
+              }}
+              mode="elevated"
+              elevation={0}
+              children={null}
+            />
+            <View
+              style={{
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={{ margin: 10, color: "#403f2b" }}>Subtotal</Text>
+                <Text style={{ margin: 10, color: "#403f2b" }}>{subTotal}</Text>
+              </View>
+              <Pressable onPress={() => navigation.navigate("Shipping", {})}>
+                <Text
+                  style={{
+                    margin: 10,
+                    color: "#403f2b",
+                    textDecorationLine: "underline",
+                  }}
+                >
+                  Estimated delivery
+                </Text>
+              </Pressable>
+            </View>
+            <Surface
+              style={{
+                margin: 10,
+                height: 1,
+                backgroundColor: "#c7c7bd",
+              }}
+              mode="elevated"
+              elevation={0}
+              children={null}
+            />
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <Text style={{ margin: 10, color: "#403f2b", fontSize: 18 }}>
+                Total
+              </Text>
+              <Text style={{ margin: 10, color: "#403f2b", fontSize: 18 }}>
+                {subTotal}
+              </Text>
+            </View>
+            <Button
+              mode="contained"
+              onPress={handleCheckout}
+              loading={checkoutRedirect}
+              contentStyle={{ color: "#fdfbef" }}
+              style={styles.checkoutButton}
+              buttonColor={theme.colors.secondary}
+            >
+              <Text style={styles.checkoutButtonText}>Checkout</Text>
+            </Button>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                paddingBottom: 20,
+              }}
+            >
+              <PrefixText icon="lock">Secure Checkout</PrefixText>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </SimpleContainer>
+  );
 }
 
-export function CartScreen({navigation}) {
-    return (
-        <Stack.Navigator
-            screenOptions={{
-                headerShown: false
-            }}
-        >
-            <Stack.Screen name="CartView" component={CartView}/>
-            <Stack.Screen name="Checkout" component={CheckoutScreen}/>
-        </Stack.Navigator>
-    )
+export function CartScreen({ navigation }) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="CartView" component={CartView} />
+      <Stack.Screen name="Checkout" component={CheckoutScreen} />
+    </Stack.Navigator>
+  );
 }
 
 const styles = StyleSheet.create({
-    checkoutButton: {
-        marginTop: 20,
-        backgroundColor: '#403f2a',
-        margin: 20,
-    },
-    checkoutButtonText: {
-        color: '#fdfbef',
-        fontSize: 18,
-        textAlign: 'center',
-    }
+  checkoutButton: {
+    marginTop: 20,
+    backgroundColor: "#403f2a",
+    margin: 20,
+  },
+  checkoutButtonText: {
+    color: "#fdfbef",
+    fontSize: 18,
+    textAlign: "center",
+  },
 });

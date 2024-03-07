@@ -5,7 +5,6 @@ import { OAuthStrategy, WixProvider } from "@wix/sdk-react";
 import * as Crypto from "expo-crypto";
 import { useFonts } from "expo-font";
 import * as Linking from "expo-linking";
-import * as WebBrowser from "expo-web-browser";
 import * as React from "react";
 import "react-native-gesture-handler";
 import { PaperProvider } from "react-native-paper";
@@ -20,11 +19,6 @@ global.crypto = Crypto;
 
 const Tab = createBottomTabNavigator();
 const queryClient = new QueryClient();
-
-console.log(
-  "maybe complete auth session",
-  WebBrowser.maybeCompleteAuthSession()
-);
 
 function App() {
   const [fontsLoaded] = useFonts({
@@ -46,7 +40,7 @@ function App() {
           })}
         >
           <WixSessionProvider clientId={clientId}>
-            <LoginHandler loginType={"custom"}>
+            <LoginHandler>
               <NavigationContainer
                 linking={{
                   prefixes: [Linking.createURL("/")],
@@ -66,7 +60,7 @@ function App() {
                 }}
               >
                 <Tab.Navigator
-                  screenOptions={({ navigation, route }) => ({
+                  screenOptions={() => ({
                     headerShown: false,
                     tabBarLabelStyle: {
                       fontSize: 11,
