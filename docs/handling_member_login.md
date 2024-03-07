@@ -15,6 +15,7 @@ Wix Managed Pages are pages that are managed by Wix and are part of the Wix doma
 To perform a login with Wix Managed Pages, we'll use the APIs available on the `OAuthStartegy` to generate a url for the Wix OAuth /authorize endpoint and then open it using the `expo-web-browser` package. For our OAuth redirect url we'll use a deep link (with `expo-linking`) that will be handled by our application and will finish the OAuth process by exchanging the `code` and `state` params for member tokens. For secure storage of our oauth data, we'll use the `expo-secure-store` package.
 
 > 📚 Learn more about the expo packages we use:
+>
 > - [expo-web-browser](https://docs.expo.dev/versions/latest/sdk/webbrowser/)
 > - [expo-linking](https://docs.expo.dev/versions/latest/sdk/linking/)
 > - [expo-secure-store](https://docs.expo.dev/versions/latest/sdk/securestore/)
@@ -40,15 +41,13 @@ export default function MyLoginButton() {
 
   const handleLogin = React.useCallback(async () => {
     const data = auth.generateOAuthData(
-      Linking.createURL("/oauth/wix/callback")
+      Linking.createURL("/oauth/wix/callback"),
     );
     const { authUrl } = await auth.getAuthUrl(data);
     WebBrowser.openBrowserAsync(authUrl);
   }, [auth]);
 
-  return (
-    <Button title="Login" onPress={handleLogin} />
-  );
+  return <Button title="Login" onPress={handleLogin} />;
 }
 ```
 
@@ -56,18 +55,16 @@ Now that we have a button that starts the login process, we need to handle the r
 
 ```jsx
 React.useEffect(() => {
-    Linking.addEventListener("url", async (event) => {
-      if (
-        event.url.startsWith(Linking.createURL("/oauth/wix/callback"))
-      ) {
-        const oauthData = JSON.parse(
-          await SecureStore.getItemAsync("oauthState")
-        );
-        const { code, state } = auth.parseFromUrl(event.url);
-        const tokens = await auth.getMemberTokens(code, state, oauthData);
-      }
-    });
-  }, []);
+  Linking.addEventListener("url", async (event) => {
+    if (event.url.startsWith(Linking.createURL("/oauth/wix/callback"))) {
+      const oauthData = JSON.parse(
+        await SecureStore.getItemAsync("oauthState"),
+      );
+      const { code, state } = auth.parseFromUrl(event.url);
+      const tokens = await auth.getMemberTokens(code, state, oauthData);
+    }
+  });
+}, []);
 ```
 
 In our event listener, we parsed the url, and then checked if the url is the callback url we registered in the Wix Dashboard. If it is, we parsed the `code` and `state` params from the url and then called `getMemberTokens` to finish the OAuth process and get the member tokens. You can then use the tokens to store the member session in your application.
@@ -106,7 +103,7 @@ function LoginHandlerInvisibleWebview(props) {
           ) {
             const { code, state } = auth.parseFromUrl(
               request.url,
-              props.loginState.data
+              props.loginState.data,
             );
             auth
               .getMemberTokens(code, state, props.loginState.data)
@@ -146,7 +143,7 @@ export function LoginHandler(props) {
         password,
       });
       const data = auth.generateOAuthData(
-        Linking.createURL("/oauth/wix/callback")
+        Linking.createURL("/oauth/wix/callback"),
       );
       const { authUrl } = await auth.getAuthUrl(data, {
         prompt: "none",
@@ -157,7 +154,7 @@ export function LoginHandler(props) {
         data,
       });
     },
-    [auth, setSessionLoading]
+    [auth, setSessionLoading],
   );
 
   return (
@@ -191,11 +188,7 @@ export default function CustomLoginScreen({ navigation }) {
 
   return (
     <View>
-      <TextInput
-        value={email}
-        onChangeText={setEmail}
-        placeholder="Email"
-      />
+      <TextInput value={email} onChangeText={setEmail} placeholder="Email" />
       <TextInput
         value={password}
         onChangeText={setPassword}
@@ -232,7 +225,7 @@ We'll start by changing the code in the `LoginHandler` component we wrote earlie
 const silentLogin = React.useCallback(
   async (sessionToken) => {
     const data = auth.generateOAuthData(
-      Linking.createURL("/oauth/wix/callback")
+      Linking.createURL("/oauth/wix/callback"),
     );
     const { authUrl } = await auth.getAuthUrl(data, {
       prompt: "none",
@@ -243,7 +236,7 @@ const silentLogin = React.useCallback(
       data,
     });
   },
-  [auth, setSessionLoading]
+  [auth, setSessionLoading],
 );
 
 const login = React.useCallback(
@@ -254,7 +247,7 @@ const login = React.useCallback(
     });
     await silentLogin(result.data.sessionToken);
   },
-  [auth, setSessionLoading]
+  [auth, setSessionLoading],
 );
 ```
 
@@ -278,4 +271,3 @@ React.useEffect(() => {
 ```
 
 In our event listener, we parsed the url, and then checked if the `wixMemberLoggedIn` query parameters is set true, and that our current session isn't for a member (meaning we are logged out). If both conditions are met, we initiate the silent login process.
-

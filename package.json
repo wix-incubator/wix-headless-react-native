@@ -5,7 +5,8 @@
     "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "format": "prettier . --write"
   },
   "dependencies": {
     "@react-navigation/bottom-tabs": "^6.5.11",
@@ -48,7 +49,8 @@
     "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9"
+    "@babel/core": "^7.23.9",
+    "prettier": "3.2.5"
   },
   "private": true
 }

@@ -1,29 +1,31 @@
-import {SafeAreaView, StyleSheet, View} from "react-native";
-import {SimpleHeader} from "../Header/SimpleHeader";
+import { SafeAreaView, StyleSheet, View } from "react-native";
+import { SimpleHeader } from "../Header/SimpleHeader";
 
-export const SimpleContainer = ({children, navigation, title, backIcon = true, styles}) => {
-    return (
-        <>
-            <SafeAreaView style={defaultStyles.safeArea}/>
-            <SimpleHeader navigation={navigation} title={title} backIcon={backIcon}/>
-            <View
-                style={[defaultStyles.container, styles]}
-            >
-                {children}
-            </View>
-        </>
-    )
-}
+export const SimpleContainer = ({
+  children,
+  navigation,
+  title,
+  backIcon = true,
+  styles,
+}) => {
+  return (
+    <>
+      <SafeAreaView style={defaultStyles.safeArea} />
+      <SimpleHeader navigation={navigation} title={title} backIcon={backIcon} />
+      <View style={[defaultStyles.container, styles]}>{children}</View>
+    </>
+  );
+};
 
 const defaultStyles = StyleSheet.create({
-    safeArea: {
-        flex: 0,
-        backgroundColor: "#c3c198",
-    },
-    container: {
-        flexDirection: "column",
-        height: "100%",
-        backgroundColor: "#fdfbef",
-        flex: 1,
-    },
+  safeArea: {
+    flex: 0,
+    backgroundColor: "#c3c198",
+  },
+  container: {
+    flexDirection: "column",
+    height: "100%",
+    backgroundColor: "#fdfbef",
+    flex: 1,
+  },
 });

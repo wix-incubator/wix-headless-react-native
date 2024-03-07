@@ -8,6 +8,6 @@ export function usePreventBackNavigation({ navigation }) {
           e.preventDefault();
         }
       }),
-    [navigation]
+    [navigation],
   );
 }
