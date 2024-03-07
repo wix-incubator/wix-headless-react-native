@@ -199,10 +199,10 @@ export function ProductScreen({ route, navigation }) {
               <Card.Cover source={{ uri: url }} style={styles.cardImage} />
             )}
           </WixMediaImage>
-          {product.sku && (
+          {selectedVariant?.variant?.sku && (
             <Card.Title
               title={""}
-              subtitle={`SKU: ${product.sku}`}
+              subtitle={`SKU: ${selectedVariant?.variant?.sku}`}
               subtitleStyle={styles.productSku}
             />
           )}
@@ -211,7 +211,7 @@ export function ProductScreen({ route, navigation }) {
               (variant) =>
                 variant.choices.Size &&
                 variant.variant.visible && (
-                  <View key={variant._id} style={styles.flexJustifyStart}>
+                  <View key={variant._id}>
                     <Chip
                       mode={"outlined"}
                       selected={
@@ -230,10 +230,12 @@ export function ProductScreen({ route, navigation }) {
           </View>
           <Card.Title
             title={product.name}
+            titleNumberOfLines={2}
             subtitle={
               selectedVariant?.variant?.convertedPriceData?.formatted
                 ?.discountedPrice || null
             }
+            titleVariant="displaySmall"
             titleStyle={styles.productTitle}
           />
 

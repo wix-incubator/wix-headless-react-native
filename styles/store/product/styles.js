@@ -33,8 +33,7 @@ export const styles = StyleSheet.create({
   productTitle: {
     fontFamily: "Fraunces-Regular",
     fontSize: 40,
-    paddingTop: 40,
-    flexWrap: "wrap",
+    paddingVertical: 20,
   },
   container: {
     flex: 1,
@@ -63,7 +62,9 @@ export const styles = StyleSheet.create({
   variantsContainer: {
     flex: 1,
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 20,
   },
 });
