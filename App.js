@@ -41,7 +41,7 @@ function App() {
           })}
         >
           <WixSessionProvider clientId={clientId}>
-            <LoginHandler loginType={"custom"}>
+            <LoginHandler>
               <NavigationContainer
                 linking={{
                   prefixes: [Linking.createURL("/")],
@@ -62,7 +62,7 @@ function App() {
                 }}
               >
                 <Tab.Navigator
-                  screenOptions={({ navigation, route }) => ({
+                  screenOptions={() => ({
                     headerShown: false,
                     tabBarLabelStyle: {
                       fontSize: 11,
