@@ -19,7 +19,6 @@ import { ErrorView } from "../ErrorView/ErrorView";
 import { WixMediaImage } from "../../WixMediaImage";
 import { data as StaticProductsData } from "../../data/staticdProductsData/data";
 import { data as StaticCollectionsData } from "../../data/staticCollectionsData/data";
-import { DISPLAY_COLLECTIONS_SLUGS, NEW_COLLECTION_SLUG } from "@env";
 import Routes from "../../routes/routes";
 
 const screenWidth = Dimensions.get("window").width;
@@ -52,9 +51,10 @@ export const ShopCollectionsHome = ({ navigation }) => {
     carouselRef.current?.prev();
   };
   const shopCollections = [...collectionsResponse.data.items];
-  const preferredCollections = DISPLAY_COLLECTIONS_SLUGS.split(" ").map(
-    (slug) => slug.toLowerCase(),
-  );
+  const preferredCollections =
+    process.env.EXPO_PUBLIC_DISPLAY_COLLECTIONS_SLUGS.split(" ").map((slug) =>
+      slug.toLowerCase(),
+    );
   const displayedCollections =
     preferredCollections.length > 0
       ? shopCollections
@@ -71,7 +71,7 @@ export const ShopCollectionsHome = ({ navigation }) => {
             .slice(0, Math.min(3, shopCollections.length))
             .map((collection) => {
               switch (collection.slug.toLowerCase()) {
-                case NEW_COLLECTION_SLUG:
+                case process.env.EXPO_PUBLIC_NEW_COLLECTION_SLUG:
                   return shopCollections[4] || collection;
                 case "all-products":
                   return shopCollections[3] || collection;
@@ -82,7 +82,8 @@ export const ShopCollectionsHome = ({ navigation }) => {
         : StaticCollectionsData.items;
 
   const newInCollection = shopCollections.find(
-    (collection) => collection.slug === NEW_COLLECTION_SLUG,
+    (collection) =>
+      collection.slug === process.env.EXPO_PUBLIC_NEW_COLLECTION_SLUG,
   );
   const newProducts = [...productsResponse.data.items].filter((product) =>
     product.collectionIds.includes(newInCollection?._id),

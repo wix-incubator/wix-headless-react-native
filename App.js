@@ -14,7 +14,6 @@ import { tabs } from "./data/tabs/data";
 import { TabBar } from "./components/Tabs/Tabs";
 import { useFonts } from "expo-font";
 import { LoadingIndicator } from "./components/LoadingIndicator/LoadingIndicator";
-import { WIX_CLIENT_ID } from "@env";
 
 global.crypto = Crypto;
 
@@ -32,6 +31,7 @@ function App() {
   }
 
   const clientId = process.env.EXPO_PUBLIC_WIX_CLIENT_ID || "";
+
   return (
     <PaperProvider>
       <QueryClientProvider client={queryClient}>
