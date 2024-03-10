@@ -26,7 +26,7 @@ export function LoginHandler(props) {
   const silentLogin = React.useCallback(
     async (sessionToken) => {
       const data = auth.generateOAuthData(
-        Linking.createURL("/wix/oauth/callback"),
+        Linking.createURL("/oauth/wix/callback"),
       );
       const { authUrl } = await auth.getAuthUrl(data, {
         prompt: "none",
@@ -102,7 +102,7 @@ function LoginHandlerInvisibleWebview(props) {
         containerStyle={{ display: "none" }}
         onShouldStartLoadWithRequest={(request) => {
           if (
-            request.url.startsWith(Linking.createURL("/wix/oauth/callback"))
+            request.url.startsWith(Linking.createURL("/oauth/wix/callback"))
           ) {
             const { code, state } = auth.parseFromUrl(
               request.url,
@@ -125,7 +125,7 @@ function LoginHandlerInvisibleWebview(props) {
 
 export function useLoginByWixManagedPages() {
   const redirectUri = makeRedirectUri({
-    path: "/wix/oauth/callback",
+    path: "/oauth/wix/callback",
   });
 
   const auth = useWixAuth();
