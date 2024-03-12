@@ -146,13 +146,16 @@ export function ProductScreen({ route, navigation }) {
   };
   const productInStock = (variant) => {
     return (
-      variant?.stock.inStock &&
-      (!isNumber(inventoryQuantity) || inventoryQuantity > 0)
+      variant?.stock.inStock ||
+      isNumber(inventoryQuantity) ||
+      inventoryQuantity > 0
     );
   };
 
   const variants = product?.variants;
-  const inventoryQuantity = selectedVariant?.stock.quantity;
+  const inventoryQuantity = product?.stock.inStock
+    ? undefined
+    : selectedVariant?.stock.quantity;
   const inStock = productInStock(selectedVariant);
 
   const addToCartHandler = () => {
