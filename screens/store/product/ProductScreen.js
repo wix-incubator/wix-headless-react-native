@@ -147,8 +147,7 @@ export function ProductScreen({ route, navigation }) {
   const productInStock = (variant) => {
     return (
       variant?.stock.inStock ||
-      isNumber(inventoryQuantity) ||
-      inventoryQuantity > 0
+      (isNumber(inventoryQuantity) && inventoryQuantity > 0)
     );
   };
 
