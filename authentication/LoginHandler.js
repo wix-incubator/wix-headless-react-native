@@ -130,26 +130,16 @@ export function useLoginByWixManagedPages() {
 
   const auth = useWixAuth();
   const { setSession, setSessionLoading } = useWixSession();
+  const [error, setError] = React.useState(null);
 
-  const [{ authorizationEndpoint, sessionToken }, setAuthorizationEndpoint] =
-    React.useState({ authorizationEndpoint: null, sessionToken: null });
-
-  React.useEffect(() => {
-    auth
-      .getAuthUrl({
-        state: "1",
-      })
-      .then(({ authUrl: authUrlAsString }) => {
-        const authUrlASUrl = new URL(authUrlAsString);
-        const authorizationEndpoint =
-          authUrlASUrl.protocol +
-          "//" +
-          authUrlASUrl.host +
-          authUrlASUrl.pathname;
-        const sessionToken = authUrlASUrl.searchParams.get("sessionToken");
-        setAuthorizationEndpoint({ authorizationEndpoint, sessionToken });
-      });
-  }, []);
+  const [
+    { authorizationEndpoint, sessionToken, used: sessionTokenUsed },
+    setAuthorizationEndpoint,
+  ] = React.useState({
+    authorizationEndpoint: null,
+    sessionToken: null,
+    used: true,
+  });
 
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -164,8 +154,21 @@ export function useLoginByWixManagedPages() {
     },
     {
       authorizationEndpoint,
+      tokenEndpoint: "https://www.wixapis.com/oauth2/token",
     },
   );
+
+  React.useEffect(() => {
+    if (!sessionTokenUsed && request?.url.startsWith(authorizationEndpoint)) {
+      promptAsync().then(() => {
+        setAuthorizationEndpoint({
+          authorizationEndpoint: null,
+          sessionToken: null,
+          used: true,
+        });
+      });
+    }
+  }, [sessionTokenUsed, authorizationEndpoint, request?.url]);
 
   React.useEffect(() => {
     let aborted = false;
@@ -199,9 +202,7 @@ export function useLoginByWixManagedPages() {
           }
         })
         .catch((error) => {
-          console.log(Object.keys(error));
-          console.error(JSON.stringify(error));
-          console.error(error);
+          setError(error);
         })
         .finally(() => {
           setSessionLoading(false);
@@ -209,14 +210,19 @@ export function useLoginByWixManagedPages() {
 
       return () => {
         aborted = true;
-        setSessionLoading(false);
       };
     }
   }, [response]);
 
   return {
-    openBrowser: () => {
-      return promptAsync();
+    error,
+    openBrowser: async () => {
+      const { authorizationEndpoint, sessionToken } = await auth.getAuthUrl();
+      setAuthorizationEndpoint({
+        authorizationEndpoint,
+        sessionToken,
+        used: false,
+      });
     },
   };
 }
