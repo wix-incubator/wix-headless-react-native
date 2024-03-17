@@ -18,13 +18,14 @@
     "@wix/members": "^1.0.50",
     "@wix/metro-runtime": "^1.1621.0",
     "@wix/redirects": "^1.0.32",
-    "@wix/sdk-react": "^0.4.8",
+    "@wix/sdk-react": "^0.4.11",
     "@wix/stores": "^1.0.122",
     "babel-plugin-module-resolver": "^5.0.0",
     "date-fns": "^3.3.1",
     "expo": "^50.0.6",
     "expo-auth-session": "~5.4.0",
     "expo-crypto": "^12.8.0",
+    "expo-standard-web-crypto": "^1.7.0",
     "expo-font": "^11.10.2",
     "expo-linking": "^6.2.2",
     "expo-secure-store": "^12.8.1",
@@ -46,7 +47,8 @@
     "react-native-svg": "^14.1.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-webview": "13.6.4",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "text-encoding": "^0.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
