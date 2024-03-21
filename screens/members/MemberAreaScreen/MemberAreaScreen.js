@@ -5,6 +5,7 @@ import { SimpleHeader } from "../../../components/Header/SimpleHeader";
 import { styles } from "../../../styles/members/styles";
 import { MemberView } from "./MemberView";
 import { SignInView } from "./SignInView";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const MemberArea = () => {
   const { session } = useWixSession();
@@ -21,7 +22,7 @@ const MemberArea = () => {
 
 export const MemberAreaScreen = ({ navigation }) => {
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 0, backgroundColor: "#c3c198" }} />
       <SimpleHeader
         title={"My Account"}
@@ -45,6 +46,6 @@ export const MemberAreaScreen = ({ navigation }) => {
           <MemberArea />
         </ScrollView>
       </View>
-    </>
+    </GestureHandlerRootView>
   );
 };
