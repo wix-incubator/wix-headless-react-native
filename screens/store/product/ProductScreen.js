@@ -2,10 +2,12 @@ import { checkout, currentCart } from "@wix/ecom";
 import { redirects } from "@wix/redirects";
 import * as Linking from "expo-linking";
 import * as React from "react";
+import { useEffect } from "react";
 import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import {
   Button,
   Card,
+  Chip,
   IconButton,
   List,
   Portal,
@@ -14,8 +16,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import RenderHtml from "react-native-render-html";
-import { usePrice } from "../price";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useWixSessionModules } from "../../../authentication/session";
 import { WixMediaImage } from "../../../WixMediaImage";
 import { NumericInput } from "../../../components/Input/NumericInput";
@@ -23,15 +24,14 @@ import { SimpleContainer } from "../../../components/Container/SimpleContainer";
 import Routes from "../../../routes/routes";
 import { styles } from "../../../styles/store/product/styles";
 import { isNumber } from "lodash";
-import { useWixModules } from "@wix/sdk-react";
-import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
-import { inventory } from "@wix/stores";
 
 export function ProductScreen({ route, navigation }) {
   const { product, collectionName } = route.params;
   const { width } = useWindowDimensions();
   const theme = useTheme();
   const [quantity, setQuantity] = React.useState(1);
+  const [selectedVariant, setSelectedVariant] = React.useState(null);
+  const [selectedVariantId, setSelectedVariantId] = React.useState(null);
   const {
     addToCurrentCart,
     getCurrentCart,
@@ -43,10 +43,12 @@ export function ProductScreen({ route, navigation }) {
     checkout: { createCheckout },
   } = useWixSessionModules({ redirects, checkout });
 
-  const price = usePrice({
-    amount: product?.price?.price,
-    currencyCode: product?.price?.currency,
-  });
+  useEffect(() => {
+    if (product?.variants?.length) {
+      setSelectedVariant(product.variants[0]);
+      setSelectedVariantId(product.variants[0]._id);
+    }
+  }, []);
 
   const description = product?.description ?? "";
 
@@ -78,7 +80,11 @@ export function ProductScreen({ route, navigation }) {
     },
     {
       onSuccess: (redirectSession) => {
-        navigation.navigate(Routes.Checkout, { redirectSession });
+        navigation.navigate(Routes.Cart, {
+          screen: Routes.Checkout,
+          params: { redirectSession, cameFrom: Routes.Store },
+          goBack: Routes.Products,
+        });
       },
     },
   );
@@ -95,6 +101,9 @@ export function ProductScreen({ route, navigation }) {
           catalogReference: {
             catalogItemId: product._id,
             appId: "1380b703-ce81-ff05-f115-39571d94dfcd",
+            options: {
+              variantId: selectedVariantId,
+            },
           },
         },
       ],
@@ -135,23 +144,27 @@ export function ProductScreen({ route, navigation }) {
   const onQuantityChanged = (val) => {
     setQuantity(val);
   };
-  const prodInventoryId = product?.inventoryItemId;
-  const { getInventoryVariants } = useWixModules(inventory);
-  const inventoryVariantsResponse = useQuery(
-    ["inventoryVariants", prodInventoryId],
-    () => getInventoryVariants(prodInventoryId),
-  );
+  const productInStock = (variant) => {
+    return (
+      variant?.stock.inStock ||
+      (isNumber(inventoryQuantity) && inventoryQuantity > 0)
+    );
+  };
 
-  const inventoryQuantity =
-    inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.quantity;
-  const inStock =
-    inventoryVariantsResponse?.data?.inventoryItem?.variants[0]?.inStock &&
-    (!isNumber(inventoryQuantity) || inventoryQuantity > 0);
+  const variants = product?.variants;
+  const inventoryQuantity = product?.stock.inStock
+    ? undefined
+    : selectedVariant?.stock.quantity;
+  const inStock = productInStock(selectedVariant);
 
   const addToCartHandler = () => {
     !addToCurrentCartMutation.isLoading
       ? addToCurrentCartMutation.mutateAsync(quantity)
       : {};
+  };
+
+  const buyNowHandler = () => {
+    !buyNowMutation.isLoading ? buyNowMutation.mutateAsync(quantity) : {};
   };
   return (
     <SimpleContainer
@@ -188,65 +201,114 @@ export function ProductScreen({ route, navigation }) {
               <Card.Cover source={{ uri: url }} style={styles.cardImage} />
             )}
           </WixMediaImage>
-          {product.sku && (
+          {selectedVariant?.variant?.sku && (
             <Card.Title
               title={""}
-              subtitle={`SKU: ${product.sku}`}
+              subtitle={`SKU: ${selectedVariant?.variant?.sku}`}
               subtitleStyle={styles.productSku}
             />
           )}
+          <View style={styles.variantsContainer}>
+            {variants?.map(
+              (variant) =>
+                variant.choices.Size &&
+                variant.variant.visible && (
+                  <View key={variant._id}>
+                    <Chip
+                      mode={"outlined"}
+                      selected={
+                        productInStock(variant) &&
+                        selectedVariantId === variant._id
+                      }
+                      onPress={() => setSelectedVariantId(variant._id)}
+                      style={{ backgroundColor: theme.colors.surface }}
+                      disabled={!productInStock(variant)}
+                    >
+                      {variant.choices.Size}
+                    </Chip>
+                  </View>
+                ),
+            )}
+          </View>
           <Card.Title
             title={product.name}
-            subtitle={price}
+            titleNumberOfLines={2}
+            subtitle={
+              selectedVariant?.variant?.convertedPriceData?.formatted
+                ?.discountedPrice || null
+            }
+            titleVariant="displaySmall"
             titleStyle={styles.productTitle}
           />
-          {!inventoryVariantsResponse.isLoading ? (
-            <Card.Content>
-              <View style={styles.flexJustifyStart}>
-                <Text style={{ fontSize: 13, marginBottom: 8 }}>Quantity</Text>
-                {inStock ? (
-                  <NumericInput
-                    value={1}
-                    onChange={onQuantityChanged}
-                    min={1}
-                    max={inventoryQuantity}
-                    style={{
-                      width: 100,
-                      justifyContent: "flex-start",
-                      alignItems: "flex-start",
-                    }}
-                  />
-                ) : (
-                  <Text style={{ color: "#B22D1D" }}>Out of Stock</Text>
-                )}
-              </View>
 
-              <Button
-                mode="contained"
-                onPress={addToCartHandler}
-                loading={addToCurrentCartMutation.isLoading}
-                style={[
-                  styles.flexGrow1Button,
-                  {
-                    backgroundColor: !inStock
-                      ? theme.colors.surfaceDisabled
-                      : "#403f2a",
-                  },
-                ]}
-                buttonColor={theme.colors.secondary}
-                disabled={!inStock}
-              >
-                Add to Cart
-              </Button>
-              <RenderHtml
-                style={styles.flexJustifyStart}
-                source={{ html: description }}
-                contentWidth={width}
-              />
-            </Card.Content>
-          ) : (
-            <LoadingIndicator />
-          )}
+          <Card.Content>
+            <View style={styles.flexJustifyStart}>
+              <Text style={{ fontSize: 13, marginBottom: 8 }}>Quantity</Text>
+              {inStock ? (
+                <NumericInput
+                  value={1}
+                  onChange={onQuantityChanged}
+                  min={1}
+                  max={inventoryQuantity}
+                  style={{
+                    width: 100,
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
+                  }}
+                />
+              ) : (
+                <Text style={{ color: "#B22D1D" }}>Out of Stock</Text>
+              )}
+            </View>
+
+            <Button
+              mode="contained"
+              onPress={addToCartHandler}
+              loading={addToCurrentCartMutation.isLoading}
+              style={[
+                styles.flexGrow1Button,
+                {
+                  backgroundColor: !inStock
+                    ? theme.colors.surfaceDisabled
+                    : "#403f2a",
+                },
+              ]}
+              buttonColor={theme.colors.secondary}
+              disabled={!inStock}
+            >
+              Add to Cart
+            </Button>
+            <Button
+              mode="contained"
+              onPress={buyNowHandler}
+              loading={buyNowMutation.isLoading}
+              style={[
+                styles.flexGrow1Button,
+                {
+                  // backgroundColor: "transparent",
+                  borderColor: !inStock
+                    ? theme.colors.surfaceDisabled
+                    : "#403f2a",
+                  marginTop: 0,
+                },
+              ]}
+              icon={"shopping-outline"}
+              textColor={theme.colors.surface}
+              contentStyle={{
+                backgroundColor: inStock
+                  ? theme.colors.secondary
+                  : theme.colors.surfaceVariant,
+              }}
+              disabled={!inStock}
+            >
+              Buy Now
+            </Button>
+            <RenderHtml
+              style={styles.flexJustifyStart}
+              source={{ html: description }}
+              contentWidth={width}
+            />
+          </Card.Content>
         </Card>
 
         {product.additionalInfoSections.map((section) => (

@@ -8,52 +8,27 @@ import {
   View,
 } from "react-native";
 import { WixMediaImage } from "../../WixMediaImage";
+import { memo, useMemo } from "react";
 
 const screenWidth = Dimensions.get("window").width;
 
-export const CollectionsGrid = ({ data, onPress }) => {
-  return (
-    <FlatList
-      scrollEventThrottle={16}
-      data={data}
-      numColumns={2}
-      keyExtractor={(item) => item._id}
-      keyboardShouldPersistTaps="always"
-      alwaysBounceVertical={false}
-      showsVerticalScrollIndicator={false}
-      renderItem={({ item, index }) => {
-        return (
-          item.visible && (
-            <View style={styles.container}>
-              <Pressable
-                onPress={() => {
-                  onPress(item);
-                }}
-              >
-                {item.media?.mainMedia?.image?.url ? (
-                  <WixMediaImage
-                    media={item.media.mainMedia.image.url}
-                    width={screenWidth / 2 - 20}
-                    height={screenWidth / 2}
-                  >
-                    {({ url }) => {
-                      return (
-                        <Image
-                          style={[
-                            styles.image,
-                            {
-                              width: screenWidth / 2 - 20, // Adjust the width as needed
-                              height: screenWidth / 2,
-                            },
-                          ]}
-                          source={{
-                            uri: url,
-                          }}
-                        />
-                      );
-                    }}
-                  </WixMediaImage>
-                ) : (
+const CollectionCard = ({ item, onPress }) => {
+  return useMemo(() => {
+    return (
+      <View style={styles.container}>
+        <Pressable
+          onPress={() => {
+            onPress(item);
+          }}
+        >
+          {item.media?.mainMedia?.image?.url ? (
+            <WixMediaImage
+              media={item.media.mainMedia.image.url}
+              width={screenWidth / 2 - 20}
+              height={screenWidth / 2}
+            >
+              {({ url }) => {
+                return (
                   <Image
                     style={[
                       styles.image,
@@ -63,23 +38,56 @@ export const CollectionsGrid = ({ data, onPress }) => {
                       },
                     ]}
                     source={{
-                      uri: `https://via.placeholder.com/${screenWidth / 2}`,
+                      uri: url,
                     }}
                   />
-                )}
-                <Text style={styles.title}>{item.name}</Text>
-                <Text style={styles.title}>
-                  {item.convertedPriceData?.formatted?.price}
-                </Text>
-              </Pressable>
-            </View>
+                );
+              }}
+            </WixMediaImage>
+          ) : (
+            <Image
+              style={[
+                styles.image,
+                {
+                  width: screenWidth / 2 - 20, // Adjust the width as needed
+                  height: screenWidth / 2,
+                },
+              ]}
+              source={{
+                uri: `https://via.placeholder.com/${screenWidth / 2}`,
+              }}
+            />
+          )}
+          <Text style={styles.title}>{item.name}</Text>
+          <Text style={styles.title}>
+            {item.convertedPriceData?.formatted?.price}
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }, [item]);
+};
+export const CollectionsGrid = memo(({ data, onPress }) => {
+  return (
+    <FlatList
+      scrollEventThrottle={16}
+      data={data}
+      numColumns={2}
+      keyExtractor={(item, index) => index.toString()}
+      keyboardShouldPersistTaps="always"
+      alwaysBounceVertical={false}
+      showsVerticalScrollIndicator={false}
+      renderItem={({ item, index }) => {
+        return (
+          item.visible && (
+            <CollectionCard key={index} item={item} onPress={onPress} />
           )
         );
       }}
       style={{ zIndex: -1 }}
     ></FlatList>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

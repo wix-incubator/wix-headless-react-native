@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import NumericInput from "react-native-numeric-input";
 import { WixMediaImage } from "../../WixMediaImage";
@@ -19,6 +19,9 @@ export const CartListItem = ({
     isError: false,
     message: "",
   });
+  useEffect(() => {
+    setNewQuantity(quantity);
+  }, [quantity]);
   return (
     <View style={{ width: "100%" }}>
       <View style={styles.card}>

@@ -32,6 +32,19 @@ export function LoginHandler(props) {
         prompt: "none",
         sessionToken,
       });
+      const result = await fetch(authUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (result.status === 400) {
+        setSessionLoading(false);
+        return Promise.reject(
+          "Invalid redirect URI. Please add an allowed URI to your Oauth App",
+        );
+      }
+
       setLoginState({
         url: authUrl,
         data,

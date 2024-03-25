@@ -161,7 +161,10 @@ function CartView() {
     {
       onSuccess: (redirectSession) => {
         if (!redirectSession) return;
-        navigation.navigate(Routes.Checkout, { redirectSession });
+        navigation.navigate(Routes.Checkout, {
+          redirectSession,
+          cameFrom: "CartView",
+        });
         setCheckoutRedirect(false);
       },
     },
@@ -379,6 +382,7 @@ export function CartScreen({ navigation }) {
         headerShown: false,
         animation: "ios",
       }}
+      initialRouteName={"CartView"}
     >
       <Stack.Screen name="CartView" component={CartView} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />

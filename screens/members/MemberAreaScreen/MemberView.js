@@ -20,6 +20,7 @@ import { ErrorView } from "../../../components/ErrorView/ErrorView";
 import { format } from "date-fns";
 import { usePrice } from "../../store/price";
 import { DismissKeyboardScrollView } from "../../../components/DismissKeyboardHOC/DismissKeyboardScrollView";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const FormInput = ({ labelValue, placeholderText, inputValue, ...rest }) => {
   return (
@@ -340,133 +341,135 @@ export const MemberView = () => {
   const { profile, contact } = currentMember || {};
 
   return (
-    <DismissKeyboardScrollView
-      style={styles.contentSection}
-      keyboardShouldPersistTaps="never"
-      alwaysBounceVertical={false}
-      showsVerticalScrollIndicator={false}
-      bounces={false}
-      bouncesZoom={false}
-      automaticallyAdjustKeyboardInsets={true}
-      scrollEventThrottle={16}
-    >
-      <View style={styles.memberHeader} />
-      <View style={styles.memberSection}>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          {profile?.photo?.url ? (
-            <Avatar.Image
-              size={100}
-              theme={{ colors: { primary: "#403f2b" } }}
-              source={{
-                uri: profile?.photo?.url,
-              }}
-            />
-          ) : (
-            <Avatar.Text
-              size={100}
-              label={
-                contact?.firstName && contact?.lastName
-                  ? `${contact?.firstName[0]}${contact?.lastName[0]}`
-                  : profile?.nickname[0]
-              }
-            />
-          )}
-          <Menu
-            visible={visibleMenu}
-            onDismiss={() => setVisibleMenu(false)}
-            anchor={
-              <IconButton
-                icon={"dots-vertical"}
-                iconColor={"#403f2b"}
-                size={30}
-                onPress={() => setVisibleMenu(!visibleMenu)}
-                style={{ backgroundColor: "#fdfbef" }}
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <DismissKeyboardScrollView
+        style={styles.contentSection}
+        keyboardShouldPersistTaps="never"
+        alwaysBounceVertical={false}
+        showsVerticalScrollIndicator={false}
+        bounces={false}
+        bouncesZoom={false}
+        automaticallyAdjustKeyboardInsets={true}
+        scrollEventThrottle={16}
+      >
+        <View style={styles.memberHeader} />
+        <View style={styles.memberSection}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+            }}
+          >
+            {profile?.photo?.url ? (
+              <Avatar.Image
+                size={100}
+                theme={{ colors: { primary: "#403f2b" } }}
+                source={{
+                  uri: profile?.photo?.url,
+                }}
               />
-            }
-            contentStyle={{
-              backgroundColor: "#fdfbef",
-              padding: 10,
-              marginTop: 40,
-            }}
-            theme={{ colors: { text: "#403f2b" } }}
-          >
-            <Menu.Item
-              leadingIcon="logout"
-              onPress={async () => {
-                await newVisitorSession();
+            ) : (
+              <Avatar.Text
+                size={100}
+                label={
+                  contact?.firstName && contact?.lastName
+                    ? `${contact?.firstName[0]}${contact?.lastName[0]}`
+                    : profile?.nickname[0]
+                }
+              />
+            )}
+            <Menu
+              visible={visibleMenu}
+              onDismiss={() => setVisibleMenu(false)}
+              anchor={
+                <IconButton
+                  icon={"dots-vertical"}
+                  iconColor={"#403f2b"}
+                  size={30}
+                  onPress={() => setVisibleMenu(!visibleMenu)}
+                  style={{ backgroundColor: "#fdfbef" }}
+                />
+              }
+              contentStyle={{
+                backgroundColor: "#fdfbef",
+                padding: 10,
+                marginTop: 40,
               }}
-              title="Signout"
-            />
-          </Menu>
-        </View>
-        <Text
-          style={{
-            fontSize: 20,
-            marginTop: 20,
-            color: "#403f2b",
-          }}
-        >
-          {contact?.firstName && contact?.lastName
-            ? `${contact?.firstName} ${contact?.lastName}`
-            : profile?.nickname}
-        </Text>
-      </View>
-      <View style={{ marginTop: 20, width: "100%" }}>
-        <Orders />
-      </View>
-      <View style={styles.memberDetails}>
-        <Text style={styles.memberDetailsTitle}>My Account</Text>
-        <Text style={styles.memberDetailsSubTitle}>
-          View and edit your personal info below.
-        </Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            gap: 10,
-            width: "100%",
-            marginTop: 20,
-          }}
-        >
-          <Button
-            mode="outlined"
-            onPress={() => {
-              updateContact({
-                firstName: contact?.firstName,
-                lastName: contact?.lastName,
-                phone: contact?.phones[0],
-              });
-            }}
-            style={styles.memberActionButton}
-            labelStyle={{ fontFamily: "Fraunces-Regular", fontSize: 16 }}
-            theme={{ colors: { primary: "#403f2b" } }}
-          >
-            Discard
-          </Button>
-          <Button
-            mode="contained"
-            onPress={() => {
-              updateMemberMutation.mutate();
-            }}
-            style={styles.memberActionButton}
-            labelStyle={{ fontFamily: "Fraunces-Regular", fontSize: 16 }}
-            theme={{
-              colors: { primary: "#403f2b" },
-              fonts: { fontFamily: "Fraunces-Regular" },
+              theme={{ colors: { text: "#403f2b" } }}
+            >
+              <Menu.Item
+                leadingIcon="logout"
+                onPress={async () => {
+                  await newVisitorSession();
+                }}
+                title="Signout"
+              />
+            </Menu>
+          </View>
+          <Text
+            style={{
+              fontSize: 20,
+              marginTop: 20,
+              color: "#403f2b",
             }}
           >
-            Update Info
-          </Button>
+            {contact?.firstName && contact?.lastName
+              ? `${contact?.firstName} ${contact?.lastName}`
+              : profile?.nickname}
+          </Text>
         </View>
-        <MemberForm />
-      </View>
-    </DismissKeyboardScrollView>
+        <View style={{ marginTop: 20, width: "100%" }}>
+          <Orders />
+        </View>
+        <View style={styles.memberDetails}>
+          <Text style={styles.memberDetailsTitle}>My Account</Text>
+          <Text style={styles.memberDetailsSubTitle}>
+            View and edit your personal info below.
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              gap: 10,
+              width: "100%",
+              marginTop: 20,
+            }}
+          >
+            <Button
+              mode="outlined"
+              onPress={() => {
+                updateContact({
+                  firstName: contact?.firstName,
+                  lastName: contact?.lastName,
+                  phone: contact?.phones[0],
+                });
+              }}
+              style={styles.memberActionButton}
+              labelStyle={{ fontFamily: "Fraunces-Regular", fontSize: 16 }}
+              theme={{ colors: { primary: "#403f2b" } }}
+            >
+              Discard
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => {
+                updateMemberMutation.mutate();
+              }}
+              style={styles.memberActionButton}
+              labelStyle={{ fontFamily: "Fraunces-Regular", fontSize: 16 }}
+              theme={{
+                colors: { primary: "#403f2b" },
+                fonts: { fontFamily: "Fraunces-Regular" },
+              }}
+            >
+              Update Info
+            </Button>
+          </View>
+          <MemberForm />
+        </View>
+      </DismissKeyboardScrollView>
+    </GestureHandlerRootView>
   );
 };
