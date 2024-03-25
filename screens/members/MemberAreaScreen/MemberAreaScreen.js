@@ -1,21 +1,16 @@
 import { SafeAreaView, ScrollView, View } from "react-native";
-import { SimpleHeader } from "../../../components/Header/SimpleHeader";
-import { useWixSession } from "../../../authentication/session";
-import { useState } from "react";
-import { styles } from "../../../styles/members/styles";
-import { SignInView } from "./SignInView";
-import { MemberView } from "./MemberView";
 import { MemberHandler } from "../../../authentication/MemberHandler";
+import { useWixSession } from "../../../authentication/session";
+import { SimpleHeader } from "../../../components/Header/SimpleHeader";
+import { styles } from "../../../styles/members/styles";
+import { MemberView } from "./MemberView";
+import { SignInView } from "./SignInView";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const MemberArea = ({ showWixLoginHandler, showWixLogin }) => {
+const MemberArea = () => {
   const { session } = useWixSession();
   if (session.refreshToken.role !== "member") {
-    return (
-      <SignInView
-        showWixLoginHandler={showWixLoginHandler}
-        showWixLogin={showWixLogin}
-      />
-    );
+    return <SignInView />;
   } else {
     return (
       <MemberHandler>
@@ -26,28 +21,14 @@ const MemberArea = ({ showWixLoginHandler, showWixLogin }) => {
 };
 
 export const MemberAreaScreen = ({ navigation }) => {
-  const [showWixLogin, setShowWixLogin] = useState(false);
-
-  const showWixLoginHandler = (val) => {
-    setShowWixLogin(val);
-  };
-
-  const navigateBack = () => {
-    if (showWixLogin) {
-      showWixLoginHandler(false);
-      return;
-    }
-    navigation.goBack();
-  };
-
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 0, backgroundColor: "#c3c198" }} />
       <SimpleHeader
         title={"My Account"}
         backIcon={true}
         navigation={navigation}
-        onBackPress={navigateBack}
+        onBackPress={() => navigation.goBack()}
       />
       <View
         keyboardShouldPersistTaps="always"
@@ -62,12 +43,9 @@ export const MemberAreaScreen = ({ navigation }) => {
           styles={styles.container}
           contentContainerStyle={styles.content}
         >
-          <MemberArea
-            showWixLoginHandler={showWixLoginHandler}
-            showWixLogin={showWixLogin}
-          />
+          <MemberArea />
         </ScrollView>
       </View>
-    </>
+    </GestureHandlerRootView>
   );
 };
