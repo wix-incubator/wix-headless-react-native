@@ -28,6 +28,19 @@ export function LoginHandler(props) {
         prompt: "none",
         sessionToken,
       });
+      const result = await fetch(authUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (result.status === 400) {
+        setSessionLoading(false);
+        return Promise.reject(
+          "Invalid redirect URI. Please add an allowed URI to your Oauth App",
+        );
+      }
+
       setLoginState({
         url: authUrl,
         data,
@@ -43,7 +56,6 @@ export function LoginHandler(props) {
         setSessionLoading(false);
         return Promise.reject("Invalid email address!");
       }
-
       const result = await auth.login({
         email,
         password,

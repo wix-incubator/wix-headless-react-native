@@ -7,11 +7,17 @@ export const SimpleContainer = ({
   title,
   backIcon = true,
   styles,
+  onBackPress,
 }) => {
   return (
     <>
       <SafeAreaView style={defaultStyles.safeArea} />
-      <SimpleHeader navigation={navigation} title={title} backIcon={backIcon} />
+      <SimpleHeader
+        navigation={navigation}
+        title={title}
+        backIcon={backIcon}
+        onBackPress={onBackPress}
+      />
       <View style={[defaultStyles.container, styles]}>{children}</View>
     </>
   );
