@@ -123,9 +123,9 @@ function CartView() {
   const checkoutMutation = useMutation(
     async () => {
       setCheckoutRedirect(true);
-      let currentCheckout = await createCheckoutFromCurrentCart(
-        currentCart.ChannelType.OTHER_PLATFORM,
-      );
+      let currentCheckout = await createCheckoutFromCurrentCart({
+        channelType: currentCart.ChannelType.OTHER_PLATFORM,
+      });
       if (userNote !== "") {
         currentCheckout.buyerNote = userNote;
       }
