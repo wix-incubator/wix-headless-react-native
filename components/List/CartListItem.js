@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import NumericInput from "react-native-numeric-input";
+import InputSpinner from "react-native-input-spinner";
 import { WixMediaImage } from "../../WixMediaImage";
 import { ActivityIndicator, IconButton } from "react-native-paper";
 
@@ -13,12 +13,7 @@ export const CartListItem = ({
   quantityHandlerChange,
   removeHandler,
 }) => {
-  const [isFocused, setIsFocused] = React.useState(false);
   const [newQuantity, setNewQuantity] = React.useState(quantity);
-  const [quantityError, setQuantityError] = React.useState({
-    isError: false,
-    message: "",
-  });
   useEffect(() => {
     setNewQuantity(quantity);
   }, [quantity]);
@@ -82,52 +77,29 @@ export const CartListItem = ({
               />
             </View>
           )}
-          <NumericInput
-            initValue={newQuantity}
+          <InputSpinner
             value={newQuantity}
-            totalWidth={100}
-            valueType="integer"
-            onBlur={() => {
-              setIsFocused(false);
-              if (!newQuantity || newQuantity < 1) {
-                setQuantityError({
-                  isError: true,
-                  message: "Quantity must be at least 1",
-                });
-                setNewQuantity(0);
-                return;
-              }
-              quantityError.isError &&
-                setQuantityError({ isError: false, message: "" });
-              quantity !== newQuantity && quantityHandlerChange(newQuantity);
-            }}
-            onFocus={() => setIsFocused(true)}
+            width={100}
+            height={40}
             onChange={(quantity) => {
               setNewQuantity(quantity);
-              if (!isFocused && !quantityError.isError)
-                quantityHandlerChange(quantity);
+              quantityHandlerChange(quantity);
             }}
-            minValue={1}
+            rounded={false}
+            showBorder={true}
+            buttonStyle={{ width: 30 }}
+            min={1}
             containerStyle={{
               backgroundColor: "transparent",
               borderColor: "#908e80",
               opacity: quantityOnEdit ? 0.5 : 1,
             }}
-            rightButtonBackgroundColor={"transparent"}
-            leftButtonBackgroundColor={"transparent"}
-            borderColor={"transparent"}
-            inputStyle={{ backgroundColor: "transparent", color: "#403f2b" }}
           />
           <Text style={[styles.price, { opacity: quantityOnEdit ? 0.5 : 1 }]}>
             {price}
           </Text>
         </View>
       </View>
-      {quantityError.isError && (
-        <View style={styles.errorContainer}>
-          {<Text style={{ color: "#B22D1D" }}>{quantityError.message}</Text>}
-        </View>
-      )}
     </View>
   );
 };
