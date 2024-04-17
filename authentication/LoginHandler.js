@@ -1,12 +1,16 @@
 import { useWixAuth } from "@wix/sdk-react";
+import {
+  exchangeCodeAsync,
+  makeRedirectUri,
+  useAuthRequest,
+} from "expo-auth-session";
 import * as Linking from "expo-linking";
-import * as SecureStore from "expo-secure-store";
 import * as React from "react";
 import "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
-import { useWixSession } from "./session";
 import validator from "validator";
+import { useWixSession } from "./session";
 
 const LoginHandlerContext = React.createContext(null);
 
@@ -15,7 +19,7 @@ export function useLoginHandler() {
 }
 
 export function LoginHandler(props) {
-  const { setSession, session, setSessionLoading } = useWixSession();
+  const { session, setSessionLoading } = useWixSession();
   const [loginState, setLoginState] = React.useState(null);
   const auth = useWixAuth();
 
@@ -73,25 +77,17 @@ export function LoginHandler(props) {
   );
 
   React.useEffect(() => {
-    Linking.addEventListener("url", async (event) => {
+    const subscription = Linking.addEventListener("url", async (event) => {
       const url = new URL(event.url);
       const wixMemberLoggedIn = url.searchParams.get("wixMemberLoggedIn");
       const requiresSilentLogin =
         wixMemberLoggedIn === "true" && session.refreshToken.role !== "member";
       if (requiresSilentLogin) {
         silentLogin();
-      } else if (
-        event.url.startsWith(Linking.createURL("/oauth/wix/callback"))
-      ) {
-        setSessionLoading(true);
-        const oauthData = JSON.parse(
-          await SecureStore.getItemAsync("oauthState"),
-        );
-        const { code, state } = auth.parseFromUrl(event.url);
-        const tokens = await auth.getMemberTokens(code, state, oauthData);
-        setSession(tokens);
       }
     });
+
+    return () => subscription.remove();
   }, []);
 
   return (
@@ -115,7 +111,7 @@ function LoginHandlerInvisibleWebview(props) {
     return (
       <WebView
         source={{ uri: props.loginState.url }}
-        originWhitelist={["exp://*"]}
+        originWhitelist={["exp://*", "wixmobileheadless://*"]}
         containerStyle={{ display: "none" }}
         onShouldStartLoadWithRequest={(request) => {
           if (
@@ -138,4 +134,108 @@ function LoginHandlerInvisibleWebview(props) {
       />
     );
   }
+}
+
+export function useLoginByWixManagedPages() {
+  const redirectUri = makeRedirectUri({
+    path: "/oauth/wix/callback",
+  });
+
+  const auth = useWixAuth();
+  const { setSession, setSessionLoading } = useWixSession();
+  const [error, setError] = React.useState(null);
+
+  const [
+    { authorizationEndpoint, sessionToken, used: sessionTokenUsed },
+    setAuthorizationEndpoint,
+  ] = React.useState({
+    authorizationEndpoint: null,
+    sessionToken: null,
+    used: true,
+  });
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: process.env.EXPO_PUBLIC_WIX_CLIENT_ID,
+      redirectUri,
+      scopes: ["offline_access"],
+      extraParams: {
+        sessionToken,
+      },
+      usePKCE: true,
+      prompt: "login",
+    },
+    {
+      authorizationEndpoint,
+      tokenEndpoint: "https://www.wixapis.com/oauth2/token",
+    },
+  );
+
+  React.useEffect(() => {
+    if (!sessionTokenUsed && request?.url.startsWith(authorizationEndpoint)) {
+      promptAsync().then(() => {
+        setAuthorizationEndpoint({
+          authorizationEndpoint: null,
+          sessionToken: null,
+          used: true,
+        });
+      });
+    }
+  }, [sessionTokenUsed, authorizationEndpoint, request?.url]);
+
+  React.useEffect(() => {
+    let aborted = false;
+    if (response?.type === "success") {
+      const { code } = response.params;
+      exchangeCodeAsync(
+        {
+          code,
+          clientId: process.env.EXPO_PUBLIC_WIX_CLIENT_ID,
+          redirectUri,
+          extraParams: {
+            code_verifier: request?.codeVerifier,
+          },
+        },
+        {
+          tokenEndpoint: "https://www.wixapis.com/oauth2/token",
+        },
+      )
+        .then((response) => {
+          if (!aborted) {
+            setSession({
+              accessToken: {
+                value: response.accessToken,
+                expiresAt: (response.issuedAt + response.expiresIn) * 1000,
+              },
+              refreshToken: {
+                value: response.refreshToken,
+                role: "member",
+              },
+            });
+          }
+        })
+        .catch((error) => {
+          setError(error);
+        })
+        .finally(() => {
+          setSessionLoading(false);
+        });
+
+      return () => {
+        aborted = true;
+      };
+    }
+  }, [response]);
+
+  return {
+    error,
+    openBrowser: async () => {
+      const { authorizationEndpoint, sessionToken } = await auth.getAuthUrl();
+      setAuthorizationEndpoint({
+        authorizationEndpoint,
+        sessionToken,
+        used: false,
+      });
+    },
+  };
 }

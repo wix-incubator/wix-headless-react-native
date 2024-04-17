@@ -70,7 +70,7 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
           </HelperText>
         )}
         <Text style={{ textAlign: "center", color: "#403F2B" }}>
-          Or login with Wix
+          Or login with Wix Managed Login
         </Text>
         <Button
           style={styles.wixLoginButton}
@@ -81,7 +81,7 @@ export function LoginForm({ navigation, loading, disabled, onWixLogin }) {
           onPress={onWixLogin}
           theme={{ colors: { primary: "#403F2B" } }}
         >
-          Wix Login
+          Wix Managed Login
         </Button>
       </View>
     </DismissKeyboardSafeAreaView>
