@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
+    "tunnel": "expo start --tunnel",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
