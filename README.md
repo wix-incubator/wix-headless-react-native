@@ -26,26 +26,20 @@ The example application can be used a starting point for a new application, but 
 You can find the following guides in this application:
 
 - Member Authentication
-  - [Login during redirect session](./docs/login_redirect_session.md)
+  - [Handling member login](./docs/handling_member_login.md)
 
 ## Roadmap
 
 These are the currently planned features and guides for this example application:
 
-- [ ] Home screen
-- [ ] Members
-  - [ ] My Profile Screen
-  - [ ] Edit profile
-  - [ ] Logout of Wix domain
+- [X] Home screen
+- [X] Members
+  - [X] My Profile Screen
+  - [X] Edit profile
+  - [X] Logout of Wix domain
 - Ecom
-  - [ ] My Orders Screen
-  - [ ] Order screen
-  - [ ] handle cart not found error
-- [ ] Bookings
-  - [ ] Services Catalog
-  - [ ] Service Details View
-  - [ ] Finding available slots
-  - [ ] Book service
-  - [ ] My Bookings screen
+  - [X] My Orders Screen
+  - [X] Order screen
+  - [X] handle cart not found error
 
 Join in the conversation in our [discord channel](https://discord.com/channels/773211030314418196/1090595348067655813) to provide feedback, ask questions and request more features for the example application.

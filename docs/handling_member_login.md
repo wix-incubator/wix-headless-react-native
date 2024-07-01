@@ -2,9 +2,17 @@
 
 In this guide we'll cover how to handle member login and logout in a React Native application based on Wix Headless. We'll cover the following topics:
 
-- [Logging in users with Wix Managed Pages by using a Redirect Session](#logging-in-with-wix-managed-pages)
-- [Building a custom login form that logs in users directly](#building-a-custom-login-form)
-- [Performing a silent login when a user logs in during a checkout redirect session.](#handling-loginlogout-inside-a-checkout-redirect-session)
+- [Handling Member Login](#handling-member-login)
+  - [Logging in with Wix Managed Pages](#logging-in-with-wix-managed-pages)
+    - [Registering OAuth Redirect Url](#registering-oauth-redirect-url)
+    - [Code Example](#code-example)
+  - [Building a Custom Login Form](#building-a-custom-login-form)
+    - [Secure Custom Login in React Native](#secure-custom-login-in-react-native)
+    - [Code Example](#code-example-1)
+  - [Handling login/logout inside a checkout redirect session](#handling-loginlogout-inside-a-checkout-redirect-session)
+    - [Detecting User Logged In During Redirect Session](#detecting-user-logged-in-during-redirect-session)
+      - [Performing a Silent Login](#performing-a-silent-login)
+      - [Code Example](#code-example-2)
 
 ## Logging in with Wix Managed Pages
 
@@ -23,6 +31,16 @@ To perform a login with Wix Managed Pages, we'll use the APIs available on the `
 ### Registering OAuth Redirect Url
 
 In the OAuth process, we need to provide a redirect url that will be used to finish the OAuth process. Any redirect url we use must be registered in the OAuth App settings in the Wix Dashboard. Since we'll be using a deep link to our mobile application, make sure to register the full url with your custom scheme (e.g. `exp://localhost:19000/oauth/wix/callback`).
+
+The base url for your redirects is printed in the console when you start your app with expo. You can use this url as the base for your redirect urls.
+
+> For the production url you'll need to use the scheme of your app (e.g. `myapp://oauth/wix/callback`), defined in your `app.json`.
+
+![Get expo go base redirects url](./expo-go-base-url.png)
+
+The use that url to create the full redirect url for your app (e.g. `exp://localhost:19000/oauth/wix/callback`) and update it in your OAuth App settings in the Wix Dashboard.
+
+![Example redirect urls setup](./redirects-urls-example.png)
 
 ### Code Example
 
