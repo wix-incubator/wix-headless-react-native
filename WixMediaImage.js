@@ -1,4 +1,4 @@
-import { media as wixMedia } from "@wix/sdk-react";
+import { media as wixMedia } from "@wix/sdk";
 
 function getImageUrlForMedia(media, width, height) {
   return wixMedia.getScaledToFillImageUrl(media, width, height, {});

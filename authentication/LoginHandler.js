@@ -1,4 +1,3 @@
-import { useWixAuth } from "@wix/sdk-react";
 import {
   exchangeCodeAsync,
   makeRedirectUri,
@@ -11,6 +10,7 @@ import "react-native-url-polyfill/auto";
 import { WebView } from "react-native-webview";
 import validator from "validator";
 import { useWixSession } from "./session";
+import { wixCient } from "./wixClient";
 
 const LoginHandlerContext = React.createContext(null);
 
@@ -21,14 +21,13 @@ export function useLoginHandler() {
 export function LoginHandler(props) {
   const { session, setSessionLoading } = useWixSession();
   const [loginState, setLoginState] = React.useState(null);
-  const auth = useWixAuth();
 
   const silentLogin = React.useCallback(
     async (sessionToken) => {
-      const data = auth.generateOAuthData(
+      const data = wixCient.auth.generateOAuthData(
         Linking.createURL("/oauth/wix/callback"),
       );
-      const { authUrl } = await auth.getAuthUrl(data, {
+      const { authUrl } = await wixCient.auth.getAuthUrl(data, {
         prompt: "none",
         sessionToken,
       });
@@ -50,7 +49,7 @@ export function LoginHandler(props) {
         data,
       });
     },
-    [auth, setSessionLoading],
+    [wixCient.auth, setSessionLoading],
   );
 
   const login = React.useCallback(
@@ -60,7 +59,7 @@ export function LoginHandler(props) {
         setSessionLoading(false);
         return Promise.reject("Invalid email address!");
       }
-      const result = await auth.login({
+      const result = await wixCient.auth.login({
         email,
         password,
       });
@@ -73,7 +72,7 @@ export function LoginHandler(props) {
       }
       await silentLogin(result.data.sessionToken);
     },
-    [auth, setSessionLoading],
+    [wixCient.auth, setSessionLoading],
   );
 
   React.useEffect(() => {
@@ -102,7 +101,6 @@ export function LoginHandler(props) {
 }
 
 function LoginHandlerInvisibleWebview(props) {
-  const auth = useWixAuth();
   const { setSession } = useWixSession();
 
   if (!props.loginState) {
@@ -117,11 +115,11 @@ function LoginHandlerInvisibleWebview(props) {
           if (
             request.url.startsWith(Linking.createURL("/oauth/wix/callback"))
           ) {
-            const { code, state } = auth.parseFromUrl(
+            const { code, state } = wixCient.auth.parseFromUrl(
               request.url,
               props.loginState.data,
             );
-            auth
+            wixCient.auth
               .getMemberTokens(code, state, props.loginState.data)
               .then((tokens) => {
                 setSession(tokens);
@@ -141,7 +139,6 @@ export function useLoginByWixManagedPages() {
     path: "/oauth/wix/callback",
   });
 
-  const auth = useWixAuth();
   const { setSession, setSessionLoading } = useWixSession();
   const [error, setError] = React.useState(null);
 
@@ -230,7 +227,8 @@ export function useLoginByWixManagedPages() {
   return {
     error,
     openBrowser: async () => {
-      const { authorizationEndpoint, sessionToken } = await auth.getAuthUrl();
+      const { authorizationEndpoint, sessionToken } =
+        await wixCient.auth.getAuthUrl();
       setAuthorizationEndpoint({
         authorizationEndpoint,
         sessionToken,

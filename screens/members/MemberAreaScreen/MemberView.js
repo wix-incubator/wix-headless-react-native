@@ -1,9 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useWix, useWixModules } from "@wix/sdk-react";
-import { members } from "@wix/members";
-import { useWixSession } from "../../../authentication/session";
+import { format } from "date-fns";
+import React, { useEffect, useState } from "react";
 import { Image, TextInput, View } from "react-native";
-import { styles } from "../../../styles/members/styles";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
   Avatar,
   Button,
@@ -13,14 +12,14 @@ import {
   Menu,
   Text,
 } from "react-native-paper";
-import React, { useEffect, useState } from "react";
 import { useMemberHandler } from "../../../authentication/MemberHandler";
-import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
-import { ErrorView } from "../../../components/ErrorView/ErrorView";
-import { format } from "date-fns";
-import { usePrice } from "../../store/price";
+import { useWixSession } from "../../../authentication/session";
+import { wixCient } from "../../../authentication/wixClient";
 import { DismissKeyboardScrollView } from "../../../components/DismissKeyboardHOC/DismissKeyboardScrollView";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ErrorView } from "../../../components/ErrorView/ErrorView";
+import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
+import { styles } from "../../../styles/members/styles";
+import { usePrice } from "../../store/price";
 
 const FormInput = ({ labelValue, placeholderText, inputValue, ...rest }) => {
   return (
@@ -84,19 +83,21 @@ const MemberForm = () => {
 };
 
 const Orders = () => {
-  const wix = useWix();
   const { session } = useWixSession();
 
   const myOrdersQuery = useQuery(["my-orders", session], async () => {
-    const res = await wix.fetch(`/stores/v2/orders/query`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const res = await wixCient.fetchWithAuth(
+      `https://www.wixapis.com/stores/v2/orders/query`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: {},
+        }),
       },
-      body: JSON.stringify({
-        query: {},
-      }),
-    });
+    );
     return res.json();
   });
 
@@ -274,18 +275,19 @@ const Orders = () => {
 };
 export const MemberView = () => {
   const queryClient = useQueryClient();
-  const { getCurrentMember, updateMember } = useWixModules(members);
   const { newVisitorSession } = useWixSession();
   const { firstName, lastName, phone, updateContact } = useMemberHandler();
   const [visibleMenu, setVisibleMenu] = useState(false);
   const getCurrentMemberRes = useQuery(["currentMember"], () =>
-    getCurrentMember({ fieldSet: "FULL" }),
+    wixCient.members.getCurrentMember({ fieldSet: "FULL" }),
   );
   const [currentMember, setCurrentMember] = useState(null);
 
   useEffect(() => {
     const fetchCurrentMember = async () => {
-      const { member } = await getCurrentMember({ fieldSet: "FULL" });
+      const { member } = await wixCient.members.getCurrentMember({
+        fieldSet: "FULL",
+      });
       updateContact({
         firstName: member?.contact?.firstName,
         lastName: member?.contact?.lastName,
@@ -311,7 +313,10 @@ export const MemberView = () => {
       const updatedMember = {
         contact: updatedContact,
       };
-      return await updateMember(currentMember?._id, updatedMember);
+      return await wixCient.members.updateMember(
+        currentMember?._id,
+        updatedMember,
+      );
     },
     {
       onSuccess: async (response) => {

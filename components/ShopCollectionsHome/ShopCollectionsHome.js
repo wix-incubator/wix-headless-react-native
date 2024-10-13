@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import { useRef } from "react";
 import {
   Dimensions,
   Image,
@@ -6,30 +8,27 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { IconButton } from "react-native-paper";
+import Carousel from "react-native-reanimated-carousel";
+import { WixMediaImage } from "../../WixMediaImage";
+import { wixCient } from "../../authentication/wixClient";
+import { data as StaticCollectionsData } from "../../data/staticCollectionsData/data";
+import { data as StaticProductsData } from "../../data/staticdProductsData/data";
+import Routes from "../../routes/routes";
 import { styles } from "../../styles/home/shop-collection/shop-collection";
 import { ImageCard } from "../Cards/ImageCard";
-import Carousel from "react-native-reanimated-carousel";
-import { useWixModules } from "@wix/sdk-react";
-import { collections, products } from "@wix/stores";
-import { useQuery } from "@tanstack/react-query";
-import { IconButton } from "react-native-paper";
-import { useRef } from "react";
-import { LoadingIndicator } from "../LoadingIndicator/LoadingIndicator";
 import { ErrorView } from "../ErrorView/ErrorView";
-import { WixMediaImage } from "../../WixMediaImage";
-import { data as StaticProductsData } from "../../data/staticdProductsData/data";
-import { data as StaticCollectionsData } from "../../data/staticCollectionsData/data";
-import Routes from "../../routes/routes";
+import { LoadingIndicator } from "../LoadingIndicator/LoadingIndicator";
 
 const screenWidth = Dimensions.get("window").width;
 
 export const ShopCollectionsHome = ({ navigation }) => {
-  const { queryProducts } = useWixModules(products);
-  const { queryCollections } = useWixModules(collections);
   const carouselRef = useRef(null);
-  const productsResponse = useQuery(["products"], () => queryProducts().find());
+  const productsResponse = useQuery(["products"], () =>
+    wixCient.products.queryProducts().find(),
+  );
   const collectionsResponse = useQuery(["collections"], () =>
-    queryCollections().find(),
+    wixCient.collections.queryCollections().find(),
   );
 
   if (productsResponse.isLoading || collectionsResponse.isLoading) {

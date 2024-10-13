@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Appbar, Divider, List, Searchbar, Text } from "react-native-paper";
-import { Image, View } from "react-native";
-import { styles } from "../../styles/home/header/styles";
-import { useWixModules } from "@wix/sdk-react";
-import { useQuery } from "@tanstack/react-query";
-import { LoadingIndicator } from "../LoadingIndicator/LoadingIndicator";
 import { useNavigation } from "@react-navigation/native";
-import { products } from "@wix/stores";
-import { WixMediaImage } from "../../WixMediaImage";
+import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import { Image, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { Appbar, Divider, List, Searchbar, Text } from "react-native-paper";
+import { wixCient } from "../../authentication/wixClient";
 import Routes from "../../routes/routes";
+import { styles } from "../../styles/home/header/styles";
+import { WixMediaImage } from "../../WixMediaImage";
+import { LoadingIndicator } from "../LoadingIndicator/LoadingIndicator";
 
 const HeaderContent = ({ handleShowResults, showResults, searchRef }) => {
-  const { queryProducts } = useWixModules(products);
   const [searchQuery, setSearchQuery] = useState("");
   const navigation = useNavigation();
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const productsResponse = useQuery(["products"], () => queryProducts().find());
+  const productsResponse = useQuery(["products"], () =>
+    wixCient.products.queryProducts().find(),
+  );
   useEffect(() => {
     if (!productsResponse.isLoading && productsResponse?.data?.items) {
       setFilteredProducts(productsResponse.data.items);

@@ -1,20 +1,18 @@
-import * as React from "react";
-import { Button, Divider, Text } from "react-native-paper";
-import { View } from "react-native";
-import { orders } from "@wix/ecom";
-import { useWixSessionModules } from "../../../authentication/session";
 import { useQuery } from "@tanstack/react-query";
-import { usePreventBackNavigation } from "../../../utils/usePreventBackNavigation";
-import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
+import * as React from "react";
+import { View } from "react-native";
+import { Button, Divider, Text } from "react-native-paper";
+import { wixCient } from "../../../authentication/wixClient";
 import { ErrorView } from "../../../components/ErrorView/ErrorView";
+import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
 import Routes from "../../../routes/routes";
+import { usePreventBackNavigation } from "../../../utils/usePreventBackNavigation";
 
 export function CheckoutThankYouScreen({ route, navigation }) {
   usePreventBackNavigation({ navigation });
 
-  const { getOrder } = useWixSessionModules(orders);
   const orderQuery = useQuery(["order", route.params.orderId], () =>
-    getOrder(route.params.orderId),
+    wixCient.orders.getOrder(route.params.orderId),
   );
 
   if (orderQuery.isLoading) {

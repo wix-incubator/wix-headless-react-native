@@ -1,26 +1,24 @@
-import * as React from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { checkout, currentCart } from "@wix/ecom";
-import { useWixSessionModules } from "../../../authentication/session";
-import { Button, Surface, useTheme } from "react-native-paper";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
-import { usePrice } from "../price";
-import { redirects } from "@wix/redirects";
-import { useWixModules } from "@wix/sdk-react";
-import * as Linking from "expo-linking";
-import { CartListItem } from "../../../components/List/CartListItem";
-import { InputPrefix } from "../../../components/Input/InputPrefix";
-import { PrefixText } from "../../../components/PrefixText/PrefixText";
-import _, { isInteger } from "lodash";
-import { SimpleContainer } from "../../../components/Container/SimpleContainer";
-import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
-import { ErrorView } from "../../../components/ErrorView/ErrorView";
+import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { CheckoutScreen } from "../checkout/CheckoutScreen";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { currentCart } from "@wix/ecom";
+import * as Linking from "expo-linking";
+import _, { isInteger } from "lodash";
+import * as React from "react";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
+import { Button, Surface, useTheme } from "react-native-paper";
+import { wixCient } from "../../../authentication/wixClient";
+import { SimpleContainer } from "../../../components/Container/SimpleContainer";
+import { ErrorView } from "../../../components/ErrorView/ErrorView";
+import { InputPrefix } from "../../../components/Input/InputPrefix";
+import { CartListItem } from "../../../components/List/CartListItem";
+import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
+import { PrefixText } from "../../../components/PrefixText/PrefixText";
 import Routes from "../../../routes/routes";
 import { styles } from "../../../styles/store/cart/styles";
-import { useNavigation } from "@react-navigation/native";
+import { CheckoutScreen } from "../checkout/CheckoutScreen";
 import { CheckoutThankYouScreen } from "../checkout/CheckoutThankYouScreen";
+import { usePrice } from "../price";
 
 const Stack = createNativeStackNavigator();
 
@@ -49,8 +47,6 @@ const EmptyCart = () => {
 
 function CartItem({ item, currency }) {
   const queryClient = useQueryClient();
-  const { updateCurrentCartLineItemQuantity, removeLineItemsFromCurrentCart } =
-    useWixSessionModules(currentCart);
 
   const updateQuantityMutation = useMutation(
     async (quantity) => {
@@ -58,7 +54,7 @@ function CartItem({ item, currency }) {
       if (isInteger(quantity) === false) {
         quantity = Math.round(quantity);
       }
-      return updateCurrentCartLineItemQuantity([
+      return wixCient.currentCart.updateCurrentCartLineItemQuantity([
         {
           _id: item._id,
           quantity,
@@ -74,7 +70,7 @@ function CartItem({ item, currency }) {
 
   const removeMutation = useMutation(
     async () => {
-      return removeLineItemsFromCurrentCart([item._id]);
+      return wixCient.currentCart.removeLineItemsFromCurrentCart([item._id]);
     },
     {
       onSuccess: (response) => {
@@ -105,16 +101,12 @@ function CartView() {
   const [userDiscount, setUserDiscount] = React.useState("");
   const [triggerInvalidCoupon, setTriggerInvalidCoupon] = React.useState(false);
   const [checkoutRedirect, setCheckoutRedirect] = React.useState(false);
-  const { getCurrentCart, createCheckoutFromCurrentCart } =
-    useWixModules(currentCart);
-  const { updateCheckout } = useWixModules(checkout);
-  const { createRedirectSession } = useWixSessionModules(redirects);
   const theme = useTheme();
   const navigation = useNavigation();
 
   const currentCartQuery = useQuery(["currentCart"], () => {
     try {
-      return getCurrentCart();
+      return wixCient.currentCart.getCurrentCart();
     } catch (e) {
       return console.error(e);
     }
@@ -123,9 +115,10 @@ function CartView() {
   const checkoutMutation = useMutation(
     async () => {
       setCheckoutRedirect(true);
-      let currentCheckout = await createCheckoutFromCurrentCart({
-        channelType: currentCart.ChannelType.OTHER_PLATFORM,
-      });
+      let currentCheckout =
+        await wixCient.currentCart.createCheckoutFromCurrentCart({
+          channelType: currentCart.ChannelType.OTHER_PLATFORM,
+        });
       if (userNote !== "") {
         currentCheckout.buyerNote = userNote;
       }
@@ -135,7 +128,7 @@ function CartView() {
 
       if (userDiscount !== "") {
         try {
-          currentCheckout = await updateCheckout(
+          currentCheckout = await wixCient.checkout.updateCheckout(
             currentCheckout.checkoutId,
             currentCheckout,
             {
@@ -149,12 +142,13 @@ function CartView() {
         }
       }
 
-      const { redirectSession } = await createRedirectSession({
-        ecomCheckout: { checkoutId: currentCheckout.checkoutId },
-        callbacks: {
-          thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
-        },
-      });
+      const { redirectSession } =
+        await wixCient.redirects.createRedirectSession({
+          ecomCheckout: { checkoutId: currentCheckout.checkoutId },
+          callbacks: {
+            thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
+          },
+        });
 
       return redirectSession;
     },
@@ -179,9 +173,7 @@ function CartView() {
   }
 
   if (currentCartQuery.isError) {
-    if (
-      !currentCartQuery.error.message.includes("code: OWNED_CART_NOT_FOUND")
-    ) {
+    if (!currentCartQuery.error.message.includes("OWNED_CART_NOT_FOUND")) {
       return <ErrorView message={currentCartQuery.error.message} />;
     } else {
       return (

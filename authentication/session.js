@@ -1,15 +1,15 @@
-import { useWixAuth, useWixModules } from "@wix/sdk-react";
 import * as SecureStore from "expo-secure-store";
 import * as React from "react";
 import { View } from "react-native";
 import "react-native-gesture-handler";
 import { ActivityIndicator } from "react-native-paper";
 import "react-native-url-polyfill/auto";
+import { wixCient } from "./wixClient";
 
 /**
  * @type {React.Context<{
- *  session: import("@wix/sdk-react").Tokens,
- * setSession: (session: import("@wix/sdk-react").Tokens) => Promise<void>,
+ *  session: import("@wix/sdk").Tokens,
+ * setSession: (session: import("@wix/sdk").Tokens) => Promise<void>,
  * newVisitorSession: () => Promise<void> }>}
  */
 const WixSessionContext = React.createContext(undefined);
@@ -17,11 +17,10 @@ const WixSessionContext = React.createContext(undefined);
 export function WixSessionProvider(props) {
   const [session, setSessionState] = React.useState(null);
   const [sessionLoading, setSessionLoading] = React.useState(false);
-  const auth = useWixAuth();
 
   const setSession = React.useCallback(
     async (tokens) => {
-      auth.setTokens(tokens);
+      wixCient.auth.setTokens(tokens);
       await SecureStore.setItemAsync(
         "wixSession",
         JSON.stringify({ tokens, clientId: props.clientId }),
@@ -29,15 +28,15 @@ export function WixSessionProvider(props) {
       setSessionState(tokens);
       setSessionLoading(false);
     },
-    [auth, setSessionState],
+    [wixCient.auth, setSessionState],
   );
 
   const newVisitorSession = React.useCallback(async () => {
     setSessionState(null);
     setSessionLoading(true);
-    const tokens = await auth.generateVisitorTokens();
+    const tokens = await wixCient.auth.generateVisitorTokens();
     setSession(tokens);
-  }, [auth, setSessionState]);
+  }, [wixCient.auth, setSessionState]);
 
   React.useEffect(() => {
     setSessionLoading(true);
@@ -84,13 +83,4 @@ export function useWixSession() {
     throw new Error("useWixSession must be used within a WixSessionProvider");
   }
   return context;
-}
-
-/**
- *
- * @type {import("@wix/sdk-react").useWixModules}
- */
-export function useWixSessionModules(modules) {
-  useWixSession();
-  return useWixModules(modules);
 }

@@ -1,6 +1,7 @@
-import { checkout, currentCart } from "@wix/ecom";
-import { redirects } from "@wix/redirects";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { checkout } from "@wix/ecom";
 import * as Linking from "expo-linking";
+import { isNumber } from "lodash";
 import * as React from "react";
 import { useEffect } from "react";
 import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
@@ -16,14 +17,12 @@ import {
   useTheme,
 } from "react-native-paper";
 import RenderHtml from "react-native-render-html";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useWixSessionModules } from "../../../authentication/session";
-import { WixMediaImage } from "../../../WixMediaImage";
-import { NumericInput } from "../../../components/Input/NumericInput";
+import { wixCient } from "../../../authentication/wixClient";
 import { SimpleContainer } from "../../../components/Container/SimpleContainer";
+import { NumericInput } from "../../../components/Input/NumericInput";
 import Routes from "../../../routes/routes";
 import { styles } from "../../../styles/store/product/styles";
-import { isNumber } from "lodash";
+import { WixMediaImage } from "../../../WixMediaImage";
 
 export function ProductScreen({ route, navigation }) {
   const { product, collectionName } = route.params;
@@ -32,16 +31,6 @@ export function ProductScreen({ route, navigation }) {
   const [quantity, setQuantity] = React.useState(1);
   const [selectedVariant, setSelectedVariant] = React.useState(null);
   const [selectedVariantId, setSelectedVariantId] = React.useState(null);
-  const {
-    addToCurrentCart,
-    getCurrentCart,
-    updateCurrentCartLineItemQuantity,
-  } = useWixSessionModules(currentCart);
-
-  const {
-    redirects: { createRedirectSession },
-    checkout: { createCheckout },
-  } = useWixSessionModules({ redirects, checkout });
 
   useEffect(() => {
     if (product?.variants?.length) {
@@ -62,19 +51,20 @@ export function ProductScreen({ route, navigation }) {
         },
       };
 
-      const currentCheckout = await createCheckout({
+      const currentCheckout = await wixCient.checkout.createCheckout({
         lineItems: [item],
         channelType: checkout.ChannelType.OTHER_PLATFORM,
       });
 
-      const { redirectSession } = await createRedirectSession({
-        ecomCheckout: { checkoutId: currentCheckout._id },
-        callbacks: {
-          thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
-          cartPageUrl: Linking.createURL("/store/cart"),
-          postFlowUrl: Linking.createURL("/store/products"),
-        },
-      });
+      const { redirectSession } =
+        await wixCient.redirects.createRedirectSession({
+          ecomCheckout: { checkoutId: currentCheckout._id },
+          callbacks: {
+            thankYouPageUrl: Linking.createURL("/store/checkout/thank-you"),
+            cartPageUrl: Linking.createURL("/store/cart"),
+            postFlowUrl: Linking.createURL("/store/products"),
+          },
+        });
 
       return redirectSession;
     },
@@ -94,7 +84,7 @@ export function ProductScreen({ route, navigation }) {
 
   const queryClient = useQueryClient();
   const addToCart = (quantity) =>
-    addToCurrentCart({
+    wixCient.currentCart.addToCurrentCart({
       lineItems: [
         {
           quantity,
@@ -112,14 +102,14 @@ export function ProductScreen({ route, navigation }) {
   const addToCurrentCartMutation = useMutation(
     async (quantity) => {
       try {
-        const currentCart = await getCurrentCart();
+        const currentCart = await wixCient.currentCart.getCurrentCart();
 
         const existingProductIndex = currentCart.lineItems.findIndex(
           (item) => item.catalogReference.catalogItemId === product._id,
         );
 
         if (existingProductIndex !== -1 && currentCart) {
-          return updateCurrentCartLineItemQuantity([
+          return wixCient.currentCart.updateCurrentCartLineItemQuantity([
             {
               _id: currentCart.lineItems[existingProductIndex]._id,
               quantity:

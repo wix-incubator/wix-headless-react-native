@@ -1,16 +1,14 @@
-import { useWixModules } from "@wix/sdk-react";
-import { collections } from "@wix/stores";
 import { useQuery } from "@tanstack/react-query";
-import { CollectionsGrid } from "../../../components/Grid/CollectionsGrid";
+import { wixCient } from "../../../authentication/wixClient";
 import { SimpleContainer } from "../../../components/Container/SimpleContainer";
-import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
 import { ErrorView } from "../../../components/ErrorView/ErrorView";
+import { CollectionsGrid } from "../../../components/Grid/CollectionsGrid";
+import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
 import Routes from "../../../routes/routes";
 
 export const CollectionsScreen = ({ navigation }) => {
-  const { queryCollections } = useWixModules(collections);
   const collectionsResponse = useQuery(["collections"], () =>
-    queryCollections().find(),
+    wixCient.collections.queryCollections().find(),
   );
   if (collectionsResponse.isLoading) {
     return (

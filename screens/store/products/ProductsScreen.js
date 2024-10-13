@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useWixModules } from "@wix/sdk-react";
 import * as React from "react";
 import { useRef } from "react";
 import { Animated, SafeAreaView, View } from "react-native";
+import { wixCient } from "../../../authentication/wixClient";
+import { ErrorView } from "../../../components/ErrorView/ErrorView";
 import { ProductsGrid } from "../../../components/Grid/ProductsGrid";
 import { ProductsHeader } from "../../../components/Header/ProductsHeader";
-import { products } from "@wix/stores";
 import { LoadingIndicator } from "../../../components/LoadingIndicator/LoadingIndicator";
-import { ErrorView } from "../../../components/ErrorView/ErrorView";
 import { styles } from "../../../styles/store/products/styles";
 
 export function ProductsScreen({ navigation, route }) {
@@ -17,9 +16,10 @@ export function ProductsScreen({ navigation, route }) {
     _id: CollectionId,
     description: CollectionDescription,
   } = route.params.items;
-  const { queryProducts } = useWixModules(products);
 
-  const productsResponse = useQuery(["products"], () => queryProducts().find());
+  const productsResponse = useQuery(["products"], () =>
+    wixCient.products.queryProducts().find(),
+  );
 
   if (productsResponse.isLoading) {
     return <LoadingIndicator />;
