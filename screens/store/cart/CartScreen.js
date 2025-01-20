@@ -367,12 +367,11 @@ function CartView() {
   );
 }
 
-export function CartScreen({ navigation }) {
+export function CartScreen() {
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        animation: "ios",
       }}
       initialRouteName={"CartView"}
     >

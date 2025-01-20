@@ -77,7 +77,6 @@ export const ProductsGrid = memo(({ data, scrollOffsetY, onPress }) => {
       renderItem={({ item }) => {
         return <ProductCard item={item} onPress={onPress} />;
       }}
-      style={{ zIndex: -1 }}
     ></FlatList>
   );
 });

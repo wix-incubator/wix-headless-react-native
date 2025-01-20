@@ -1,14 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { checkout } from "@wix/ecom";
+import { products } from "@wix/stores";
 import * as Linking from "expo-linking";
-import { isNumber } from "lodash";
 import * as React from "react";
-import { useEffect } from "react";
 import { Pressable, ScrollView, useWindowDimensions, View } from "react-native";
 import {
   Button,
   Card,
-  Chip,
   IconButton,
   List,
   Portal,
@@ -16,6 +14,7 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
+import { Dropdown } from "react-native-paper-dropdown";
 import RenderHtml from "react-native-render-html";
 import { wixCient } from "../../../authentication/wixClient";
 import { SimpleContainer } from "../../../components/Container/SimpleContainer";
@@ -28,16 +27,21 @@ export function ProductScreen({ route, navigation }) {
   const { product, collectionName } = route.params;
   const { width } = useWindowDimensions();
   const theme = useTheme();
-  const [quantity, setQuantity] = React.useState(1);
-  const [selectedVariant, setSelectedVariant] = React.useState(null);
-  const [selectedVariantId, setSelectedVariantId] = React.useState(null);
+  const queryClient = useQueryClient();
+  const [requestedQuantity, setRequestQuantity] = React.useState(1);
+  const [selectedProductOptions, setSelectedProductOptions] = React.useState(
+    {},
+  );
+  const [addToCartSnackBarVisible, setAddToCartSnackBarVisible] =
+    React.useState(false);
 
-  useEffect(() => {
-    if (product?.variants?.length) {
-      setSelectedVariant(product.variants[0]);
-      setSelectedVariantId(product.variants[0]._id);
-    }
-  }, []);
+  const selectedVariant = product.variants?.find(
+    (variant) =>
+      Object.entries(selectedProductOptions).length > 0 &&
+      Object.entries(selectedProductOptions).every(
+        ([key, value]) => variant.choices[key] === value,
+      ),
+  );
 
   const description = product?.description ?? "";
 
@@ -45,10 +49,11 @@ export function ProductScreen({ route, navigation }) {
     async (quantity) => {
       const item = {
         quantity,
-        catalogReference: {
-          catalogItemId: product._id,
-          appId: "1380b703-ce81-ff05-f115-39571d94dfcd",
-        },
+        catalogReference: catalogReference(
+          product,
+          selectedVariant,
+          selectedProductOptions,
+        ),
       };
 
       const currentCheckout = await wixCient.checkout.createCheckout({
@@ -79,50 +84,20 @@ export function ProductScreen({ route, navigation }) {
     },
   );
 
-  const [addToCartSnackBarVisible, setAddToCartSnackBarVisible] =
-    React.useState(false);
-
-  const queryClient = useQueryClient();
-  const addToCart = (quantity) =>
-    wixCient.currentCart.addToCurrentCart({
-      lineItems: [
-        {
-          quantity,
-          catalogReference: {
-            catalogItemId: product._id,
-            appId: "1380b703-ce81-ff05-f115-39571d94dfcd",
-            options: {
-              variantId: selectedVariantId,
-            },
-          },
-        },
-      ],
-    });
-
   const addToCurrentCartMutation = useMutation(
-    async (quantity) => {
-      try {
-        const currentCart = await wixCient.currentCart.getCurrentCart();
-
-        const existingProductIndex = currentCart.lineItems.findIndex(
-          (item) => item.catalogReference.catalogItemId === product._id,
-        );
-
-        if (existingProductIndex !== -1 && currentCart) {
-          return wixCient.currentCart.updateCurrentCartLineItemQuantity([
-            {
-              _id: currentCart.lineItems[existingProductIndex]._id,
-              quantity:
-                currentCart.lineItems[existingProductIndex].quantity + quantity,
-            },
-          ]);
-        } else {
-          return addToCart(quantity);
-        }
-      } catch (e) {
-        return addToCart(quantity);
-      }
-    },
+    async (quantity) =>
+      wixCient.currentCart.addToCurrentCart({
+        lineItems: [
+          {
+            quantity,
+            catalogReference: cartCatalogReference(
+              product,
+              selectedVariant,
+              selectedProductOptions,
+            ),
+          },
+        ],
+      }),
     {
       onSuccess: (response) => {
         queryClient.setQueryData(["currentCart"], response.cart);
@@ -131,31 +106,13 @@ export function ProductScreen({ route, navigation }) {
     },
   );
 
-  const onQuantityChanged = (val) => {
-    setQuantity(val);
-  };
-  const productInStock = (variant) => {
-    return (
-      variant?.stock.inStock ||
-      (isNumber(inventoryQuantity) && inventoryQuantity > 0)
-    );
-  };
+  const inStock = productInStock(product, selectedVariant, requestedQuantity);
+  const allProductOptionsSelected = (product.productOptions ?? []).every(
+    (productOption) => productOption.name in selectedProductOptions,
+  );
 
-  const variants = product?.variants;
-  const inventoryQuantity = product?.stock.inStock
-    ? undefined
-    : selectedVariant?.stock.quantity;
-  const inStock = productInStock(selectedVariant);
+  const canBeAddedToCart = inStock && allProductOptionsSelected;
 
-  const addToCartHandler = () => {
-    !addToCurrentCartMutation.isLoading
-      ? addToCurrentCartMutation.mutateAsync(quantity)
-      : {};
-  };
-
-  const buyNowHandler = () => {
-    !buyNowMutation.isLoading ? buyNowMutation.mutateAsync(quantity) : {};
-  };
   return (
     <SimpleContainer
       navigation={navigation}
@@ -198,28 +155,32 @@ export function ProductScreen({ route, navigation }) {
               subtitleStyle={styles.productSku}
             />
           )}
-          <View style={styles.variantsContainer}>
-            {variants?.map(
-              (variant) =>
-                variant.choices.Size &&
-                variant.variant.visible && (
-                  <View key={variant._id}>
-                    <Chip
-                      mode={"outlined"}
-                      selected={
-                        productInStock(variant) &&
-                        selectedVariantId === variant._id
-                      }
-                      onPress={() => setSelectedVariantId(variant._id)}
-                      style={{ backgroundColor: theme.colors.surface }}
-                      disabled={!productInStock(variant)}
-                    >
-                      {variant.choices.Size}
-                    </Chip>
-                  </View>
-                ),
-            )}
-          </View>
+          {product.productOptions.map((productOption) => (
+            <View style={styles.variantsContainer}>
+              <Dropdown
+                label={productOption.name}
+                options={productOption.choices.map((choice) => ({
+                  label: choice.description,
+                  value: choice.description,
+                }))}
+                value={selectedProductOptions[productOption.name]}
+                onSelect={(value) => {
+                  setSelectedProductOptions((selectedProductOptions) => {
+                    const newSelectedProductOptions = {
+                      ...selectedProductOptions,
+                      [productOption.name]: value,
+                    };
+                    if (typeof value === "undefined") {
+                      delete newSelectedProductOptions[productOption.name];
+                    }
+                    return newSelectedProductOptions;
+                  });
+                }}
+                mode="outlined"
+              />
+            </View>
+          ))}
+
           <Card.Title
             title={product.name}
             titleNumberOfLines={2}
@@ -233,50 +194,59 @@ export function ProductScreen({ route, navigation }) {
 
           <Card.Content>
             <View style={styles.flexJustifyStart}>
-              <Text style={{ fontSize: 13, marginBottom: 8 }}>Quantity</Text>
-              {inStock ? (
-                <NumericInput
-                  value={1}
-                  onChange={onQuantityChanged}
-                  min={1}
-                  max={inventoryQuantity}
-                  style={{
-                    width: 100,
-                    justifyContent: "flex-start",
-                    alignItems: "flex-start",
-                  }}
-                />
-              ) : (
+              {!inStock ? (
                 <Text style={{ color: "#B22D1D" }}>Out of Stock</Text>
+              ) : !allProductOptionsSelected ? (
+                <Text style={{ color: "#B22D1D" }}>
+                  Please select all product options
+                </Text>
+              ) : (
+                <>
+                  <Text style={{ fontSize: 13, marginBottom: 8 }}>
+                    Quantity
+                  </Text>
+                  <NumericInput
+                    value={requestedQuantity}
+                    onChange={(val) => setRequestQuantity(val)}
+                    min={1}
+                    style={{
+                      width: 100,
+                      justifyContent: "flex-start",
+                      alignItems: "flex-start",
+                    }}
+                  />
+                </>
               )}
             </View>
 
             <Button
               mode="contained"
-              onPress={addToCartHandler}
+              onPress={() =>
+                addToCurrentCartMutation.mutateAsync(requestedQuantity)
+              }
               loading={addToCurrentCartMutation.isLoading}
               style={[
                 styles.flexGrow1Button,
                 {
-                  backgroundColor: !inStock
+                  backgroundColor: !canBeAddedToCart
                     ? theme.colors.surfaceDisabled
                     : "#403f2a",
                 },
               ]}
               buttonColor={theme.colors.secondary}
-              disabled={!inStock}
+              disabled={!canBeAddedToCart}
             >
               Add to Cart
             </Button>
             <Button
               mode="contained"
-              onPress={buyNowHandler}
+              onPress={() => buyNowMutation.mutateAsync(requestedQuantity)}
               loading={buyNowMutation.isLoading}
               style={[
                 styles.flexGrow1Button,
                 {
                   // backgroundColor: "transparent",
-                  borderColor: !inStock
+                  borderColor: !canBeAddedToCart
                     ? theme.colors.surfaceDisabled
                     : "#403f2a",
                   marginTop: 0,
@@ -285,11 +255,11 @@ export function ProductScreen({ route, navigation }) {
               icon={"shopping-outline"}
               textColor={theme.colors.surface}
               contentStyle={{
-                backgroundColor: inStock
+                backgroundColor: canBeAddedToCart
                   ? theme.colors.secondary
                   : theme.colors.surfaceVariant,
               }}
-              disabled={!inStock}
+              disabled={!canBeAddedToCart}
             >
               Buy Now
             </Button>
@@ -342,5 +312,40 @@ export function ProductScreen({ route, navigation }) {
         </Portal>
       </ScrollView>
     </SimpleContainer>
+  );
+}
+
+function cartCatalogReference(
+  product,
+  selectedVariant,
+  selectedProductOptions,
+) {
+  return {
+    catalogItemId: product._id,
+    appId: "215238eb-22a5-4c36-9e7b-e7c08025e04e",
+    options: product.manageVariants
+      ? {
+          variantId: selectedVariant?._id,
+        }
+      : { options: selectedProductOptions },
+  };
+}
+
+function productInStock(product, selectedVariant, requestedQuantity) {
+  if (product.stock.inventoryStatus === products.InventoryStatus.OUT_OF_STOCK) {
+    return false;
+  }
+
+  if (!product.manageVariants) {
+    return true;
+  }
+
+  if (!selectedVariant) {
+    return false;
+  }
+
+  return (
+    selectedVariant.stock.inStock &&
+    selectedVariant.stock.quantity >= requestedQuantity
   );
 }

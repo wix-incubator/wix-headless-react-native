@@ -8,64 +8,62 @@ import {
   View,
 } from "react-native";
 import { WixMediaImage } from "../../WixMediaImage";
-import { memo, useMemo } from "react";
+import { memo } from "react";
 
 const screenWidth = Dimensions.get("window").width;
 
 const CollectionCard = ({ item, onPress }) => {
-  return useMemo(() => {
-    return (
-      <View style={styles.container}>
-        <Pressable
-          onPress={() => {
-            onPress(item);
-          }}
-        >
-          {item.media?.mainMedia?.image?.url ? (
-            <WixMediaImage
-              media={item.media.mainMedia.image.url}
-              width={screenWidth / 2 - 20}
-              height={screenWidth / 2}
-            >
-              {({ url }) => {
-                return (
-                  <Image
-                    style={[
-                      styles.image,
-                      {
-                        width: screenWidth / 2 - 20, // Adjust the width as needed
-                        height: screenWidth / 2,
-                      },
-                    ]}
-                    source={{
-                      uri: url,
-                    }}
-                  />
-                );
-              }}
-            </WixMediaImage>
-          ) : (
-            <Image
-              style={[
-                styles.image,
-                {
-                  width: screenWidth / 2 - 20, // Adjust the width as needed
-                  height: screenWidth / 2,
-                },
-              ]}
-              source={{
-                uri: `https://via.placeholder.com/${screenWidth / 2}`,
-              }}
-            />
-          )}
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.title}>
-            {item.convertedPriceData?.formatted?.price}
-          </Text>
-        </Pressable>
-      </View>
-    );
-  }, [item]);
+  return (
+    <View style={styles.container}>
+      <Pressable
+        onPress={() => {
+          onPress(item);
+        }}
+      >
+        {item.media?.mainMedia?.image?.url ? (
+          <WixMediaImage
+            media={item.media.mainMedia.image.url}
+            width={screenWidth / 2 - 20}
+            height={screenWidth / 2}
+          >
+            {({ url }) => {
+              return (
+                <Image
+                  style={[
+                    styles.image,
+                    {
+                      width: screenWidth / 2 - 20, // Adjust the width as needed
+                      height: screenWidth / 2,
+                    },
+                  ]}
+                  source={{
+                    uri: url,
+                  }}
+                />
+              );
+            }}
+          </WixMediaImage>
+        ) : (
+          <Image
+            style={[
+              styles.image,
+              {
+                width: screenWidth / 2 - 20, // Adjust the width as needed
+                height: screenWidth / 2,
+              },
+            ]}
+            source={{
+              uri: `https://via.placeholder.com/${screenWidth / 2}`,
+            }}
+          />
+        )}
+        <Text style={styles.title}>{item.name}</Text>
+        <Text style={styles.title}>
+          {item.convertedPriceData?.formatted?.price}
+        </Text>
+      </Pressable>
+    </View>
+  );
 };
 export const CollectionsGrid = memo(({ data, onPress }) => {
   return (
@@ -84,7 +82,6 @@ export const CollectionsGrid = memo(({ data, onPress }) => {
           )
         );
       }}
-      style={{ zIndex: -1 }}
     ></FlatList>
   );
 });
