@@ -194,12 +194,12 @@ export function ProductScreen({ route, navigation }) {
 
           <Card.Content>
             <View style={styles.flexJustifyStart}>
-              {!inStock ? (
-                <Text style={{ color: "#B22D1D" }}>Out of Stock</Text>
-              ) : !allProductOptionsSelected ? (
+              {!allProductOptionsSelected ? (
                 <Text style={{ color: "#B22D1D" }}>
                   Please select all product options
                 </Text>
+              ) : !inStock ? (
+                <Text style={{ color: "#B22D1D" }}>Out of Stock</Text>
               ) : (
                 <>
                   <Text style={{ fontSize: 13, marginBottom: 8 }}>
