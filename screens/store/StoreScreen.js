@@ -11,7 +11,6 @@ export function StoreScreen() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-        animation: "ios",
       }}
     >
       <Stack.Screen name="Collection" component={CollectionsScreen} />
