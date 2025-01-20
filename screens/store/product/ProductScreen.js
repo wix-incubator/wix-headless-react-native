@@ -49,7 +49,7 @@ export function ProductScreen({ route, navigation }) {
     async (quantity) => {
       const item = {
         quantity,
-        catalogReference: catalogReference(
+        catalogReference: cartCatalogReference(
           product,
           selectedVariant,
           selectedProductOptions,
